@@ -3,8 +3,8 @@ import {CubeCoords} from "./CubeCoords";
 import {OffsetCoords} from "./OffsetCoords";
 
 export class AxialCoords extends HexCoords{
-  constructor(col, row, orientation) {
-    super(orientation);
+  constructor(col, row, grid) {
+    super(grid);
 
     if(!Number.isInteger(col)) {
       throw new Error( `Invalid Argument: "col" must be an integer, value was "${col}"` );
@@ -27,18 +27,18 @@ export class AxialCoords extends HexCoords{
     }
 
     if(!(coord instanceof HexCoords)) {
-      throw new Error('Invalid Argument error: Supplied argument must be of type "HexCoords"');
+      throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
     }
 
-    if(this.orientation != coord.orientation) {
+    /*if(this.orientation != coord.orientation) {
         throw new Error('Invalid Argument error: coordinate orientations must match');
-    }
+    }*/
 
     if(!(coord instanceof AxialCoords)) {
       coord = coord.toAxialCoords();
     }
 
-    return new AxialCoords(this.col + coord.col, this.row + coord.row, this.orientation);
+    return new AxialCoords(this.col + coord.col, this.row + coord.row, this.grid);
   }
 
   subtract (coord) {
@@ -47,18 +47,18 @@ export class AxialCoords extends HexCoords{
     }
 
     if(!(coord instanceof HexCoords)) {
-      throw new Error('Invalid Argument error: Supplied argument must be of type "HexCoords"');
+      throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
     }
 
-    if(this.orientation != coord.orientation) {
+    /*if(this.orientation != coord.orientation) {
         throw new Error('Invalid Argument error: coordinate orientations must match');
-    }
+    }*/
 
     if(!(coord instanceof AxialCoords)) {
       coord = coord.toAxialCoords();
     }
 
-    return new AxialCoords(this.col - coord.col, this.row - coord.row, this.orientation);
+    return new AxialCoords(this.col - coord.col, this.row - coord.row, this.grid);
   }
 
   equals (coord) {
@@ -67,12 +67,12 @@ export class AxialCoords extends HexCoords{
     }
 
     if(!(coord instanceof HexCoords)) {
-      throw new Error('Invalid Argument error: Supplied argument must be of type "HexCoords"');
+      throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
     }
 
-    if(this.orientation != coord.orientation) {
+    /*if(this.orientation != coord.orientation) {
         throw new Error('Invalid Argument error: coordinate orientations must match');
-    }
+    }*/
 
     if(!(coord instanceof AxialCoords)) {
       coord = coord.toAxialCoords();
@@ -87,18 +87,19 @@ export class AxialCoords extends HexCoords{
     }
 
     if(!(coord instanceof HexCoords)) {
-      throw new Error('Invalid Argument error: Supplied argument must be of type "HexCoords"');
+      throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
     }
 
-    if(this.orientation != coord.orientation) {
+    /*if(this.orientation != coord.orientation) {
         throw new Error('Invalid Argument error: coordinate orientations must match');
-    }
+    }*/
 
     //TODO
   }
 
   getDirection (direction) {
     //TODO
+    //WTF does this mean?
   }
 
   isNeighbour (coord) {
@@ -107,14 +108,15 @@ export class AxialCoords extends HexCoords{
     }
 
     if(!(coord instanceof HexCoords)) {
-      throw new Error('Invalid Argument error: Supplied argument must be of type "HexCoords"');
+      throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
     }
 
-    if(this.orientation != coord.orientation) {
+    /*if(this.orientation != coord.orientation) {
         throw new Error('Invalid Argument error: coordinate orientations must match');
-    }
+    }*/
 
     throw new Error('Not implemented');
+    //TODO
   }
 
   getNeighbours () {
@@ -122,6 +124,10 @@ export class AxialCoords extends HexCoords{
   }
 
   getNeighbour (direction) {
+    if(!HexCoords.Directions.isValid(direction)) {
+      throw new Error(`Invalid argument 'direction', unknow value '${direction}'`);
+    }
+
     throw new Error('Not implemented');
   }
 
@@ -130,7 +136,7 @@ export class AxialCoords extends HexCoords{
   }
 
   toCubeCoords () {
-    return new CubeCoords(this.col, this.row, -this.col-this.row, this.orientation);
+    return new CubeCoords(this.col, this.row, -this.col-this.row, this.grid);
   }
 
   toOffsetCoords (layout) {
@@ -141,13 +147,13 @@ export class AxialCoords extends HexCoords{
 
     switch(layout) {
       case layouts.EvenCol:
-        return new OffsetCoords(x, z + (x + (x&1)) / 2, layout, this.orientation);
+        return new OffsetCoords(x, z + (x + (x&1)) / 2, layout, this.grid);
       case layouts.OddCol:
-        return new OffsetCoords(x, z + (x - (x&1)) / 2, layout, this.orientation);
+        return new OffsetCoords(x, z + (x - (x&1)) / 2, layout, this.grid);
       case layouts.EvenRow:
-        return new OffsetCoords(x + (z + (z&1)) / 2, z, layout, this.orientation);
+        return new OffsetCoords(x + (z + (z&1)) / 2, z, layout, this.grid);
       case layouts.OddRow:
-        return new OffsetCoords(x + (z - (z&1)) / 2, z, layout, this.orientation);
+        return new OffsetCoords(x + (z - (z&1)) / 2, z, layout, this.grid);
     }
 
     throw new Error( `Cannot convert to OffsetCoords: Unknown layout "${layout}"` );
@@ -157,20 +163,32 @@ export class AxialCoords extends HexCoords{
     return `AxialCoords {col: ${this.col}, row: ${this.row}, orientation: ${this.orientation}}`;
   }
 
-  get directions() {
-    return Directions[this.orientation];
+  get DirectionCoordinateOffsets() {
+    return DirectionCoordinateOffsets;
   }
 
-  static getDirections (orientation = HexCoords.Orientations.pointyTop) {
-    if(!Orientations.isValid(orientation)) {
-      throw new Error(`Invalid Argument: Invalid orientation "${orientation}`);
+  getDirectionCoordinateOffset(direction) {
+    if(!HexCoords.Directions.isValid(direction)) {
+      throw new Error(`Invalid argument 'direction', unknow value '${direction}'`);
     }
 
-    return Directions[orientation];
+    return DirectionCoordinateOffsets[direction];
+  }
+
+  /*static get DirectionCoordinateOffsets () {
+    return DirectionCoordinateOffsets;
   };
+
+  static getDirectionCoordinateOffset(direction) {
+    if(!(direction in DirectionCoordinateOffsets)) {
+      throw new Error(`Invalid argument 'direction', unknow value '${direction}'`);
+    }
+
+    return DirectionCoordinateOffsets[direction];
+  }*/
 }
 
-const PointyTopDirections = Object.freeze({
+const DirectionCoordinateOffsets = Object.freeze({
   upRight: new AxialCoords(1, -1),
   right: new AxialCoords(1, 0),
   downRight: new AxialCoords(0, 1),
@@ -179,16 +197,12 @@ const PointyTopDirections = Object.freeze({
   upLeft: new AxialCoords(0, -1)
 });
 
-const FlatTopDirections = Object.freeze({
+/*//Flat top
+const DirectionCoordinateOffsets = Object.freeze({
   up: new AxialCoords(0, -1),
   upRight: new AxialCoords(1, -1),
   downRight: new AxialCoords(1, 0),
   down: new AxialCoords(0, 1),
   downLeft: new AxialCoords(-1, 1),
   upLeft: new AxialCoords(-1, 0)
-});
-
-const Directions = Object.freeze({
-  pointyTop: PointyTopDirections,
-  flatTop: FlatTopDirections
-});
+});*/

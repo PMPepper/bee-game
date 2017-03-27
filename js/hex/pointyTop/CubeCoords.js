@@ -3,8 +3,8 @@ import {AxialCoords} from "./AxialCoords";
 import {OffsetCoords} from "./OffsetCoords";
 
 export class CubeCoords extends HexCoords{
-  constructor(x, y, z, orientation) {
-    super(orientation);
+  constructor(x, y, z, grid) {
+    super(grid);
 
     if(!Number.isInteger(x)) {
       throw new Error( `Invalid Argument: "x" must be an integer, value was "${x}"` );
@@ -40,15 +40,15 @@ export class CubeCoords extends HexCoords{
       throw new Error('Invalid Argument error: Supplied argument must be of type "HexCoords"');
     }
 
-    if(this.orientation != coord.orientation) {
+    /*if(this.orientation != coord.orientation) {
         throw new Error('Invalid Argument error: coordinate orientations must match');
-    }
+    }*/
 
     if(!(coord instanceof CubeCoords)) {
       coord = coord.toCubeCoords();
     }
 
-    return new CubeCoords(this.x + coord.x, this.y + coord.y, this.z + coord.z);
+    return new CubeCoords(this.x + coord.x, this.y + coord.y, this.z + coord.z, this.grid);
   }
 
   subtract (coord) {
@@ -60,15 +60,15 @@ export class CubeCoords extends HexCoords{
       throw new Error('Invalid Argument error: Supplied argument must be of type "HexCoords"');
     }
 
-    if(this.orientation != coord.orientation) {
+    /*if(this.orientation != coord.orientation) {
         throw new Error('Invalid Argument error: coordinate orientations must match');
-    }
+    }*/
 
     if(!(coord instanceof CubeCoords)) {
       coord = coord.toCubeCoords();
     }
 
-    return new CubeCoords(this.x - coord.x, this.y - coord.y, this.z - coord.z);
+    return new CubeCoords(this.x - coord.x, this.y - coord.y, this.z - coord.z, this.grid);
   }
 
   equals (coord) {
@@ -80,9 +80,9 @@ export class CubeCoords extends HexCoords{
       throw new Error('Invalid Argument error: Supplied argument must be of type "HexCoords"');
     }
 
-    if(this.orientation != coord.orientation) {
+    /*if(this.orientation != coord.orientation) {
         throw new Error('Invalid Argument error: coordinate orientations must match');
-    }
+    }*/
 
     if(!(coord instanceof CubeCoords)) {
       coord = coord.toCubeCoords();
@@ -104,15 +104,15 @@ export class CubeCoords extends HexCoords{
       throw new Error('Invalid Argument error: Supplied argument must be of type "HexCoords"');
     }
 
-    if(this.orientation != coord.orientation) {
+    /*if(this.orientation != coord.orientation) {
         throw new Error('Invalid Argument error: coordinate orientations must match');
-    }
+    }*/
 
     if(!(coord instanceof CubeCoords)) {
       coord = coord.toCubeCoords();
     }
 
-    const directions = HexCoords.getDirections(this.orientation);
+    const directions = HexCoords.Directions;
     const x = this.x;
     const y = this.y;
     const z = this.z;
@@ -120,31 +120,32 @@ export class CubeCoords extends HexCoords{
     const ty = coord.y;
     const tz = coord.z;
 
-    if(this.orientation == HexCoords.Orientations.pointyTop) {
-      if(x+1 === tx && y === ty && z-1 == tz) {
-        return directions.upRight;
-      }
+    if(x+1 === tx && y === ty && z-1 == tz) {
+      return directions.upRight;
+    }
 
-      if(x+1 === tx && y-1 === ty && z == tz) {
-        return directions.right;
-      }
+    if(x+1 === tx && y-1 === ty && z == tz) {
+      return directions.right;
+    }
 
-      if(x === tx && y-1 === ty && z+1 == tz) {
-        return directions.downRight;
-      }
+    if(x === tx && y-1 === ty && z+1 == tz) {
+      return directions.downRight;
+    }
 
-      if(x-1 === tx && y === ty && z+1 == tz) {
-        return directions.downLeft;
-      }
+    if(x-1 === tx && y === ty && z+1 == tz) {
+      return directions.downLeft;
+    }
 
-      if(x-1 === tx && y+1 === ty && z == tz) {
-        return directions.left;
-      }
+    if(x-1 === tx && y+1 === ty && z == tz) {
+      return directions.left;
+    }
 
-      if(x === tx && y+1 === ty && z-1 == tz) {
-        return directions.upLeft;
-      }
-    } else {
+    if(x === tx && y+1 === ty && z-1 == tz) {
+      return directions.upLeft;
+    }
+
+    //Flat top alternative
+    /*} else {
       if(x === tx && y+1 === ty && z-1 == tz) {
         return directions.up;
       }
@@ -168,7 +169,7 @@ export class CubeCoords extends HexCoords{
       if(x-1 === tx && y+1 === ty && z == tz) {
         return directions.upLeft;
       }
-    }
+    }*/
 
     return false;
   }
@@ -182,7 +183,7 @@ export class CubeCoords extends HexCoords{
   }
 
   toAxialCoords () {
-    return new AxialCoords(this.x, this.z, this.orientation);
+    return new AxialCoords(this.x, this.z, this.grid);
   }
 
   toCubeCoords () {
@@ -196,10 +197,10 @@ export class CubeCoords extends HexCoords{
     let layouts = OffsetCoords.Layouts;
 
     switch(layout) {
-      case layouts.EvenCol:
+      /*case layouts.EvenCol:
         return new OffsetCoords(x, z + (x + (x&1)) / 2, layout, this.orientation);
       case layouts.OddCol:
-        return new OffsetCoords(x, z + (x - (x&1)) / 2, layout, this.orientation);
+        return new OffsetCoords(x, z + (x - (x&1)) / 2, layout, this.orientation);*/
       case layouts.EvenRow:
         return new OffsetCoords(x + (z + (z&1)) / 2, z, layout, this.orientation);
       case layouts.OddRow:
@@ -213,20 +214,20 @@ export class CubeCoords extends HexCoords{
     return `CubeCoords {x: ${this.x}, y: ${this.y}, z: ${this.z}, orientation: ${this.orientation}}`;
   }
 
-  get directions() {
-    return Directions[this.orientation];
+  get DirectionCoordinateOffsets() {
+    return DirectionCoordinateOffsets;
   }
 
-  static getDirections (orientation = HexCoords.Orientations.pointyTop) {
-    if(!Orientations.isValid(orientation)) {
-      throw new Error(`Invalid Argument: Invalid orientation "${orientation}`);
+  getDirectionCoordinateOffset(direction) {
+    if(!HexCoords.Directions.isValid(direction)) {
+      throw new Error(`Invalid argument 'direction', unknow value '${direction}'`);
     }
 
-    return Directions[orientation];
-  };
+    return DirectionCoordinateOffsets[direction];
+  }
 }
 
-const PointyTopDirections = Object.freeze({
+const DirectionCoordinateOffsets = Object.freeze({
   upRight: new CubeCoords(1, 0, -1),
   right: new CubeCoords(1, -1, 0),
   downRight: new CubeCoords(0, -1, 1),
@@ -235,16 +236,11 @@ const PointyTopDirections = Object.freeze({
   upLeft: new CubeCoords(0, 1, -1)
 });
 
-const FlatTopDirections = Object.freeze({
+/*const FlatTopDirections = Object.freeze({
   up: new CubeCoords(0, 1, -1),
   upRight: new CubeCoords(1, 0, -1),
   downRight: new CubeCoords(1, -1, 0),
   down: new CubeCoords(0, -1, 1),
   downLeft: new CubeCoords(-1, 0, 1),
   upLeft: new CubeCoords(-1, 1, 0)
-});
-
-const Directions = Object.freeze({
-  pointyTop: PointyTopDirections,
-  flatTop: FlatTopDirections
-});
+});*/

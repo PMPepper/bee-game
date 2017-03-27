@@ -1,12 +1,12 @@
-import {Enum} from '../Enum.js'
+import {Enum} from '../../Enum.js'
 
 import {HexCoords} from "./HexCoords";
 import {AxialCoords} from "./AxialCoords";
 import {CubeCoords} from "./CubeCoords";
 
 export class OffsetCoords extends HexCoords{
-  constructor(col, row, layout = Layouts.oddRow, orientation) {
-    super(orientation);
+  constructor(col, row, layout, grid) {
+    super(grid);
 
     if(!Number.isInteger(col)) {
       throw new Error( `Invalid Argument: "col" must be an integer, value was "${col}"` );
@@ -19,10 +19,6 @@ export class OffsetCoords extends HexCoords{
     //TODO restrict layouts based on orientation
     if(!(layout in Layouts)) {
       throw new Error( `Invalid Argument: Invalid layout "${layout}"` );
-    }
-
-    if(!OffsetCoords.isValidLayout(this.orientation, layout)) {
-        throw new Error( `Invalid Arguments: Invalid orientation/layout combination "${this.orientation}"/"${layout}"` );
     }
 
     this._col = col;
@@ -40,18 +36,18 @@ export class OffsetCoords extends HexCoords{
     }
 
     if(!(coord instanceof HexCoords)) {
-      throw new Error('Invalid Argument error: Supplied argument must be of type "HexCoords"');
+      throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
     }
 
-    if(this.orientation != coord.orientation) {
+    /*if(this.orientation != coord.orientation) {
         throw new Error('Invalid Argument error: coordinate orientations must match');
-    }
+    }*/
 
     if(!(coord instanceof OffsetCoords) || this.layout != coord.layout) {
       coord = coord.toOffsetCoords(this.layout);
     }
 
-    return new OffsetCoords(this.col + coord.col, this.row + coord.row, this.layout, this.orientation);
+    return new OffsetCoords(this.col + coord.col, this.row + coord.row, this.layout, this.grid);
   }
 
   subtract (coord) {
@@ -60,18 +56,18 @@ export class OffsetCoords extends HexCoords{
     }
 
     if(!(coord instanceof HexCoords)) {
-      throw new Error('Invalid Argument error: Supplied argument must be of type "HexCoords"');
+      throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
     }
 
-    if(this.orientation != coord.orientation) {
+    /*if(this.orientation != coord.orientation) {
         throw new Error('Invalid Argument error: coordinate orientations must match');
-    }
+    }*/
 
     if(!(coord instanceof OffsetCoords) || this.layout != coord.layout) {
       coord = coord.toOffsetCoords(this.layout);
     }
 
-    return new OffsetCoords(this.col - coord.col, this.row - coord.row, this.layout, this.orientation);
+    return new OffsetCoords(this.col - coord.col, this.row - coord.row, this.layout, this.grid);
   }
 
   equals (coord) {
@@ -80,12 +76,12 @@ export class OffsetCoords extends HexCoords{
     }
 
     if(!(coord instanceof HexCoords)) {
-      throw new Error('Invalid Argument error: Supplied argument must be of type "HexCoords"');
+      throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
     }
 
-    if(this.orientation != coord.orientation) {
+    /*if(this.orientation != coord.orientation) {
         throw new Error('Invalid Argument error: coordinate orientations must match');
-    }
+    }*/
 
     if(!(coord instanceof OffsetCoords)) {
       coord = coord.toOffsetCoords();
@@ -100,12 +96,12 @@ export class OffsetCoords extends HexCoords{
     }
 
     if(!(coord instanceof HexCoords)) {
-      throw new Error('Invalid Argument error: Supplied argument must be of type "HexCoords"');
+      throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
     }
 
-    if(this.orientation != coord.orientation) {
+    /*if(this.orientation != coord.orientation) {
         throw new Error('Invalid Argument error: coordinate orientations must match');
-    }
+    }*/
 
     //TODO
   }
@@ -116,12 +112,12 @@ export class OffsetCoords extends HexCoords{
     }
 
     if(!(coord instanceof HexCoords)) {
-      throw new Error('Invalid Argument error: Supplied argument must be of type "HexCoords"');
+      throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
     }
 
-    if(this.orientation != coord.orientation) {
+    /*if(this.orientation != coord.orientation) {
         throw new Error('Invalid Argument error: coordinate orientations must match');
-    }
+    }*/
 
     throw new Error('Not implemented');
   }
@@ -141,14 +137,14 @@ export class OffsetCoords extends HexCoords{
     const row = this.row;
 
     switch(this.layout) {
-      case Layouts.evenCol:
+      /*case Layouts.evenCol:
         x = col;
         z = row - (col + (col&1)) / 2;
         break;
       case Layouts.oddCol:
         x = col;
         z = row - (col - (col&1)) / 2;
-        break;
+        break;*/
       case Layouts.evenRow:
         x = col - (row + (row&1)) / 2;
         z = row;
@@ -160,7 +156,7 @@ export class OffsetCoords extends HexCoords{
     }
 
     //Convert Cube coords to axial coords
-    return new AxialCoords(x, z, this.orientation);
+    return new AxialCoords(x, z, this.grid);
   }
 
   toCubeCoords () {
@@ -171,7 +167,7 @@ export class OffsetCoords extends HexCoords{
     const row = this.row;
 
     switch(this.layout) {
-      case Layouts.evenCol:
+      /*case Layouts.evenCol:
         x = col;
         z = row - (col + (col&1)) / 2;
         y = -x-z;
@@ -180,7 +176,7 @@ export class OffsetCoords extends HexCoords{
         x = col;
         z = row - (col - (col&1)) / 2;
         y = -x-z;
-        break;
+        break;*/
       case Layouts.evenRow:
         x = col - (row + (row&1)) / 2;
         z = row;
@@ -193,7 +189,7 @@ export class OffsetCoords extends HexCoords{
         break;
     }
 
-    return new CubeCoords(x, y, z, this.orientation);
+    return new CubeCoords(x, y, z, this.grid);
   }
 
   toOffsetCoords (layout) {
@@ -209,7 +205,7 @@ export class OffsetCoords extends HexCoords{
     let row = this.row;
 
     switch(this.layout) {
-      case layouts.EvenCol:
+      /*case layouts.EvenCol:
         x = col;
         z = row - (col + (col&1)) / 2;
         y = -x-z;
@@ -218,7 +214,7 @@ export class OffsetCoords extends HexCoords{
         x = col;
         z = row - (col - (col&1)) / 2;
         y = -x-z;
-        break;
+        break;*/
       case layouts.EvenRow:
         x = col - (row + (row&1)) / 2;
         z = row;
@@ -233,14 +229,14 @@ export class OffsetCoords extends HexCoords{
 
     //Now output into new layout
     switch(layout) {
-      case layouts.EvenCol:
-        return new OffsetCoords(x, z + (x + (x&1)) / 2, layout, this.orientation);
+      /*case layouts.EvenCol:
+        return new OffsetCoords(x, z + (x + (x&1)) / 2, layout, this.grid);
       case layouts.OddCol:
-        return new OffsetCoords(x, z + (x - (x&1)) / 2, layout, this.orientation);
+        return new OffsetCoords(x, z + (x - (x&1)) / 2, layout, this.grid);*/
       case layouts.EvenRow:
-        return new OffsetCoords(x + (z + (z&1)) / 2, z, layout, this.orientation);
+        return new OffsetCoords(x + (z + (z&1)) / 2, z, layout, this.grid);
       case layouts.OddRow:
-        return new OffsetCoords(x + (z - (z&1)) / 2, z, layout, this.orientation);
+        return new OffsetCoords(x + (z - (z&1)) / 2, z, layout, this.grid);
     }
 
     throw new Error( `Cannot convert to OffsetCoords: Unknown layout "${layout}"` );
@@ -250,37 +246,51 @@ export class OffsetCoords extends HexCoords{
     return `OffsetCoords {col: ${this.col}, row: ${this.row}, layout: ${this.layout}, orientation: ${this.orientation}}`;
   }
 
-  get directions() {
-    return Directions[this.layout];
+  get DirectionCoordinateOffsets() {
+    return this.layout == Layouts.oddRow ? OddRowDirectionCoordinateOffsets : EvenRowDirectionCoordinateOffsets;
   }
 
-  static getDirections (layout) {
-    if(!Layouts.isValid(layout)) {
-      throw new Error(`Argument error: Invalid layout "${layout}`);
+  getDirectionCoordinateOffset(direction) {
+    if(!HexCoords.Directions.isValid(direction)) {
+      throw new Error(`Invalid argument 'direction', unknow value '${direction}'`);
     }
 
-    return Directions[layout];
-  };
+    return this.DirectionCoordinateOffsets[direction];
+  }
 
   static get Layouts () {
     return Layouts;
   }
 
-  static isValidLayout(orientation, layout) {
-    if(!HexCoords.Orientations.isValid(orientation)) {
-      throw new Error(`Invalid Argument: Invalid orientation "${orientation}`);
-    }
-
-    if(!Layouts.isValid(layout)) {
-      throw new Error(`Argument error: Invalid layout "${layout}`);
-    }
-
-    return (orientation === HexCoords.Orientations.pointyTop) ?
-      layout == Layouts.oddRow || layout == Layouts.evenRow
-      :
-      layout == Layouts.oddCol || layout == Layouts.evenCol
-  }
 }
+
+const Layouts = Enum(
+  "oddRow",
+  "evenRow"
+);
+
+//aw crap, this might not work...
+//TODO
+const OddRowDirectionCoordinateOffsets = Object.freeze({
+  upRight: new OffsetCoords(1, 0, Layouts.oddRow),
+  right: new OffsetCoords(1, -1, Layouts.oddRow),
+  downRight: new OffsetCoords(0, -1, Layouts.oddRow),
+  downLeft: new OffsetCoords(-1, 0, Layouts.oddRow),
+  left: new OffsetCoords(-1, 1, Layouts.oddRow),
+  upLeft: new OffsetCoords(0, 1, Layouts.oddRow)
+});
+
+const EvenRowDirectionCoordinateOffsets = Object.freeze({
+  upRight: new OffsetCoords(1, 0, Layouts.evenRow),
+  right: new OffsetCoords(1, -1, Layouts.evenRow),
+  downRight: new OffsetCoords(0, -1, Layouts.evenRow),
+  downLeft: new OffsetCoords(-1, 0, Layouts.evenRow),
+  left: new OffsetCoords(-1, 1, Layouts.evenRow),
+  upLeft: new OffsetCoords(0, 1, Layouts.evenRow)
+});
+
+/*
+
 
 const Layouts = Enum(
   "oddRow",
@@ -333,3 +343,5 @@ const Directions = Object.freeze({
   oddCol: OddRowDirections,
   evenCol: EvenColDirections
 });
+
+*/
