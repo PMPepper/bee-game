@@ -1,0 +1,49 @@
+{
+  "name": "bee-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "js/main.js",
+  "scripts": {
+    "test": "ava",
+    "postinstall": "bower install"
+  },
+  "author": "PMP",
+  "license": "ISC",
+  "devDependencies": {
+    "ava": "^0.18.1",
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
+    "babel-plugin-transform-runtime": "^6.15.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-es2017": "^6.22.0",
+    "babel-register": "^6.22.0",
+    "bower": "^1.8.0",
+    "browser-sync": "^2.18.5",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.1",
+    "gulp-cssnano": "^2.1.2",
+    "gulp-data": "^1.2.1",
+    "gulp-directory-map": "^0.1.3",
+    "gulp-filter": "^4.0.0",
+    "gulp-jasmine": "^2.4.2",
+    "gulp-minify": "0.0.14",
+    "gulp-nunjucks": "^2.3.0",
+    "gulp-sass": "^3.0.0",
+    "gulp-sourcemaps": "^1.9.1",
+    "gulp-uglify": "^2.0.0",
+    "json-loader": "^0.5.4",
+    "run-sequence": "^1.2.2",
+    "script-loader": "^0.7.0",
+    "susy": "^2.2.12",
+    "through2": "^2.0.3",
+    "webpack": "^1.14.0",
+    "webpack-stream": "^3.2.0"
+  },
+  "babel": {
+   "presets": [
+     "es2015",
+     "es2017"
+   ]
+ }
+}
