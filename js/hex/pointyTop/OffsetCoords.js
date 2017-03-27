@@ -16,7 +16,6 @@ export class OffsetCoords extends HexCoords{
       throw new Error( `Invalid Argument: "row" must be an integer, value was "${row}"` );
     }
 
-    //TODO restrict layouts based on orientation
     if(!(layout in Layouts)) {
       throw new Error( `Invalid Argument: Invalid layout "${layout}"` );
     }
@@ -269,8 +268,6 @@ const Layouts = Enum(
   "evenRow"
 );
 
-//aw crap, this might not work...
-//TODO
 const OddRowDirectionCoordinateOffsets = Object.freeze({
   upRight: new OffsetCoords(1, 0, Layouts.oddRow),
   right: new OffsetCoords(1, -1, Layouts.oddRow),

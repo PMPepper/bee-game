@@ -97,11 +97,6 @@ export class AxialCoords extends HexCoords{
     //TODO
   }
 
-  getDirection (direction) {
-    //TODO
-    //WTF does this mean?
-  }
-
   isNeighbour (coord) {
     if(!coord) {
       throw new Error('Null argument error: coord cannot be null');
@@ -174,18 +169,6 @@ export class AxialCoords extends HexCoords{
 
     return DirectionCoordinateOffsets[direction];
   }
-
-  /*static get DirectionCoordinateOffsets () {
-    return DirectionCoordinateOffsets;
-  };
-
-  static getDirectionCoordinateOffset(direction) {
-    if(!(direction in DirectionCoordinateOffsets)) {
-      throw new Error(`Invalid argument 'direction', unknow value '${direction}'`);
-    }
-
-    return DirectionCoordinateOffsets[direction];
-  }*/
 }
 
 const DirectionCoordinateOffsets = Object.freeze({
