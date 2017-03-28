@@ -129,3 +129,15 @@ test('Pointy top non-neighbouring coords', (t) => {
   t.pass('cube - offset')
   t.pass('offset - cube');
 });
+
+test('Pointy top coords distance', (t) => {
+  t.is(ax0.distanceTo(ax2), 2, 'axial')
+  //t.is(cb0.distanceTo(cb2), 99, 'cube');
+  t.pass('offset')
+  t.pass('axial - cube')
+  t.pass('cube - axial')
+  t.pass('axial - offset')
+  t.pass('offset - axial')
+  t.pass('cube - offset')
+  t.pass('offset - cube');
+});

@@ -178,10 +178,6 @@ export class CubeCoords extends HexCoords{
     throw new Error('Not implemented');
   }
 
-  getNeighbour (direction) {
-    throw new Error('Not implemented');
-  }
-
   toAxialCoords () {
     return new AxialCoords(this.x, this.z, this.grid);
   }

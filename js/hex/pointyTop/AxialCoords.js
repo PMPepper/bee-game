@@ -94,10 +94,18 @@ export class AxialCoords extends HexCoords{
         throw new Error('Invalid Argument error: coordinate orientations must match');
     }*/
 
-    //TODO
+    if(!(coord instanceof AxialCoords)) {
+      coord = coord.toAxialCoords();
+    }
+
+    const abs = Math.abs;
+
+    return (abs(this.col - coord.col)
+          + abs(this.col + this.row - coord.col - coord.row)
+          + abs(this.row - coord.row)) / 2;
   }
 
-  isNeighbour (coord) {
+  isNeighbour (coord, direction = null) {
     if(!coord) {
       throw new Error('Null argument error: coord cannot be null');
     }
@@ -106,24 +114,50 @@ export class AxialCoords extends HexCoords{
       throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
     }
 
-    /*if(this.orientation != coord.orientation) {
-        throw new Error('Invalid Argument error: coordinate orientations must match');
-    }*/
-
-    throw new Error('Not implemented');
-    //TODO
-  }
-
-  getNeighbours () {
-    throw new Error('Not implemented');
-  }
-
-  getNeighbour (direction) {
-    if(!HexCoords.Directions.isValid(direction)) {
-      throw new Error(`Invalid argument 'direction', unknow value '${direction}'`);
+    if(!(coord instanceof AxialCoords)) {
+      coord = coord.toAxialCoords();
     }
 
-    throw new Error('Not implemented');
+    if(direction != null) {
+      if(!HexCoords.Directions.isValid(direction)) {
+        throw new TypeError(`Argument 'direction' is not a valid value: '${direction}'`);
+      }
+
+      return coord.equals(this.add(this.getDirectionCoordinateOffset(direction)));
+    }
+
+    //is this coord a neighbour in ANY direction
+    for(let direction in HexCoords.Directions) {
+      if(coord.equals(this.add(this.getDirectionCoordinateOffset(direction)))) {
+        return direction;//return which direction this neighbour is in
+      }
+    }
+
+    return false;
+  }
+
+  get neighbours () {
+    let neighbours = this._neighbours;
+
+    //only ever need to calculate neighbours once
+    if(neighbours == null) {
+      neighbours = this._neighbours = {};
+
+      for(let direction in HexCoords.Directions) {
+        let neighbour = this.add(this.getDirectionCoordinateOffset(direction));
+
+        //If a grid is specified, check if the potential neighbour is contained within it
+        if(!this.grid || this.grid.contains(neighbour)) {
+          neighbours[direction] = neighbour;
+        } else {
+          neighbours[direction] = null;
+        }
+      }
+
+      Object.freeze(neighbours);
+    }
+
+    return neighbours;
   }
 
   toAxialCoords() {

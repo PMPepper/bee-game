@@ -16,6 +16,7 @@ export class HexCoords{
 
     this._grid = grid;
     this._orientation = Orientations.pointyTop;
+    this._neighbours = null;
   }
 
   get grid () {
@@ -30,12 +31,16 @@ export class HexCoords{
     throw new Error('Not implemented');
   }
 
-  getNeighbours () {
+  get neighbours () {
     throw new Error('Not implemented');
   }
 
   getNeighbour (direction) {
-    throw new Error('Not implemented');
+    if(!HexCoords.Directions.isValid(direction)) {
+      throw new Error(`Invalid argument 'direction', unknow value '${direction}'`);
+    }
+
+    return this.neighbours[direction];
   }
 
   static get Directions() {

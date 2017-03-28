@@ -125,10 +125,6 @@ export class OffsetCoords extends HexCoords{
     throw new Error('Not implemented');
   }
 
-  getNeighbour (direction) {
-    throw new Error('Not implemented');
-  }
-
   toAxialCoords () {
     let x;//Cube coords
     let z;

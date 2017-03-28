@@ -1,5 +1,9 @@
 import {HexGrid} from "./HexGrid";
 
+
+//TODO prevent repeated objects being generated for the same coordinate? Link coordinate object to grid? Hmmm....
+
+
 function test1() {
   /*const ax = new AxialCoords(0, 1);
   const cb = new CubeCoords(0, -1, 1);
