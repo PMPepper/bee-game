@@ -1,81 +1,127 @@
 import {Orientations} from "../Orientations";
-import {CoordTypes} from "../CoordTypes";
 
-import {AxialCoords} from "./AxialCoords";
-import {CubeCoords} from "./CubeCoords";
-import {OffsetCoords} from "./OffsetCoords";
+import {HexCoords} from "./HexCoords";
 import {Directions} from "./Directions";
+import {DataPools} from "./DataPools";
 
-import {DataPool} from "../../DataPool";
-
-export class HexGrid{
-  constructor(cols, rows, coordType = CoordTypes.axial) {
-
-    if(!CoordTypes.isValid(coordType)) {
-      throw new TypeError(`Invalid value for argument 'coordType', '${coordType}'`);
+export class HexGrid {
+  constructor(shape, firstColumn) {
+    if(!shape || !(shape instanceof Array)) {
+      throw new TypeError('Invalid argument for "shape", must be of type array');
     }
 
-    this._cols = cols;
-    this._rows = rows;
-    this._coordType = coordType;
-
-    switch(this._coordType) {
-      case CoordTypes.axial:
-        this._hexCoord = AxialCoords;
-
-        this._coordsPool = this._axialCoordsPool = new DataPool(AxialCoords, Math.ceil(cols * rows * 1.1));
-        this._cubeCoordsPool = new DataPool(CubeCoords, 100);
-        this._offsetCoordsPool = new DataPool(OffsetCoords, 100);
-      case CoordTypes.cube:
-        this._hexCoord = CubeCoords;
-
-        this._coordsPool = this._cubeCoordsPool = new DataPool(CubeCoords, Math.ceil(cols * rows * 1.1));
-        this._axialCoordsPool = new DataPool(Axial, 100);
-        this._offsetCoordsPool = new DataPool(OffsetCoords, 100);
-      case CoordTypes.offset:
-        this._hexCoord = OffsetCoords;
-
-        this._coordsPool = this._offsetCoordsPool = new DataPool(OffsetCoords, Math.ceil(cols * rows * 1.1));
-        this._axialCoordsPool = new DataPool(AxialCoords, 100);
-        this._cubeCoordsPool = new DataPool(CubeCoords, 100);
+    if(!firstColumn || !(firstColumn instanceof Array)) {
+      throw new TypeError('Invalid argument for "firstColumn", must be of type array');
     }
 
-    this._data = {};
+    const data = this._data = {};
+    this._cols = 0;
+    this._rows = shape.length;
+
+
+
+    const start = shape.start || 0;
+    let count = 0;
+    let colNum = 0;
+    let rowNum = 0;
+    let row = null;
+    let maxColumns
+
+    for(let i = 0; i < shape.length; i++) {
+      colNum = firstColumn[i];
+      rowNum = i + start;
+      row = shape[i];
+
+      for( let j = 0; j < row.length; j++) {
+        if(row[j]) {
+          let coord = DataPools.coordsPool.take(colNum, rowNum, this);
+          data[coord.hash] = coord;
+          count++;
+        }
+
+        colNum++;
+      }
+    }
+
+
+    this._count = count;
+
+    //For some reason the class syntax isn't working!
+    this.isValidCoord = (col, row) => {
+      return !!this._data[HexCoords.getHashFor(col, row)];
+    }
+
+    this.getCoordAt = (col, row) => {
+      return (this._data[HexCoords.getHashFor(col, row)]) || null;
+    }
   }
 
   //public methods
 
 
   //getters/setters
-  get cols () {
-    return this._cols;
-  }
+  get cols() { return this._cols; }
+  get rows() { return this._rows; }
+  get count() { return this._count; }
 
-  get rows () {
-    return this._rows;
-  }
-
-  get coordType () {
-    return this._coordType;
-  }
-
-  get HexCoords () {
-    return this._hexCoord;
-  }
-
-  static get AxialCoords () {
-    return AxialCoords;
-  }
-
-  static get CubeCoords () {
-    return CubeCoords;
-  }
-
-  static get OffsetCoords () {
-    return OffsetCoords;
+  //static methods
+  static get HexCoords () {
+    return HexCoords;
   }
 
   static get Directions () {
     return Directions;
   }
+
+  static get DirectionCoordOffsets() {
+    return DirectionCoordOffsets;
+  }
+
+  static getDirectionCoordOffset(direction) {
+
+    if(!HexCoords.Directions.isValid(direction)) {
+      throw new Error(`Invalid argument 'direction', unknow value '${direction}'`);
+    }
+
+    return DirectionCoordOffsets[direction];
+  }
+
+  //-Factory methods
+  static createRectangle(cols, rows, startCol = 0, startRow = 0) {
+    const shape = [];
+    const firstColumn = [];
+
+    shape.start = startRow;
+
+    let colNum = 0;
+    let rowNum = 0;
+    let row = null;
+
+    for(let i = 0; i < rows; i++) {
+      rowNum = i + startRow;
+      colNum = -Math.floor(rowNum/2);
+      row = [];
+      shape.push(row);
+      firstColumn.push(colNum);
+
+      for( let j = 0; j < cols; j++) {
+        row[j] = true;
+
+        colNum++;
+      }
+    }
+
+    return new HexGrid(shape, firstColumn);
+  }
 }
+
+DataPools.init();
+
+const DirectionCoordOffsets = Object.freeze({
+  upRight:    DataPools.coordOffsetPool.take(1, -1),
+  right:      DataPools.coordOffsetPool.take(1, 0),
+  downRight:  DataPools.coordOffsetPool.take(0, 1),
+  downLeft:   DataPools.coordOffsetPool.take(-1, 1),
+  left:       DataPools.coordOffsetPool.take(-1, 0),
+  upLeft:     DataPools.coordOffsetPool.take(0, -1)
+});

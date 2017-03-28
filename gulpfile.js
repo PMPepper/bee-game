@@ -129,7 +129,7 @@ config.webpack = {
           exclude: /(node_modules|bower_components)/,
           loader: 'babel-loader',
           query: {
-            presets: ['es2015'],
+            presets: ['es2017'],
             plugins: ['transform-runtime']
           }
         }
@@ -164,7 +164,7 @@ config.webpack = {
           exclude: /(node_modules|bower_components)/,
           loader: 'babel-loader',
           query: {
-            presets: ['es2015'],
+            presets: ['es2017'],
             plugins: ['transform-runtime']
           }
         }

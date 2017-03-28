@@ -52,7 +52,7 @@
 	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 	
-	var $ = __webpack_require__(32);
+	var $ = __webpack_require__(41);
 
 /***/ },
 /* 1 */
@@ -60,25 +60,34 @@
 
 	"use strict";
 	
-	var _AxialCoords = __webpack_require__(2);
+	var _HexGrid = __webpack_require__(2);
 	
-	var _CubeCoords = __webpack_require__(23);
+	//TODO prevent repeated objects being generated for the same coordinate? Link coordinate object to grid? Hmmm....
 	
-	var _OffsetCoords = __webpack_require__(24);
-	
-	console.log(_AxialCoords.AxialCoords);
-	
-	console.log(new _AxialCoords.AxialCoords(1, 2).toString());
-	console.log(new _CubeCoords.CubeCoords(1, 2, 3).toString());
-	console.log(new _OffsetCoords.OffsetCoords(1, 2).toString());
 	
 	function test1() {
-	  var ax = new _AxialCoords.AxialCoords(0, 1);
-	  var cb = new _CubeCoords.CubeCoords(0, -1, 1);
-	  var cb2 = new _CubeCoords.CubeCoords(0, -1, 2);
+	  /*const ax = new AxialCoords(0, 1);
+	  const cb = new CubeCoords(0, -1, 1);
+	  const cb2 = new CubeCoords(0, -1, 2);
+	    console.log(`${ax} equals ${cb}: `, ax.equals(cb));
+	  console.log(`${ax} equals ${cb2}: `, ax.equals(cb2));*/
 	
-	  console.log(ax + " equals " + cb + ": ", ax.equals(cb));
-	  console.log(ax + " equals " + cb2 + ": ", ax.equals(cb2));
+	  var hexGrid = _HexGrid.HexGrid.createRectangle(100, 100);
+	
+	  //0,0
+	  var ptc0 = new hexGrid.getCoordAt(0, 0);
+	
+	  //down/right 1 from 0
+	  var ptc1 = new hexGrid.getCoordAt(0, 1);
+	
+	  //down/right 2 from 0
+	  var ptc2 = new hexGrid.getCoordAt(0, 2);
+	
+	  ptc1.add(ptc1).equals(ptc2);
+	
+	  console.log(hexGrid._data);
+	
+	  console.log(ptc0, ptc1, ptc2);
 	}
 	
 	test1();
@@ -92,185 +101,414 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.AxialCoords = undefined;
+	exports.HexGrid = undefined;
 	
-	var _classCallCheck2 = __webpack_require__(3);
+	var _freeze = __webpack_require__(3);
+	
+	var _freeze2 = _interopRequireDefault(_freeze);
+	
+	var _classCallCheck2 = __webpack_require__(25);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _createClass2 = __webpack_require__(4);
+	var _createClass2 = __webpack_require__(26);
 	
 	var _createClass3 = _interopRequireDefault(_createClass2);
 	
-	var _CubeCoords = __webpack_require__(23);
+	var _Orientations = __webpack_require__(30);
 	
-	var _OffsetCoords = __webpack_require__(24);
+	var _HexCoords = __webpack_require__(32);
+	
+	var _Directions = __webpack_require__(40);
+	
+	var _DataPools = __webpack_require__(38);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var AxialCoords = exports.AxialCoords = function () {
-	  function AxialCoords(col, row) {
-	    (0, _classCallCheck3.default)(this, AxialCoords);
+	var HexGrid = exports.HexGrid = function () {
+	  function HexGrid(shape, firstColumn) {
+	    var _this = this;
 	
-	    this._col = col;
-	    this._row = row;
+	    (0, _classCallCheck3.default)(this, HexGrid);
+	
+	    if (!shape || !(shape instanceof Array)) {
+	      throw new TypeError('Invalid argument for "shape", must be of type array');
+	    }
+	
+	    if (!firstColumn || !(firstColumn instanceof Array)) {
+	      throw new TypeError('Invalid argument for "firstColumn", must be of type array');
+	    }
+	
+	    var data = this._data = {};
+	    this._cols = 0;
+	    this._rows = shape.length;
+	
+	    var start = shape.start || 0;
+	    var count = 0;
+	    var colNum = 0;
+	    var rowNum = 0;
+	    var row = null;
+	    var maxColumns = void 0;
+	
+	    for (var i = 0; i < shape.length; i++) {
+	      colNum = firstColumn[i];
+	      rowNum = i + start;
+	      row = shape[i];
+	
+	      for (var j = 0; j < row.length; j++) {
+	        if (row[j]) {
+	          var coord = _DataPools.DataPools.coordsPool.take(colNum, rowNum, this);
+	          data[coord.hash] = coord;
+	          count++;
+	        }
+	
+	        colNum++;
+	      }
+	    }
+	
+	    this._count = count;
+	
+	    //For some reason the class syntax isn't working!
+	    this.isValidCoord = function (col, row) {
+	      return !!_this._data[_HexCoords.HexCoords.getHashFor(col, row)];
+	    };
+	
+	    this.getCoordAt = function (col, row) {
+	      return _this._data[_HexCoords.HexCoords.getHashFor(col, row)] || null;
+	    };
 	  }
 	
-	  (0, _createClass3.default)(AxialCoords, [{
-	    key: "add",
-	    value: function add(coord) {
-	      if (!(coord instanceof AxialCoords)) {
-	        coord = coord.toAxialCoords();
-	      }
+	  //public methods
 	
-	      return new AxialCoords(this.col + coord.col, this.row + coord.row);
-	    }
-	  }, {
-	    key: "subtract",
-	    value: function subtract(coord) {
-	      if (!(coord instanceof AxialCoords)) {
-	        coord = coord.toAxialCoords();
-	      }
 	
-	      return new AxialCoords(this.col - coord.col, this.row - coord.row);
-	    }
-	  }, {
-	    key: "equals",
-	    value: function equals(coord) {
-	      if (!(coord instanceof AxialCoords)) {
-	        coord = coord.toAxialCoords();
-	      }
+	  //getters/setters
 	
-	      return this.col === coord.col && this.row == coord.row;
-	    }
-	  }, {
-	    key: "distanceTo",
-	    value: function distanceTo(coord) {
-	      //TODO
-	    }
-	  }, {
-	    key: "toCubeCoords",
-	    value: function toCubeCoords() {
-	      return new _CubeCoords.CubeCoords(this.col, this.row, -this.col - this.row);
-	    }
-	  }, {
-	    key: "toOffsetCoords",
-	    value: function toOffsetCoords(layout) {
-	      var x = this.col;
-	      var y = this.row;
-	      var z = -this.col - this.row;
-	      var layouts = _OffsetCoords.OffsetCoords.Layouts;
 	
-	      switch (layout) {
-	        case layouts.EvenCol:
-	          return new _OffsetCoords.OffsetCoords(x, z + (x + (x & 1)) / 2, layout);
-	        case layouts.OddCol:
-	          return new _OffsetCoords.OffsetCoords(x, z + (x - (x & 1)) / 2, layout);
-	        case layouts.EvenRow:
-	          return new _OffsetCoords.OffsetCoords(x + (z + (z & 1)) / 2, z, layout);
-	        case layouts.OddRow:
-	          return new _OffsetCoords.OffsetCoords(x + (z - (z & 1)) / 2, z, layout);
-	      }
-	
-	      throw new Error("Cannot convert to OffsetCoords: Unknown layout \"" + layout + "\"");
-	    }
-	  }, {
-	    key: "toString",
-	    value: function toString() {
-	      return "AxialCoords {col: " + this.col + ", row: " + this.row + "}";
-	    }
-	  }, {
-	    key: "col",
+	  (0, _createClass3.default)(HexGrid, [{
+	    key: "cols",
 	    get: function get() {
-	      return this._col;
+	      return this._cols;
 	    }
 	  }, {
-	    key: "row",
+	    key: "rows",
 	    get: function get() {
-	      return this._row;
+	      return this._rows;
+	    }
+	  }, {
+	    key: "count",
+	    get: function get() {
+	      return this._count;
+	    }
+	
+	    //static methods
+	
+	  }], [{
+	    key: "getDirectionCoordOffset",
+	    value: function getDirectionCoordOffset(direction) {
+	
+	      if (!_HexCoords.HexCoords.Directions.isValid(direction)) {
+	        throw new Error("Invalid argument 'direction', unknow value '" + direction + "'");
+	      }
+	
+	      return DirectionCoordOffsets[direction];
+	    }
+	
+	    //-Factory methods
+	
+	  }, {
+	    key: "createRectangle",
+	    value: function createRectangle(cols, rows) {
+	      var startCol = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+	      var startRow = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+	
+	      var shape = [];
+	      var firstColumn = [];
+	
+	      shape.start = startRow;
+	
+	      var colNum = 0;
+	      var rowNum = 0;
+	      var row = null;
+	
+	      for (var i = 0; i < rows; i++) {
+	        rowNum = i + startRow;
+	        colNum = -Math.floor(rowNum / 2);
+	        row = [];
+	        shape.push(row);
+	        firstColumn.push(colNum);
+	
+	        for (var j = 0; j < cols; j++) {
+	          row[j] = true;
+	
+	          colNum++;
+	        }
+	      }
+	
+	      return new HexGrid(shape, firstColumn);
+	    }
+	  }, {
+	    key: "HexCoords",
+	    get: function get() {
+	      return _HexCoords.HexCoords;
+	    }
+	  }, {
+	    key: "Directions",
+	    get: function get() {
+	      return _Directions.Directions;
+	    }
+	  }, {
+	    key: "DirectionCoordOffsets",
+	    get: function get() {
+	      return DirectionCoordOffsets;
 	    }
 	  }]);
-	  return AxialCoords;
+	  return HexGrid;
 	}();
+	
+	_DataPools.DataPools.init();
+	
+	var DirectionCoordOffsets = (0, _freeze2.default)({
+	  upRight: _DataPools.DataPools.coordOffsetPool.take(1, -1),
+	  right: _DataPools.DataPools.coordOffsetPool.take(1, 0),
+	  downRight: _DataPools.DataPools.coordOffsetPool.take(0, 1),
+	  downLeft: _DataPools.DataPools.coordOffsetPool.take(-1, 1),
+	  left: _DataPools.DataPools.coordOffsetPool.take(-1, 0),
+	  upLeft: _DataPools.DataPools.coordOffsetPool.take(0, -1)
+	});
 
 /***/ },
 /* 3 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
-	
-	exports.__esModule = true;
-	
-	exports.default = function (instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	};
+	module.exports = { "default": __webpack_require__(4), __esModule: true };
 
 /***/ },
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
-	
-	exports.__esModule = true;
-	
-	var _defineProperty = __webpack_require__(5);
-	
-	var _defineProperty2 = _interopRequireDefault(_defineProperty);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	exports.default = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];
-	      descriptor.enumerable = descriptor.enumerable || false;
-	      descriptor.configurable = true;
-	      if ("value" in descriptor) descriptor.writable = true;
-	      (0, _defineProperty2.default)(target, descriptor.key, descriptor);
-	    }
-	  }
-	
-	  return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);
-	    if (staticProps) defineProperties(Constructor, staticProps);
-	    return Constructor;
-	  };
-	}();
+	__webpack_require__(5);
+	module.exports = __webpack_require__(20).Object.freeze;
 
 /***/ },
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(6), __esModule: true };
+	// 19.1.2.5 Object.freeze(O)
+	var isObject = __webpack_require__(6)
+	  , meta     = __webpack_require__(7).onFreeze;
+	
+	__webpack_require__(18)('freeze', function($freeze){
+	  return function freeze(it){
+	    return $freeze && isObject(it) ? $freeze(meta(it)) : it;
+	  };
+	});
 
 /***/ },
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	__webpack_require__(7);
-	var $Object = __webpack_require__(10).Object;
-	module.exports = function defineProperty(it, key, desc){
-	  return $Object.defineProperty(it, key, desc);
+	module.exports = function(it){
+	  return typeof it === 'object' ? it !== null : typeof it === 'function';
 	};
 
 /***/ },
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var $export = __webpack_require__(8);
-	// 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
-	$export($export.S + $export.F * !__webpack_require__(18), 'Object', {defineProperty: __webpack_require__(14).f});
+	var META     = __webpack_require__(8)('meta')
+	  , isObject = __webpack_require__(6)
+	  , has      = __webpack_require__(9)
+	  , setDesc  = __webpack_require__(10).f
+	  , id       = 0;
+	var isExtensible = Object.isExtensible || function(){
+	  return true;
+	};
+	var FREEZE = !__webpack_require__(14)(function(){
+	  return isExtensible(Object.preventExtensions({}));
+	});
+	var setMeta = function(it){
+	  setDesc(it, META, {value: {
+	    i: 'O' + ++id, // object ID
+	    w: {}          // weak collections IDs
+	  }});
+	};
+	var fastKey = function(it, create){
+	  // return primitive with prefix
+	  if(!isObject(it))return typeof it == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it;
+	  if(!has(it, META)){
+	    // can't set metadata to uncaught frozen object
+	    if(!isExtensible(it))return 'F';
+	    // not necessary to add metadata
+	    if(!create)return 'E';
+	    // add missing metadata
+	    setMeta(it);
+	  // return object ID
+	  } return it[META].i;
+	};
+	var getWeak = function(it, create){
+	  if(!has(it, META)){
+	    // can't set metadata to uncaught frozen object
+	    if(!isExtensible(it))return true;
+	    // not necessary to add metadata
+	    if(!create)return false;
+	    // add missing metadata
+	    setMeta(it);
+	  // return hash weak collections IDs
+	  } return it[META].w;
+	};
+	// add metadata on freeze-family methods calling
+	var onFreeze = function(it){
+	  if(FREEZE && meta.NEED && isExtensible(it) && !has(it, META))setMeta(it);
+	  return it;
+	};
+	var meta = module.exports = {
+	  KEY:      META,
+	  NEED:     false,
+	  fastKey:  fastKey,
+	  getWeak:  getWeak,
+	  onFreeze: onFreeze
+	};
 
 /***/ },
 /* 8 */
+/***/ function(module, exports) {
+
+	var id = 0
+	  , px = Math.random();
+	module.exports = function(key){
+	  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
+	};
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	var hasOwnProperty = {}.hasOwnProperty;
+	module.exports = function(it, key){
+	  return hasOwnProperty.call(it, key);
+	};
+
+/***/ },
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var global    = __webpack_require__(9)
-	  , core      = __webpack_require__(10)
-	  , ctx       = __webpack_require__(11)
-	  , hide      = __webpack_require__(13)
+	var anObject       = __webpack_require__(11)
+	  , IE8_DOM_DEFINE = __webpack_require__(12)
+	  , toPrimitive    = __webpack_require__(17)
+	  , dP             = Object.defineProperty;
+	
+	exports.f = __webpack_require__(13) ? Object.defineProperty : function defineProperty(O, P, Attributes){
+	  anObject(O);
+	  P = toPrimitive(P, true);
+	  anObject(Attributes);
+	  if(IE8_DOM_DEFINE)try {
+	    return dP(O, P, Attributes);
+	  } catch(e){ /* empty */ }
+	  if('get' in Attributes || 'set' in Attributes)throw TypeError('Accessors not supported!');
+	  if('value' in Attributes)O[P] = Attributes.value;
+	  return O;
+	};
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var isObject = __webpack_require__(6);
+	module.exports = function(it){
+	  if(!isObject(it))throw TypeError(it + ' is not an object!');
+	  return it;
+	};
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = !__webpack_require__(13) && !__webpack_require__(14)(function(){
+	  return Object.defineProperty(__webpack_require__(15)('div'), 'a', {get: function(){ return 7; }}).a != 7;
+	});
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// Thank's IE8 for his funny defineProperty
+	module.exports = !__webpack_require__(14)(function(){
+	  return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
+	});
+
+/***/ },
+/* 14 */
+/***/ function(module, exports) {
+
+	module.exports = function(exec){
+	  try {
+	    return !!exec();
+	  } catch(e){
+	    return true;
+	  }
+	};
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var isObject = __webpack_require__(6)
+	  , document = __webpack_require__(16).document
+	  // in old IE typeof document.createElement is 'object'
+	  , is = isObject(document) && isObject(document.createElement);
+	module.exports = function(it){
+	  return is ? document.createElement(it) : {};
+	};
+
+/***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+	// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
+	var global = module.exports = typeof window != 'undefined' && window.Math == Math
+	  ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
+	if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// 7.1.1 ToPrimitive(input [, PreferredType])
+	var isObject = __webpack_require__(6);
+	// instead of the ES6 spec version, we didn't implement @@toPrimitive case
+	// and the second argument - flag - preferred type is a string
+	module.exports = function(it, S){
+	  if(!isObject(it))return it;
+	  var fn, val;
+	  if(S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
+	  if(typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it)))return val;
+	  if(!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
+	  throw TypeError("Can't convert object to primitive value");
+	};
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// most Object methods by ES6 should accept primitives
+	var $export = __webpack_require__(19)
+	  , core    = __webpack_require__(20)
+	  , fails   = __webpack_require__(14);
+	module.exports = function(KEY, exec){
+	  var fn  = (core.Object || {})[KEY] || Object[KEY]
+	    , exp = {};
+	  exp[KEY] = exec(fn);
+	  $export($export.S + $export.F * fails(function(){ fn(1); }), 'Object', exp);
+	};
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var global    = __webpack_require__(16)
+	  , core      = __webpack_require__(20)
+	  , ctx       = __webpack_require__(21)
+	  , hide      = __webpack_require__(23)
 	  , PROTOTYPE = 'prototype';
 	
 	var $export = function(type, name, source){
@@ -330,27 +568,18 @@
 	module.exports = $export;
 
 /***/ },
-/* 9 */
-/***/ function(module, exports) {
-
-	// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
-	var global = module.exports = typeof window != 'undefined' && window.Math == Math
-	  ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
-	if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
-
-/***/ },
-/* 10 */
+/* 20 */
 /***/ function(module, exports) {
 
 	var core = module.exports = {version: '2.4.0'};
 	if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
 
 /***/ },
-/* 11 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// optional / simple context binding
-	var aFunction = __webpack_require__(12);
+	var aFunction = __webpack_require__(22);
 	module.exports = function(fn, that, length){
 	  aFunction(fn);
 	  if(that === undefined)return fn;
@@ -371,7 +600,7 @@
 	};
 
 /***/ },
-/* 12 */
+/* 22 */
 /***/ function(module, exports) {
 
 	module.exports = function(it){
@@ -380,12 +609,12 @@
 	};
 
 /***/ },
-/* 13 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var dP         = __webpack_require__(14)
-	  , createDesc = __webpack_require__(22);
-	module.exports = __webpack_require__(18) ? function(object, key, value){
+	var dP         = __webpack_require__(10)
+	  , createDesc = __webpack_require__(24);
+	module.exports = __webpack_require__(13) ? function(object, key, value){
 	  return dP.f(object, key, createDesc(1, value));
 	} : function(object, key, value){
 	  object[key] = value;
@@ -393,104 +622,7 @@
 	};
 
 /***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var anObject       = __webpack_require__(15)
-	  , IE8_DOM_DEFINE = __webpack_require__(17)
-	  , toPrimitive    = __webpack_require__(21)
-	  , dP             = Object.defineProperty;
-	
-	exports.f = __webpack_require__(18) ? Object.defineProperty : function defineProperty(O, P, Attributes){
-	  anObject(O);
-	  P = toPrimitive(P, true);
-	  anObject(Attributes);
-	  if(IE8_DOM_DEFINE)try {
-	    return dP(O, P, Attributes);
-	  } catch(e){ /* empty */ }
-	  if('get' in Attributes || 'set' in Attributes)throw TypeError('Accessors not supported!');
-	  if('value' in Attributes)O[P] = Attributes.value;
-	  return O;
-	};
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var isObject = __webpack_require__(16);
-	module.exports = function(it){
-	  if(!isObject(it))throw TypeError(it + ' is not an object!');
-	  return it;
-	};
-
-/***/ },
-/* 16 */
-/***/ function(module, exports) {
-
-	module.exports = function(it){
-	  return typeof it === 'object' ? it !== null : typeof it === 'function';
-	};
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = !__webpack_require__(18) && !__webpack_require__(19)(function(){
-	  return Object.defineProperty(__webpack_require__(20)('div'), 'a', {get: function(){ return 7; }}).a != 7;
-	});
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// Thank's IE8 for his funny defineProperty
-	module.exports = !__webpack_require__(19)(function(){
-	  return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
-	});
-
-/***/ },
-/* 19 */
-/***/ function(module, exports) {
-
-	module.exports = function(exec){
-	  try {
-	    return !!exec();
-	  } catch(e){
-	    return true;
-	  }
-	};
-
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var isObject = __webpack_require__(16)
-	  , document = __webpack_require__(9).document
-	  // in old IE typeof document.createElement is 'object'
-	  , is = isObject(document) && isObject(document.createElement);
-	module.exports = function(it){
-	  return is ? document.createElement(it) : {};
-	};
-
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// 7.1.1 ToPrimitive(input [, PreferredType])
-	var isObject = __webpack_require__(16);
-	// instead of the ES6 spec version, we didn't implement @@toPrimitive case
-	// and the second argument - flag - preferred type is a string
-	module.exports = function(it, S){
-	  if(!isObject(it))return it;
-	  var fn, val;
-	  if(S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
-	  if(typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it)))return val;
-	  if(!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
-	  throw TypeError("Can't convert object to primitive value");
-	};
-
-/***/ },
-/* 22 */
+/* 24 */
 /***/ function(module, exports) {
 
 	module.exports = function(bitmap, value){
@@ -503,123 +635,464 @@
 	};
 
 /***/ },
-/* 23 */
+/* 25 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	exports.__esModule = true;
+	
+	exports.default = function (instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	};
+
+/***/ },
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.CubeCoords = undefined;
+	exports.__esModule = true;
 	
-	var _classCallCheck2 = __webpack_require__(3);
+	var _defineProperty = __webpack_require__(27);
 	
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-	
-	var _createClass2 = __webpack_require__(4);
-	
-	var _createClass3 = _interopRequireDefault(_createClass2);
-	
-	var _AxialCoords = __webpack_require__(2);
-	
-	var _OffsetCoords = __webpack_require__(24);
+	var _defineProperty2 = _interopRequireDefault(_defineProperty);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var CubeCoords = exports.CubeCoords = function () {
-	  function CubeCoords(x, y, z) {
-	    (0, _classCallCheck3.default)(this, CubeCoords);
-	
-	    this._x = x;
-	    this._y = y;
-	    this._z = z;
+	exports.default = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];
+	      descriptor.enumerable = descriptor.enumerable || false;
+	      descriptor.configurable = true;
+	      if ("value" in descriptor) descriptor.writable = true;
+	      (0, _defineProperty2.default)(target, descriptor.key, descriptor);
+	    }
 	  }
 	
-	  (0, _createClass3.default)(CubeCoords, [{
-	    key: "add",
-	    value: function add(coord) {
-	      if (!(coord instanceof CubeCoords)) {
-	        coord = coord.toCubeCoords();
-	      }
-	
-	      return new CubeCoords(this.x + coord.x, this.y + coord.y, this.z + coord.z);
-	    }
-	  }, {
-	    key: "subtract",
-	    value: function subtract(coord) {
-	      if (!(coord instanceof CubeCoords)) {
-	        coord = coord.toCubeCoords();
-	      }
-	
-	      return new CubeCoords(this.x - coord.x, this.y - coord.y, this.z - coord.z);
-	    }
-	  }, {
-	    key: "equals",
-	    value: function equals(coord) {
-	      if (!(coord instanceof CubeCoords)) {
-	        coord = coord.toCubeCoords();
-	      }
-	
-	      return this.x === coord.x && this.y == coord.y && this.z == coord.z;
-	    }
-	  }, {
-	    key: "distanceTo",
-	    value: function distanceTo(coord) {
-	      //TODO
-	    }
-	  }, {
-	    key: "toAxialCoords",
-	    value: function toAxialCoords() {
-	      return new _AxialCoords.AxialCoords(this.x, this.z);
-	    }
-	  }, {
-	    key: "toOffsetCoords",
-	    value: function toOffsetCoords() {
-	      var x = this.x;
-	      var y = this.y;
-	      var z = this.z;
-	      var layouts = _OffsetCoords.OffsetCoords.Layouts;
-	
-	      switch (layout) {
-	        case layouts.EvenCol:
-	          return new _OffsetCoords.OffsetCoords(x, z + (x + (x & 1)) / 2, layout);
-	        case layouts.OddCol:
-	          return new _OffsetCoords.OffsetCoords(x, z + (x - (x & 1)) / 2, layout);
-	        case layouts.EvenRow:
-	          return new _OffsetCoords.OffsetCoords(x + (z + (z & 1)) / 2, z, layout);
-	        case layouts.OddRow:
-	          return new _OffsetCoords.OffsetCoords(x + (z - (z & 1)) / 2, z, layout);
-	      }
-	
-	      throw new Error("Cannot convert to OffsetCoords: Unknown layout \"" + layout + "\"");
-	    }
-	  }, {
-	    key: "toString",
-	    value: function toString() {
-	      return "CubeCoords {x: " + this.x + ", y: " + this.y + ", z: " + this.z + "}";
-	    }
-	  }, {
-	    key: "x",
-	    get: function get() {
-	      return this._x;
-	    }
-	  }, {
-	    key: "y",
-	    get: function get() {
-	      return this._y;
-	    }
-	  }, {
-	    key: "z",
-	    get: function get() {
-	      return this._z;
-	    }
-	  }]);
-	  return CubeCoords;
+	  return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+	    if (staticProps) defineProperties(Constructor, staticProps);
+	    return Constructor;
+	  };
 	}();
 
 /***/ },
-/* 24 */
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = { "default": __webpack_require__(28), __esModule: true };
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	__webpack_require__(29);
+	var $Object = __webpack_require__(20).Object;
+	module.exports = function defineProperty(it, key, desc){
+	  return $Object.defineProperty(it, key, desc);
+	};
+
+/***/ },
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $export = __webpack_require__(19);
+	// 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
+	$export($export.S + $export.F * !__webpack_require__(13), 'Object', {defineProperty: __webpack_require__(10).f});
+
+/***/ },
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.Orientations = undefined;
+	
+	var _Enum = __webpack_require__(31);
+	
+	var Orientations = exports.Orientations = (0, _Enum.Enum)('pointyTop', 'flatTop');
+
+/***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.Enum = undefined;
+	
+	var _freeze = __webpack_require__(3);
+	
+	var _freeze2 = _interopRequireDefault(_freeze);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function Enum() {
+	  var obj = {};
+	
+	  for (var _len = arguments.length, values = Array(_len), _key = 0; _key < _len; _key++) {
+	    values[_key] = arguments[_key];
+	  }
+	
+	  values.forEach(function (value) {
+	    value = value.toString();
+	
+	    if (value === 'isValid') {
+	      throw new Error('Enum may not have a value of "isValid"');
+	    }
+	
+	    obj[value] = value;
+	  });
+	
+	  Object.defineProperty(obj, 'isValid', {
+	    value: function value(_value) {
+	      _value = _value.toString();
+	
+	      return _value != 'isValid' && _value in obj;
+	    }
+	  });
+	
+	  return (0, _freeze2.default)(obj);
+	}
+	exports.Enum = Enum;
+
+/***/ },
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.HexCoords = undefined;
+	
+	var _freeze = __webpack_require__(3);
+	
+	var _freeze2 = _interopRequireDefault(_freeze);
+	
+	var _isInteger = __webpack_require__(33);
+	
+	var _isInteger2 = _interopRequireDefault(_isInteger);
+	
+	var _classCallCheck2 = __webpack_require__(25);
+	
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+	
+	var _createClass2 = __webpack_require__(26);
+	
+	var _createClass3 = _interopRequireDefault(_createClass2);
+	
+	var _Enum = __webpack_require__(31);
+	
+	var _DataPool = __webpack_require__(37);
+	
+	var _DataPools = __webpack_require__(38);
+	
+	var _Orientations = __webpack_require__(30);
+	
+	var _Directions = __webpack_require__(40);
+	
+	var _HexGrid = __webpack_require__(2);
+	
+	var _HexCoordOffset = __webpack_require__(39);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var HexCoords = exports.HexCoords = function () {
+	  function HexCoords(pool) {
+	    (0, _classCallCheck3.default)(this, HexCoords);
+	
+	    if (!(pool instanceof _DataPool.DataPool)) {
+	      throw new TypeError('Invalid argument "pool" must be of type DataPool');
+	    }
+	
+	    this._pool = pool;
+	  }
+	
+	  (0, _createClass3.default)(HexCoords, [{
+	    key: 'init',
+	    value: function init(col, row, grid) {
+	      if (grid && !(grid instanceof _HexGrid.HexGrid)) {
+	        throw new TypeError("Argument 'grid' must be of type 'HexGrid'");
+	      }
+	
+	      if (!(0, _isInteger2.default)(col)) {
+	        throw new Error('Invalid Argument: "col" must be an integer, value was "' + col + '"');
+	      }
+	
+	      if (!(0, _isInteger2.default)(row)) {
+	        throw new Error('Invalid Argument: "row" must be an integer, value was "' + row + '"');
+	      }
+	
+	      //Axial coords
+	      this._col = col;
+	      this._row = row;
+	
+	      this._hash = HexCoords.getHashFor(col, row);
+	
+	      //Other stuff
+	      this._grid = grid;
+	      this._orientation = _Orientations.Orientations.pointyTop;
+	      this._neighbours = null;
+	    }
+	  }, {
+	    key: 'reset',
+	
+	
+	    //internal methods
+	    value: function reset() {
+	      this._col = null;
+	      this._row = null;
+	
+	      this._hash = null;
+	
+	      this._grid = null;
+	      this._orientation = null;
+	      this._neighbours = null;
+	    }
+	
+	    //Public methods
+	
+	  }, {
+	    key: 'release',
+	    value: function release() {
+	      this._pool.release(this);
+	    }
+	  }, {
+	    key: 'add',
+	    value: function add(coord) {
+	      if (!coord) {
+	        throw new Error('Null argument error: coord cannot be null');
+	      }
+	
+	      if (!(coord instanceof HexCoords) && !(coord instanceof _HexCoordOffset.HexCoordOffset)) {
+	        throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords" or "pointyTop.HexCoordOffset"');
+	      }
+	
+	      return _DataPools.DataPools.coordsPool.take(this.col + coord.col, this.row + coord.row, this.grid);
+	    }
+	  }, {
+	    key: 'subtract',
+	    value: function subtract(coord) {
+	      if (!coord) {
+	        throw new Error('Null argument error: coord cannot be null');
+	      }
+	
+	      if (!(coord instanceof HexCoords) && !(coord instanceof _HexCoordOffset.HexCoordOffset)) {
+	        throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords" or "pointyTop.HexCoordOffset"');
+	      }
+	
+	      return _DataPools.DataPools.coordsPool.take(this.col - coord.col, this.row - coord.row, this.grid);
+	    }
+	  }, {
+	    key: 'equals',
+	    value: function equals(coord) {
+	      if (!coord) {
+	        throw new Error('Null argument error: coord cannot be null');
+	      }
+	
+	      if (!(coord instanceof HexCoords)) {
+	        throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
+	      }
+	
+	      return this.col === coord.col && this.row == coord.row;
+	    }
+	  }, {
+	    key: 'distanceTo',
+	    value: function distanceTo(coord) {
+	      if (!coord) {
+	        throw new Error('Null argument error: coord cannot be null');
+	      }
+	
+	      if (!(coord instanceof HexCoords)) {
+	        throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
+	      }
+	
+	      var abs = Math.abs;
+	
+	      return (abs(this.col - coord.col) + abs(this.col + this.row - coord.col - coord.row) + abs(this.row - coord.row)) / 2;
+	    }
+	  }, {
+	    key: 'isNeighbour',
+	    value: function isNeighbour(coord) {
+	      var direction = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+	
+	      if (!coord) {
+	        throw new Error('Null argument error: coord cannot be null');
+	      }
+	
+	      if (!(coord instanceof HexCoords)) {
+	        throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
+	      }
+	
+	      if (direction != null) {
+	        if (!HexCoords.Directions.isValid(direction)) {
+	          throw new TypeError('Argument \'direction\' is not a valid value: \'' + direction + '\'');
+	        }
+	
+	        return coord.equals(this.add(_HexGrid.HexGrid.getDirectionCoordOffset(direction)));
+	      }
+	
+	      //is this coord a neighbour in ANY direction
+	      for (var _direction in HexCoords.Directions) {
+	        if (coord.equals(this.add(_HexGrid.HexGrid.getDirectionCoordOffset(_direction)))) {
+	          return _direction; //return which direction this neighbour is in
+	        }
+	      }
+	
+	      return false;
+	    }
+	  }, {
+	    key: 'getNeighbour',
+	    value: function getNeighbour(direction) {
+	      if (!HexCoords.Directions.isValid(direction)) {
+	        throw new Error('Invalid argument \'direction\', unknow value \'' + direction + '\'');
+	      }
+	
+	      return this.neighbours[direction];
+	    }
+	  }, {
+	    key: 'toString',
+	    value: function toString() {
+	      return 'HexCoords {col: ' + this.col + ', row: ' + this.row + ', orientation: ' + this.orientation + '}';
+	    }
+	  }, {
+	    key: 'col',
+	    get: function get() {
+	      return this._col;
+	    }
+	  }, {
+	    key: 'row',
+	    get: function get() {
+	      return this._row;
+	    }
+	
+	    //Cube coords
+	
+	  }, {
+	    key: 'x',
+	    get: function get() {
+	      return this._col;
+	    }
+	  }, {
+	    key: 'y',
+	    get: function get() {
+	      return this._row;
+	    }
+	  }, {
+	    key: 'z',
+	    get: function get() {
+	      return -this.col - this.row;
+	    }
+	  }, {
+	    key: 'hash',
+	    get: function get() {
+	      return this._hash;
+	    }
+	  }, {
+	    key: 'grid',
+	    get: function get() {
+	      return this._grid;
+	    }
+	  }, {
+	    key: 'orientation',
+	    get: function get() {
+	      return this._orientation;
+	    }
+	  }, {
+	    key: 'neighbours',
+	    get: function get() {
+	      var neighbours = this._neighbours;
+	
+	      //only ever need to calculate neighbours once
+	      if (neighbours == null) {
+	        neighbours = this._neighbours = {};
+	
+	        for (var direction in HexCoords.Directions) {
+	          var neighbour = this.add(_HexGrid.HexGrid.getDirectionCoordOffset(direction));
+	
+	          //If a grid is specified, check if the potential neighbour is contained within it
+	          if (!this.grid || this.grid.contains(neighbour)) {
+	            neighbours[direction] = neighbour;
+	          } else {
+	            neighbours[direction] = null;
+	          }
+	        }
+	
+	        (0, _freeze2.default)(neighbours);
+	      }
+	
+	      return neighbours;
+	    }
+	  }], [{
+	    key: 'getHashFor',
+	    value: function getHashFor(col, row) {
+	      return col + ',' + row;
+	    }
+	  }, {
+	    key: 'HexCoords',
+	    get: function get() {
+	      return HexCoords;
+	    }
+	  }, {
+	    key: 'Directions',
+	    get: function get() {
+	      return _Directions.Directions;
+	    }
+	  }, {
+	    key: 'Orientations',
+	    get: function get() {
+	      return _Orientations.Orientations;
+	    }
+	  }]);
+	  return HexCoords;
+	}();
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = { "default": __webpack_require__(34), __esModule: true };
+
+/***/ },
+/* 34 */
+/***/ function(module, exports, __webpack_require__) {
+
+	__webpack_require__(35);
+	module.exports = __webpack_require__(20).Number.isInteger;
+
+/***/ },
+/* 35 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// 20.1.2.3 Number.isInteger(number)
+	var $export = __webpack_require__(19);
+	
+	$export($export.S, 'Number', {isInteger: __webpack_require__(36)});
+
+/***/ },
+/* 36 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// 20.1.2.3 Number.isInteger(number)
+	var isObject = __webpack_require__(6)
+	  , floor    = Math.floor;
+	module.exports = function isInteger(it){
+	  return !isObject(it) && isFinite(it) && floor(it) === it;
+	};
+
+/***/ },
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -627,189 +1100,306 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.OffsetCoords = undefined;
+	exports.DataPool = undefined;
 	
-	var _classCallCheck2 = __webpack_require__(3);
+	var _isInteger = __webpack_require__(33);
+	
+	var _isInteger2 = _interopRequireDefault(_isInteger);
+	
+	var _classCallCheck2 = __webpack_require__(25);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _createClass2 = __webpack_require__(4);
+	var _createClass2 = __webpack_require__(26);
 	
 	var _createClass3 = _interopRequireDefault(_createClass2);
 	
-	var _freeze = __webpack_require__(25);
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	//TODO needs more thought...
+	
+	var DataPool = exports.DataPool = function () {
+	  function DataPool(type) {
+	    var initial = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 100;
+	
+	    var _this = this;
+	
+	    var max = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+	    var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+	    (0, _classCallCheck3.default)(this, DataPool);
+	
+	    if (!(0, _isInteger2.default)(initial) || initial < 0) {
+	      throw new TypeError("Argument 'initial' must be a positive integer or zero");
+	    }
+	
+	    this._data = new Array(initial);
+	    this._type = type;
+	    this._max = max;
+	    this._tracking = [];
+	
+	    options = options || {};
+	
+	    this._new = options.create ? options.create : function () {
+	      return new _this._type(_this);
+	    };
+	
+	    this._release = options.release ? options.release : function (obj) {
+	      obj.reset();
+	    };
+	
+	    this._init = options.init ? options.init : function (obj, args) {
+	      obj.init.apply(obj, args);
+	    };
+	
+	    //Actually create the initial objects
+	    for (var i = 0; i < initial; i++) {
+	      this._data[i] = this._new();
+	    }
+	  }
+	
+	  (0, _createClass3.default)(DataPool, [{
+	    key: "take",
+	    value: function take() {
+	      var data = this._data;
+	      var obj = null;
+	
+	      if (data.length > 0) {
+	        obj = data.pop();
+	      } else {
+	        obj = this._new();
+	      }
+	
+	      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	        args[_key] = arguments[_key];
+	      }
+	
+	      this._init(obj, args);
+	
+	      //add to tracking
+	      if (this.isTracking) {
+	        this._tracking[this._tracking.length - 1].push(obj);
+	      }
+	
+	      return obj;
+	    }
+	  }, {
+	    key: "release",
+	    value: function release(obj) {
+	      var data = this._data;
+	
+	      if (this.isTracking) {
+	        this.exclude(obj);
+	      }
+	
+	      this._release(obj);
+	
+	      if (this.max === 0 || data.length < this.max) {
+	        data[data.length] = obj;
+	      }
+	    }
+	  }, {
+	    key: "startTracking",
+	    value: function startTracking() {
+	      this._tracking.push([]);
+	    }
+	  }, {
+	    key: "endTracking",
+	    value: function endTracking() {
+	      if (this.isTracking) {
+	        this._tracking.pop();
+	      }
+	    }
+	  }, {
+	    key: "endTrackingAndRelease",
+	    value: function endTrackingAndRelease() {
+	      if (!this.isTracking) {
+	        return;
+	      }
+	
+	      this.releaseTracked();
+	      this.endTracking();
+	    }
+	  }, {
+	    key: "exclude",
+	    value: function exclude(obj) {
+	      if (!this.isTracking) {
+	        return;
+	      }
+	
+	      var tracking = this._tracking;
+	
+	      for (var i = 0; i < tracking.length; i++) {
+	        var tracked = tracking[i];
+	
+	        for (var j = 0; j < tracked.length; j++) {
+	
+	          if (tracked[j] == obj) {
+	            tracked.splice(j, 1);
+	
+	            return;
+	          }
+	        }
+	      }
+	    }
+	  }, {
+	    key: "releaseTracked",
+	    value: function releaseTracked() {
+	      var _this2 = this;
+	
+	      if (!this.isTracking) {
+	        return;
+	      }
+	
+	      var tracking = this._tracking;
+	      var tracked = tracking[tracking.length];
+	
+	      tracked.forEach(function (obj) {
+	        _this2.release(obj);
+	      });
+	
+	      tracked.length = 0;
+	    }
+	
+	    //getters/setters
+	
+	  }, {
+	    key: "max",
+	    get: function get() {
+	      return this._max;
+	    }
+	  }, {
+	    key: "isTracking",
+	    get: function get() {
+	      return this._tracking.length > 0;
+	    }
+	  }]);
+	  return DataPool;
+	}();
+
+/***/ },
+/* 38 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.DataPools = undefined;
+	
+	var _freeze = __webpack_require__(3);
 	
 	var _freeze2 = _interopRequireDefault(_freeze);
 	
-	var _AxialCoords = __webpack_require__(2);
+	var _DataPool = __webpack_require__(37);
 	
-	var _CubeCoords = __webpack_require__(23);
+	var _HexCoords = __webpack_require__(32);
+	
+	var _HexCoordOffset = __webpack_require__(39);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var Layouts = (0, _freeze2.default)({ OddRow: "odd-row", EvenRow: "even-row", OddCol: "odd-col", EvenCol: "even-col" });
+	var inited = false;
 	
-	var OffsetCoords = exports.OffsetCoords = function () {
-	  function OffsetCoords(col, row) {
-	    var layout = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : Layouts.OddRow;
-	    (0, _classCallCheck3.default)(this, OffsetCoords);
-	
-	    if (layout != Layouts.OddRow && layout != Layouts.EvenRow && layout != Layouts.OddCol && layout != Layouts.EvenCol) {
-	      throw new Error("Unable to create OffsetCoords: Invalid layout \"" + layout + "\"");
-	    }
-	
-	    this._col = col;
-	    this._row = row;
-	    this._layout = layout;
+	function init() {
+	  if (inited) {
+	    return;
 	  }
 	
-	  (0, _createClass3.default)(OffsetCoords, [{
-	    key: "add",
-	    value: function add(coord) {
-	      if (!(coord instanceof OffsetCoords) || this.layout != coord.layout) {
-	        coord = coord.toOffsetCoords(this.layout);
+	  delete DataPools.init;
+	
+	  inited = true;
+	  var coordsPool = new _DataPool.DataPool(_HexCoords.HexCoords, 100);
+	  var coordOffsetPool = new _DataPool.DataPool(_HexCoordOffset.HexCoordOffset, 20);
+	
+	  DataPools.coordsPool = coordsPool;
+	  DataPools.coordOffsetPool = coordOffsetPool;
+	
+	  (0, _freeze2.default)(DataPools);
+	};
+	
+	var DataPools = exports.DataPools = { init: init };
+
+/***/ },
+/* 39 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.HexCoordOffset = undefined;
+	
+	var _isInteger = __webpack_require__(33);
+	
+	var _isInteger2 = _interopRequireDefault(_isInteger);
+	
+	var _classCallCheck2 = __webpack_require__(25);
+	
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+	
+	var _createClass2 = __webpack_require__(26);
+	
+	var _createClass3 = _interopRequireDefault(_createClass2);
+	
+	var _DataPool = __webpack_require__(37);
+	
+	var _DataPools = __webpack_require__(38);
+	
+	var _HexCoords = __webpack_require__(32);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var HexCoordOffset = exports.HexCoordOffset = function () {
+	  function HexCoordOffset(pool) {
+	    (0, _classCallCheck3.default)(this, HexCoordOffset);
+	
+	    if (!(pool instanceof _DataPool.DataPool)) {
+	      throw new TypeError('Invalid argument "pool" must be of type DataPool');
+	    }
+	
+	    this._pool = pool;
+	  }
+	
+	  (0, _createClass3.default)(HexCoordOffset, [{
+	    key: "init",
+	    value: function init(col, row) {
+	      if (!(0, _isInteger2.default)(col)) {
+	        throw new Error("Invalid Argument: \"col\" must be an integer, value was \"" + col + "\"");
 	      }
 	
-	      return new OffsetCoords(this.col + coord.col, this.row + coord.row, this.layout);
+	      if (!(0, _isInteger2.default)(row)) {
+	        throw new Error("Invalid Argument: \"row\" must be an integer, value was \"" + row + "\"");
+	      }
+	
+	      //Axial coords
+	      this._col = col;
+	      this._row = row;
+	
+	      //this._hash = HexCoords.getHashFor(col, row);
 	    }
 	  }, {
-	    key: "subtract",
-	    value: function subtract(coord) {
-	      if (!(coord instanceof OffsetCoords) || this.layout != coord.layout) {
-	        coord = coord.toOffsetCoords(this.layout);
-	      }
+	    key: "reset",
 	
-	      return new OffsetCoords(this.col - coord.col, this.row - coord.row, this.layout);
+	
+	    //internal methods
+	    value: function reset() {
+	      this._col = null;
+	      this._row = null;
 	    }
+	
+	    //Public methods
+	
 	  }, {
-	    key: "equals",
-	    value: function equals(coord) {
-	      if (!(coord instanceof OffsetCoords)) {
-	        coord = coord.toOffsetCoords();
-	      }
-	
-	      return this.col === coord.col && this.row === coord.row && this.layout === coord.layout;
-	    }
-	  }, {
-	    key: "distanceTo",
-	    value: function distanceTo(coord) {
-	      //TODO
-	    }
-	  }, {
-	    key: "toAxialCoords",
-	    value: function toAxialCoords() {
-	      var x = void 0; //Cube coords
-	      var z = void 0;
-	      var col = this.col;
-	      var row = this.row;
-	
-	      switch (this.layout) {
-	        case layouts.EvenCol:
-	          x = col;
-	          z = row - (col + (col & 1)) / 2;
-	          break;
-	        case layouts.OddCol:
-	          x = col;
-	          z = row - (col - (col & 1)) / 2;
-	          break;
-	        case layouts.EvenRow:
-	          x = col - (row + (row & 1)) / 2;
-	          z = row;
-	          break;
-	        case layouts.OddRow:
-	          x = col - (row - (row & 1)) / 2;
-	          z = row;
-	          break;
-	      }
-	
-	      //Convert Cube coords to axial coords
-	      return new _AxialCoords.AxialCoords(x, z);
-	    }
-	  }, {
-	    key: "toCubeCoords",
-	    value: function toCubeCoords() {
-	      var x = void 0;
-	      var y = void 0;
-	      var z = void 0;
-	      var col = this.col;
-	      var row = this.row;
-	
-	      switch (this.layout) {
-	        case layouts.EvenCol:
-	          x = col;
-	          z = row - (col + (col & 1)) / 2;
-	          y = -x - z;
-	          break;
-	        case layouts.OddCol:
-	          x = col;
-	          z = row - (col - (col & 1)) / 2;
-	          y = -x - z;
-	          break;
-	        case layouts.EvenRow:
-	          x = col - (row + (row & 1)) / 2;
-	          z = row;
-	          y = -x - z;
-	          break;
-	        case layouts.OddRow:
-	          x = col - (row - (row & 1)) / 2;
-	          z = row;
-	          y = -x - z;
-	          break;
-	      }
-	
-	      return new _CubeCoords.CubeCoords(x, y, z);
-	    }
-	  }, {
-	    key: "toOffsetCoords",
-	    value: function toOffsetCoords(layout) {
-	      //Convert into cube coords
-	      var x = void 0;
-	      var y = void 0;
-	      var z = void 0;
-	      var col = this.col;
-	      var row = this.row;
-	
-	      switch (this.layout) {
-	        case layouts.EvenCol:
-	          x = col;
-	          z = row - (col + (col & 1)) / 2;
-	          y = -x - z;
-	          break;
-	        case layouts.OddCol:
-	          x = col;
-	          z = row - (col - (col & 1)) / 2;
-	          y = -x - z;
-	          break;
-	        case layouts.EvenRow:
-	          x = col - (row + (row & 1)) / 2;
-	          z = row;
-	          y = -x - z;
-	          break;
-	        case layouts.OddRow:
-	          x = col - (row - (row & 1)) / 2;
-	          z = row;
-	          y = -x - z;
-	          break;
-	      }
-	
-	      //Now output into new layout
-	      switch (layout) {
-	        case layouts.EvenCol:
-	          return new OffsetCoords(x, z + (x + (x & 1)) / 2, layout);
-	        case layouts.OddCol:
-	          return new OffsetCoords(x, z + (x - (x & 1)) / 2, layout);
-	        case layouts.EvenRow:
-	          return new OffsetCoords(x + (z + (z & 1)) / 2, z, layout);
-	        case layouts.OddRow:
-	          return new OffsetCoords(x + (z - (z & 1)) / 2, z, layout);
-	      }
-	
-	      throw new Error("Cannot convert to OffsetCoords: Unknown layout \"" + layout + "\"");
+	    key: "release",
+	    value: function release() {
+	      this._pool.release(this);
 	    }
 	  }, {
 	    key: "toString",
 	    value: function toString() {
-	      return "OffsetCoords {col: " + this.col + ", row: " + this.row + ", layout: " + this.layout + "}";
+	      return "HexCoordOffset {col: " + this.col + ", row: " + this.row + ", orientation: " + this.orientation + "}";
 	    }
 	  }, {
 	    key: "col",
@@ -821,141 +1411,27 @@
 	    get: function get() {
 	      return this._row;
 	    }
-	  }, {
-	    key: "layout",
-	    get: function get() {
-	      return this._layout;
-	    }
-	  }], [{
-	    key: "Layouts",
-	    get: function get() {
-	      return Layouts;
-	    }
 	  }]);
-	  return OffsetCoords;
+	  return HexCoordOffset;
 	}();
 
 /***/ },
-/* 25 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(26), __esModule: true };
-
-/***/ },
-/* 26 */
-/***/ function(module, exports, __webpack_require__) {
-
-	__webpack_require__(27);
-	module.exports = __webpack_require__(10).Object.freeze;
-
-/***/ },
-/* 27 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// 19.1.2.5 Object.freeze(O)
-	var isObject = __webpack_require__(16)
-	  , meta     = __webpack_require__(28).onFreeze;
+	'use strict';
 	
-	__webpack_require__(31)('freeze', function($freeze){
-	  return function freeze(it){
-	    return $freeze && isObject(it) ? $freeze(meta(it)) : it;
-	  };
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
 	});
+	exports.Directions = undefined;
+	
+	var _Enum = __webpack_require__(31);
+	
+	var Directions = exports.Directions = (0, _Enum.Enum)('upRight', 'right', 'downRight', 'downLeft', 'left', 'upLeft');
 
 /***/ },
-/* 28 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var META     = __webpack_require__(29)('meta')
-	  , isObject = __webpack_require__(16)
-	  , has      = __webpack_require__(30)
-	  , setDesc  = __webpack_require__(14).f
-	  , id       = 0;
-	var isExtensible = Object.isExtensible || function(){
-	  return true;
-	};
-	var FREEZE = !__webpack_require__(19)(function(){
-	  return isExtensible(Object.preventExtensions({}));
-	});
-	var setMeta = function(it){
-	  setDesc(it, META, {value: {
-	    i: 'O' + ++id, // object ID
-	    w: {}          // weak collections IDs
-	  }});
-	};
-	var fastKey = function(it, create){
-	  // return primitive with prefix
-	  if(!isObject(it))return typeof it == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it;
-	  if(!has(it, META)){
-	    // can't set metadata to uncaught frozen object
-	    if(!isExtensible(it))return 'F';
-	    // not necessary to add metadata
-	    if(!create)return 'E';
-	    // add missing metadata
-	    setMeta(it);
-	  // return object ID
-	  } return it[META].i;
-	};
-	var getWeak = function(it, create){
-	  if(!has(it, META)){
-	    // can't set metadata to uncaught frozen object
-	    if(!isExtensible(it))return true;
-	    // not necessary to add metadata
-	    if(!create)return false;
-	    // add missing metadata
-	    setMeta(it);
-	  // return hash weak collections IDs
-	  } return it[META].w;
-	};
-	// add metadata on freeze-family methods calling
-	var onFreeze = function(it){
-	  if(FREEZE && meta.NEED && isExtensible(it) && !has(it, META))setMeta(it);
-	  return it;
-	};
-	var meta = module.exports = {
-	  KEY:      META,
-	  NEED:     false,
-	  fastKey:  fastKey,
-	  getWeak:  getWeak,
-	  onFreeze: onFreeze
-	};
-
-/***/ },
-/* 29 */
-/***/ function(module, exports) {
-
-	var id = 0
-	  , px = Math.random();
-	module.exports = function(key){
-	  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
-	};
-
-/***/ },
-/* 30 */
-/***/ function(module, exports) {
-
-	var hasOwnProperty = {}.hasOwnProperty;
-	module.exports = function(it, key){
-	  return hasOwnProperty.call(it, key);
-	};
-
-/***/ },
-/* 31 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// most Object methods by ES6 should accept primitives
-	var $export = __webpack_require__(8)
-	  , core    = __webpack_require__(10)
-	  , fails   = __webpack_require__(19);
-	module.exports = function(KEY, exec){
-	  var fn  = (core.Object || {})[KEY] || Object[KEY]
-	    , exp = {};
-	  exp[KEY] = exec(fn);
-	  $export($export.S + $export.F * fails(function(){ fn(1); }), 'Object', exp);
-	};
-
-/***/ },
-/* 32 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!

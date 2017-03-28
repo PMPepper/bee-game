@@ -1,6 +1,6 @@
 //TODO needs more thought...
 
-export class DataPools {
+export class DataPool {
   constructor(type, initial = 100, max = 0, options = null) {
     if(!Number.isInteger(initial) || initial < 0) {
       throw new TypeError("Argument 'initial' must be a positive integer or zero");
@@ -14,7 +14,7 @@ export class DataPools {
     options = options || {};
 
     this._new = options.create ? options.create : () => {
-      return new type();
+      return new this._type(this);
     };
 
     this._release = options.release ? options.release : (obj) => {
@@ -22,10 +22,13 @@ export class DataPools {
     };
 
     this._init = options.init ? options.init : (obj, args) => {
-      args.unshift(this);
-
       obj.init.apply(obj, args);
     };
+
+    //Actually create the initial objects
+    for(let i = 0; i < initial; i++) {
+      this._data[i] = this._new();
+    }
   }
 
   take (...args) {
