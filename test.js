@@ -11,6 +11,7 @@ import {Directions as FlatTopDirections} from "./js/hex/flatTop/Directions";
 //import { as FlatTop} from "./js/hex/flatTop/";
 
 //pointy top
+import {HexGrid as PointyTopHexGrid} from "./js/hex/pointyTop/HexGrid";
 import {AxialCoords as PointyTopAxialCoords} from "./js/hex/pointyTop/AxialCoords";
 import {CubeCoords as PointyTopCubeCoords} from "./js/hex/pointyTop/CubeCoords";
 import {OffsetCoords as PointyTopOffsetCoords} from "./js/hex/pointyTop/OffsetCoords";
@@ -34,6 +35,7 @@ const cb2 = new PointyTopCubeCoords(0, -2, 2);
 const of2 = new PointyTopOffsetCoords(1, 2, PointyTopOffsetCoords.Layouts.oddRow);
 
 // Tests...
+
 test('Pointy top constructor tests', (t) => {
   t.throws(() => {
     new PointyTopHexCoords();
@@ -54,6 +56,10 @@ test('Pointy top constructor tests', (t) => {
   t.throws(() => {
     new PointyTopCubeCoords(1, 2, 3);
   }, null, 'CubeCoords arguments are valid');
+
+  t.truthy(() => {
+    return new HexGrid(100, 100);
+  }, 'Create HexGrid')
 });
 
 //-Equality
