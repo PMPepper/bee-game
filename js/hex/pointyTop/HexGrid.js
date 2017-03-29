@@ -132,11 +132,25 @@ export class HexGrid {
     const distance = start.distanceTo(end);
     const results = [];
 
-    //TODO
+    function lerp(a, b, t) { // for floats
+      return a + (b - a) * t
+    }
 
-    /*for() {
+    function cubeLerp(a, b, t){ // for hexes
+      return DataPools.coordsPool.take(
+        lerp(a.x, b.x, t),
+        lerp(a.y, b.y, t));
+    }
 
-    }*/
+    for(let i = 0; i < distance; i++) {
+      let fractionCoord = cubeLerp(start, end, 1.0/distance * i);
+      let roundedCoord = fractionCoord.round();
+
+      results.push(this.getHexAt(roundedCoord));
+
+      fractionCoord.release();
+      roundedCoord.release();
+    }
 
     return results;
   }

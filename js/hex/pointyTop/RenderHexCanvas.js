@@ -36,23 +36,14 @@ export class RenderHexCanvas extends RenderHex {
 
     ctx.clearRect(0, 0, width, height);
 
-
-
     const arr = [];
 
-    //TODO this needs to be the hexes that are visible...
+    //TODO this needs to be only the hexes that are visible...
     this._grid.forEach((hex) => {
       arr.push(hex);
     });
 
     this.renderHexes(x, y, scale, arr);
-
-    //this.renderHexAt(50, 50, hexSize, 'a,b', '#000000', '#CCCCCC', '#000000');
-
-    //temp code
-    //context.fillStyle = 'rgb('+Math.floor(Math.random()*255)+', '+Math.floor(Math.random()*255)+', '+Math.floor(Math.random()*255)+')';
-
-    //context.fillRect(0, 0, width, height)
   }
 
   renderHexes(x, y, scale, hexes) {
@@ -62,12 +53,16 @@ export class RenderHexCanvas extends RenderHex {
     ctx.font = Math.round(hexSize * 0.6) +'px Arial';
     ctx.textAlign = 'center';
 
-    let width = hexAngleCos * hexSize * 2;//(Math.sqrt(3)/2) * (hexSize * 1.5);// * 1.3;
+    let width = hexAngleCos * hexSize * 2;
 
     for(let i = 0; i < hexes.length; i++ ) {
       let hex = hexes[i];
 
-      this.renderHexAt(x + (hex.col * width) + (hex.row * width * 0.5), y + (hex.row * hexSize * 1.5), hexSize, hex.hash, '#000000', '#CCCCCC', '#000000');
+      if(hex.modules['render-content-2d']) {
+        hex.modules['render-content-2d'].render(x, y, hexSize, ctx);
+      } else {
+        this.renderHexAt(x + (hex.col * width) + (hex.row * width * 0.5), y + (hex.row * hexSize * 1.5), hexSize, hex.hash, '#000000', '#CCCCCC', '#000000');
+      }
     }
   }
 
@@ -105,5 +100,3 @@ export class RenderHexCanvas extends RenderHex {
 var angleRad = Math.PI / 180 * 30;
 const hexAngleCos = Math.cos(angleRad);
 const hexAngleSin = Math.sin(angleRad);
-
-console.log(hexAngleCos, hexAngleSin);

@@ -23,6 +23,14 @@ export class Hex extends HexCoords{
   }
 
   init(col, row, grid) {
+    if(!Number.isInteger(col)) {
+      throw new Error( `Invalid Argument: "col" must be an integer, value was "${col}"` );
+    }
+
+    if(!Number.isInteger(row)) {
+      throw new Error( `Invalid Argument: "row" must be an integer, value was "${row}"` );
+    }
+    
     if(grid && !(grid instanceof HexGrid)) {
       throw new TypeError("Argument 'grid' must be of type 'HexGrid'");
     }

@@ -1,7 +1,10 @@
 import {DataPool} from '../../DataPool'
+import {VarHelpers} from '../../VarHelpers'
 import {DataPools} from "./DataPools";
 import {Orientations} from '../Orientations'
 import {Directions} from './Directions'
+
+const sqrt3 = Math.sqrt(3);
 
 export class HexCoords{
   constructor(pool) {
@@ -16,17 +19,17 @@ export class HexCoords{
 
   init(col, row) {
     //Does this need to be an integer?
-    if(!Number.isInteger(col)) {
+    if(!VarHelpers.isNumber(+col)) {
       throw new Error( `Invalid Argument: "col" must be an integer, value was "${col}"` );
     }
 
-    if(!Number.isInteger(row)) {
+    if(!VarHelpers.isNumber(+row)) {
       throw new Error( `Invalid Argument: "row" must be an integer, value was "${row}"` );
     }
 
     //Axial coords
-    this._col = col;
-    this._row = row;
+    this._col = +col;
+    this._row = +row;
 
     this._hash = HexCoords.getHashFor(col, row);
   }
@@ -38,6 +41,14 @@ export class HexCoords{
   get x () { return this._col; }
   get y () { return this._row; }
   get z () { return -this.col-this.row; }
+
+  get x2d() {
+    return (this.col + (this.row * 0.5))*sqrt3;
+  }
+
+  get y2d() {
+    return this.row * 1.5;
+  }
 
   get hash () { return this._hash; }
 
@@ -92,6 +103,25 @@ export class HexCoords{
     return this.col === coord.col && this.row == coord.row;
   }
 
+  round() {
+    var rx = Math.round(this.x)
+    var ry = Math.round(this.y)
+    var rz = Math.round(this.z)
+
+    var xDiff = Math.abs(rx - this.x)
+    var yDiff = Math.abs(ry - this.y)
+    var zDiff = Math.abs(rz - this.z)
+
+    if( xDiff > yDiff && xDiff > zDiff ) {
+        rx = -ry-rz;
+    } else if (yDiff > zDiff) {
+        ry = -rx-rz;
+    } else {
+        rz = -rx-ry;
+    }
+    return DataPools.coordsPool.take(rx, ry);
+  }
+
   distanceTo (coord) {
     if(!coord) {
       throw new Error('Null argument error: coord cannot be null');
@@ -116,7 +146,7 @@ export class HexCoords{
     if(!HexCoords.Directions.isValid(direction)) {
       throw new Error(`Invalid argument 'direction', unknow value '${direction}'`);
     }
-    
+
     return this.add(HexCoords.getDirectionCoordOffset(direction));
   }
 
@@ -142,6 +172,17 @@ export class HexCoords{
 
   toString () {
     return `HexCoords {col: ${this.col}, row: ${this.row}, orientation: ${this.orientation}}`;
+  }
+
+  static from2dCoords(x, y, size) {
+      let col = (x * Math.sqrt(3)/3 - y / 3) / size;
+      let row = y * 2/3 / size;
+      let h1 = DataPools.coordsPool.take(col, row);
+      let h2 = h1.round();
+
+      h1.release();
+
+      return h2;
   }
 
   static get Directions() {
