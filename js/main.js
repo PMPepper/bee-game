@@ -8,6 +8,17 @@ $(() => {
   const grid = HexGrid.createRectangle(10, 10);
   const renderer = new RenderHexCanvas($('#canvas')[0], grid);
 
+  //0,0
+  const ptc0 = grid.getHexAt(0, 0);
+
+  //down/right 1 from 0
+  const ptc1 = grid.getHexAt(0, 1);
+
+  //down/right 2 from 0
+  const ptc2 = grid.getHexAt(0, 2);
+  
+  console.log( 'is neighbours?: ' +ptc1.isNeighbour(ptc2) );
+
   function step(timestamp) {
     renderer.render(0, 0);
 
@@ -17,6 +28,7 @@ $(() => {
   window.requestAnimationFrame(step);
 });
 
+/*
 
 class Test {
   constructor(...args) {
@@ -51,7 +63,12 @@ for (let x of t1._iterate()) {
 }
 
 console.log('');
+console.log('Iterate test yields: ');
 
 for (let x of t1.iterate) {
     console.log(x);
 }
+
+console.log('');
+
+*/

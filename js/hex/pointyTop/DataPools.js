@@ -1,6 +1,7 @@
 import {DataPool} from "../../DataPool";
+import {KeyValuePair} from "../../KeyValuePair";
 import {HexCoords} from "./HexCoords";
-import {HexCoordOffset} from "./HexCoordOffset";
+import {Hex} from "./Hex";
 
 let inited = false;
 
@@ -16,11 +17,13 @@ function init() {
   delete DataPools.init;
 
   inited = true;
+  const keyValuesPool = new DataPool(KeyValuePair, 100);
   const coordsPool = new DataPool(HexCoords, 100);
-  const coordOffsetPool = new DataPool(HexCoordOffset, 20);
+  const hexPool = new DataPool(Hex, 100);
 
+  DataPools.keyValuesPool = keyValuesPool;
   DataPools.coordsPool = coordsPool;
-  DataPools.coordOffsetPool = coordOffsetPool;
+  DataPools.hexPool = hexPool;
 
   Object.freeze(DataPools);
 };

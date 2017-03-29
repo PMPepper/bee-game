@@ -1,8 +1,9 @@
 import {Orientations} from "../Orientations";
 
-import {HexCoords} from "./HexCoords";
 import {Directions} from "./Directions";
 import {DataPools} from "./DataPools";
+import {HexCoords} from "./HexCoords";
+import {Hex} from "./Hex";
 
 export class HexGrid {
   constructor(shape, firstColumn) {
@@ -19,7 +20,6 @@ export class HexGrid {
     this._rows = shape.length;
 
 
-
     const start = shape.start || 0;
     let count = 0;
     let colNum = 0;
@@ -34,7 +34,7 @@ export class HexGrid {
 
       for( let j = 0; j < row.length; j++) {
         if(row[j]) {
-          let coord = DataPools.coordsPool.take(colNum, rowNum, this);
+          let coord = DataPools.hexPool.take(colNum, rowNum, this);
           data[coord.hash] = coord;
           count++;
         }
@@ -43,20 +43,58 @@ export class HexGrid {
       }
     }
 
-
     this._count = count;
 
     //For some reason the class syntax isn't working!
-    this.isValidCoord = (col, row) => {
+    this.isInGrid = (col, row) => {
+      if(arguments.length == 1 && (arguments[0] instanceof HexCoords)) {
+        col = arguments[0].col;
+        row = arguments[0].row;
+      }
+
       return !!this._data[HexCoords.getHashFor(col, row)];
     }
 
-    this.getCoordAt = (col, row) => {
+    /*this.getHexAt = (col, row) => {
+      if(arguments.length == 1 && (arguments[0] instanceof HexCoords)) {
+        col = arguments[0].col;
+        row = arguments[0].row;
+      }
+
       return (this._data[HexCoords.getHashFor(col, row)]) || null;
+    }*/
+
+    this.getHexes = (...coords) => {
+      if(coords.length == 1 && (coords[0] instanceof Array)) {
+        coords = coords[0];
+      }
+
+      const results = [];
+
+      for(var i = 0; i < coords.length; i++ ) {
+        let coord = coords[i];
+
+        if(!(coord instanceof HexCoords)) {
+          throw new TypeError('Invalid value in coords list, must be of type "HexCoords"');
+        }
+
+        results.push(this.getHexAt(coord));
+      }
+
+      return results;
     }
   }
 
   //public methods
+  getHexAt (col, row) {
+    if(arguments.length == 1 && (arguments[0] instanceof HexCoords)) {
+      col = arguments[0].col;
+      row = arguments[0].row;
+    }
+
+    return (this._data[HexCoords.getHashFor(col, row)]) || null;
+  }
+
   forEach(callback) {
     const data = this._data;
 
@@ -77,6 +115,8 @@ export class HexGrid {
     const distance = start.distanceTo(end);
     const results = [];
 
+    //TODO
+
     /*for() {
 
     }*/
@@ -96,19 +136,6 @@ export class HexGrid {
 
   static get Directions () {
     return Directions;
-  }
-
-  static get DirectionCoordOffsets() {
-    return DirectionCoordOffsets;
-  }
-
-  static getDirectionCoordOffset(direction) {
-
-    if(!HexCoords.Directions.isValid(direction)) {
-      throw new Error(`Invalid argument 'direction', unknow value '${direction}'`);
-    }
-
-    return DirectionCoordOffsets[direction];
   }
 
   //-Factory methods
@@ -141,12 +168,3 @@ export class HexGrid {
 }
 
 DataPools.init();
-
-const DirectionCoordOffsets = Object.freeze({
-  upRight:    DataPools.coordOffsetPool.take(1, -1),
-  right:      DataPools.coordOffsetPool.take(1, 0),
-  downRight:  DataPools.coordOffsetPool.take(0, 1),
-  downLeft:   DataPools.coordOffsetPool.take(-1, 1),
-  left:       DataPools.coordOffsetPool.take(-1, 0),
-  upLeft:     DataPools.coordOffsetPool.take(0, -1)
-});

@@ -1,11 +1,7 @@
-import {Enum} from '../../Enum'
 import {DataPool} from '../../DataPool'
 import {DataPools} from "./DataPools";
 import {Orientations} from '../Orientations'
 import {Directions} from './Directions'
-
-import {HexGrid} from './HexGrid'
-import {HexCoordOffset} from './HexCoordOffset'
 
 export class HexCoords{
   constructor(pool) {
@@ -13,17 +9,13 @@ export class HexCoords{
       throw new TypeError('Invalid argument "pool" must be of type DataPool');
     }
 
-    this._data = {};
-    this._modules = {};
+    this._orientation = Orientations.pointyTop;
 
     this._pool = pool;
   }
 
-  init(col, row, grid) {
-    if(grid && !(grid instanceof HexGrid)) {
-      throw new TypeError("Argument 'grid' must be of type 'HexGrid'");
-    }
-
+  init(col, row) {
+    //Does this need to be an integer?
     if(!Number.isInteger(col)) {
       throw new Error( `Invalid Argument: "col" must be an integer, value was "${col}"` );
     }
@@ -37,12 +29,6 @@ export class HexCoords{
     this._row = row;
 
     this._hash = HexCoords.getHashFor(col, row);
-
-    //Other stuff
-
-    this._grid = grid;
-    this._orientation = Orientations.pointyTop;
-    this._neighbours = null;
   }
 
   get col () { return this._col; }
@@ -55,10 +41,6 @@ export class HexCoords{
 
   get hash () { return this._hash; }
 
-  get data () { return this._data; }
-  get modules () { return this._modules; }
-
-  get grid () { return this._grid; }
   get orientation () { return this._orientation; }
 
   //internal methods
@@ -67,24 +49,6 @@ export class HexCoords{
     this._row = null;
 
     this._hash = null;
-
-    this._data = null;
-    this._modules = null;
-
-    const data = this._data;
-    const modules = this._modules;
-
-    for(let key in data) {
-      delete data[key];
-    }
-
-    for(let key in modules) {
-      delete modules[key];
-    }
-
-    this._grid = null;
-    this._orientation = null;
-    this._neighbours = null;
   }
 
   //Public methods
@@ -97,11 +61,11 @@ export class HexCoords{
       throw new Error('Null argument error: coord cannot be null');
     }
 
-    if(!(coord instanceof HexCoords) && !(coord instanceof HexCoordOffset)) {
-      throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords" or "pointyTop.HexCoordOffset"');
+    if(!(coord instanceof HexCoords)) {
+      throw new TypeError('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
     }
 
-    return DataPools.coordsPool.take(this.col + coord.col, this.row + coord.row, this.grid);
+    return DataPools.coordsPool.take(this.col + coord.col, this.row + coord.row);
   }
 
   subtract (coord) {
@@ -109,11 +73,11 @@ export class HexCoords{
       throw new Error('Null argument error: coord cannot be null');
     }
 
-    if(!(coord instanceof HexCoords) && !(coord instanceof HexCoordOffset)) {
-      throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords" or "pointyTop.HexCoordOffset"');
+    if(!(coord instanceof HexCoords)) {
+      throw new TypeError('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
     }
 
-    return DataPools.coordsPool.take(this.col - coord.col, this.row - coord.row, this.grid);
+    return DataPools.coordsPool.take(this.col - coord.col, this.row - coord.row);
   }
 
   equals (coord) {
@@ -122,7 +86,7 @@ export class HexCoords{
     }
 
     if(!(coord instanceof HexCoords)) {
-      throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
+      throw new TypeError('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
     }
 
     return this.col === coord.col && this.row == coord.row;
@@ -134,7 +98,7 @@ export class HexCoords{
     }
 
     if(!(coord instanceof HexCoords)) {
-      throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
+      throw new TypeError('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
     }
 
     const abs = Math.abs;
@@ -144,71 +108,40 @@ export class HexCoords{
           + abs(this.row - coord.row)) / 2;
   }
 
-  isNeighbour (coord, direction = null) {
-    if(!coord) {
-      throw new Error('Null argument error: coord cannot be null');
-    }
-
-    if(!(coord instanceof HexCoords)) {
-      throw new Error('Invalid Argument error: Supplied argument must be of type "pointyTop.HexCoords"');
-    }
-
-    if(direction != null) {
-      if(!HexCoords.Directions.isValid(direction)) {
-        throw new TypeError(`Argument 'direction' is not a valid value: '${direction}'`);
-      }
-
-      return coord.equals(this.add(HexGrid.getDirectionCoordOffset(direction)));
-    }
-
-    //is this coord a neighbour in ANY direction
-    for(let direction in HexCoords.Directions) {
-      if(coord.equals(this.add(HexGrid.getDirectionCoordOffset(direction)))) {
-        return direction;//return which direction this neighbour is in
-      }
-    }
-
-    return false;
+  isNeighbour(coord) {
+    return this.distanceTo(coord) == 1;
   }
 
-  get neighbours () {
-    let neighbours = this._neighbours;
-
-    //only ever need to calculate neighbours once
-    if(neighbours == null) {
-      neighbours = this._neighbours = {};
-
-      for(let direction in HexCoords.Directions) {
-        let neighbour = this.add(HexGrid.getDirectionCoordOffset(direction));
-
-        //If a grid is specified, check if the potential neighbour is contained within it
-        if(!this.grid || this.grid.contains(neighbour)) {
-          neighbours[direction] = neighbour;
-        } else {
-          neighbours[direction] = null;
-        }
-      }
-
-      Object.freeze(neighbours);
-    }
-
-    return neighbours;
-  }
-
-  getNeighbour (direction) {
+  getNeighbouringCoord (direction) {
     if(!HexCoords.Directions.isValid(direction)) {
       throw new Error(`Invalid argument 'direction', unknow value '${direction}'`);
     }
+    
+    return this.add(HexCoords.getDirectionCoordOffset(direction));
+  }
 
-    return this.neighbours[direction];
+  getNeighbouringCoords () {
+    result = {};
+
+    for(let direction in Directions) {
+      result[direction] = getNeighbouringCoord(direction);
+    }
+
+    return result;
+  }
+
+  getNeighbouringCoordsAsArray() {
+    result = [];
+
+    for(let direction in Directions) {
+      result.push(getNeighbouringCoord(direction));
+    }
+
+    return result;
   }
 
   toString () {
     return `HexCoords {col: ${this.col}, row: ${this.row}, orientation: ${this.orientation}}`;
-  }
-
-  static get HexCoords() {
-    return HexCoords;
   }
 
   static get Directions() {
@@ -222,15 +155,33 @@ export class HexCoords{
   static getHashFor(col, row) {
     return col+','+row;
   }
+
+  static get directionCoordOffsets() {
+    if(!isDirectionsCoordOffsetInited) {
+      isDirectionsCoordOffsetInited = true;
+
+      DirectionCoordOffsets.upRight   = DataPools.coordsPool.take(1, -1);
+      DirectionCoordOffsets.right     = DataPools.coordsPool.take(1, 0);
+      DirectionCoordOffsets.downRight = DataPools.coordsPool.take(0, 1);
+      DirectionCoordOffsets.downLeft  = DataPools.coordsPool.take(-1, 1);
+      DirectionCoordOffsets.left      = DataPools.coordsPool.take(-1, 0);
+      DirectionCoordOffsets.upLeft    = DataPools.coordsPool.take(0, -1);
+
+      Object.freeze(DirectionCoordOffsets);
+    }
+
+    return DirectionCoordOffsets;
+  }
+
+  static getDirectionCoordOffset(direction) {
+
+    if(!HexCoords.Directions.isValid(direction)) {
+      throw new Error(`Invalid argument 'direction', unknow value '${direction}'`);
+    }
+
+    return HexCoords.directionCoordOffsets[direction];
+  }
 }
 
-/*class Neighbours {
-  constructor() {
-
-    Object.freeze(this);
-  }
-
-  forEach(callback) {
-
-  }
-}*/
+let isDirectionsCoordOffsetInited = false;
+const DirectionCoordOffsets = {};

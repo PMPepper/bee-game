@@ -1,5 +1,6 @@
 import test from 'ava';
 import 'babel-register';
+import 'babel-polyfill';
 
 //flat top
 //TODO implement these
@@ -10,13 +11,13 @@ import {HexGrid as PointyTopHexGrid} from "./js/hex/pointyTop/HexGrid";
 const pointyTopHexGrid = PointyTopHexGrid.createRectangle(10, 10);
 
 //0,0
-const ptc0 = new pointyTopHexGrid.getCoordAt(0, 0);
+const ptc0 = pointyTopHexGrid.getHexAt(0, 0);
 
 //down/right 1 from 0
-const ptc1 = new pointyTopHexGrid.getCoordAt(0, 1);
+const ptc1 = pointyTopHexGrid.getHexAt(0, 1);
 
 //down/right 2 from 0
-const ptc2 = new pointyTopHexGrid.getCoordAt(0, 2);
+const ptc2 = pointyTopHexGrid.getHexAt(0, 2);
 
 // Tests...
 
