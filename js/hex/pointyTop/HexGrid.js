@@ -44,55 +44,72 @@ export class HexGrid {
     }
 
     this._count = count;
-
-    //For some reason the class syntax isn't working!
-    this.isInGrid = (col, row) => {
-      if(arguments.length == 1 && (arguments[0] instanceof HexCoords)) {
-        col = arguments[0].col;
-        row = arguments[0].row;
-      }
-
-      return !!this._data[HexCoords.getHashFor(col, row)];
-    }
-
-    /*this.getHexAt = (col, row) => {
-      if(arguments.length == 1 && (arguments[0] instanceof HexCoords)) {
-        col = arguments[0].col;
-        row = arguments[0].row;
-      }
-
-      return (this._data[HexCoords.getHashFor(col, row)]) || null;
-    }*/
-
-    this.getHexes = (...coords) => {
-      if(coords.length == 1 && (coords[0] instanceof Array)) {
-        coords = coords[0];
-      }
-
-      const results = [];
-
-      for(var i = 0; i < coords.length; i++ ) {
-        let coord = coords[i];
-
-        if(!(coord instanceof HexCoords)) {
-          throw new TypeError('Invalid value in coords list, must be of type "HexCoords"');
-        }
-
-        results.push(this.getHexAt(coord));
-      }
-
-      return results;
-    }
   }
 
   //public methods
-  getHexAt (col, row) {
-    if(arguments.length == 1 && (arguments[0] instanceof HexCoords)) {
+  isInGrid(col, row) {
+    if(arguments.length == 1) {
+      if(!(arguments[0] instanceof HexCoords)) {
+        throw new TypeError('Invalid argument, if single argument must be instance of HexCoords object');
+      }
+
+      if((arguments[0] instanceof Hex) && arguments[0].grid != this) {
+        throw new Error('Invalid Argument error: Supplied Hex object must be part of this grid');
+      }
+
       col = arguments[0].col;
       row = arguments[0].row;
+    } else {
+      if( !Number.isInteger(col)) {
+        throw new TypeError(`Invalid argument, "col" must be an integer, value supplied was "${col}"`);
+      }
+
+      if( !Number.isInteger(row)) {
+        throw new TypeError(`Invalid argument, "row" must be an integer, value supplied was "${row}"`);
+      }
+    }
+
+    return !!this._data[HexCoords.getHashFor(col, row)];
+  }
+
+  getHexAt (col, row) {
+    if(arguments.length == 1) {
+      if(!(arguments[0] instanceof HexCoords)) {
+        throw new TypeError('Invalid argument, if single argument must be instance of HexCoords object');
+      }
+      col = arguments[0].col;
+      row = arguments[0].row;
+    } else {
+      if( !Number.isInteger(col)) {
+        throw new TypeError(`Invalid argument, "col" must be an integer, value supplied was "${col}"`);
+      }
+
+      if( !Number.isInteger(row)) {
+        throw new TypeError(`Invalid argument, "row" must be an integer, value supplied was "${row}"`);
+      }
     }
 
     return (this._data[HexCoords.getHashFor(col, row)]) || null;
+  }
+
+  getHexes (...coords)  {
+    if(coords.length == 1 && (coords[0] instanceof Array)) {
+      coords = coords[0];
+    }
+
+    const results = [];
+
+    for(var i = 0; i < coords.length; i++ ) {
+      let coord = coords[i];
+
+      if(!(coord instanceof HexCoords)) {
+        throw new TypeError('Invalid value in coords list, must be of type "HexCoords"');
+      }
+
+      results.push(this.getHexAt(coord));
+    }
+
+    return results;
   }
 
   forEach(callback) {

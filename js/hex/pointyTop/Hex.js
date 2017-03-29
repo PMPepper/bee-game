@@ -177,6 +177,10 @@ export class Hex extends HexCoords{
     return `HexCoords {col: ${this.col}, row: ${this.row}, orientation: ${this.orientation}}`;
   }
 
+  toCoord () {
+    return DataPools.coordsPool.take(this.col, this.row);
+  }
+
   static get Directions() {
     return Directions;
   }
