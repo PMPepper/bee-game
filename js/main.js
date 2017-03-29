@@ -16,11 +16,11 @@ $(() => {
 
   //down/right 2 from 0
   const ptc2 = grid.getHexAt(0, 2);
-  
+
   console.log( 'is neighbours?: ' +ptc1.isNeighbour(ptc2) );
 
   function step(timestamp) {
-    renderer.render(0, 0);
+    renderer.render(20, 20);
 
     window.requestAnimationFrame(step);
   }
