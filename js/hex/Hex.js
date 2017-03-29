@@ -5,14 +5,8 @@ import {HexGrid} from "./pointyTop/HexGrid";
 
 
 function test1() {
-  /*const ax = new AxialCoords(0, 1);
-  const cb = new CubeCoords(0, -1, 1);
-  const cb2 = new CubeCoords(0, -1, 2);
 
-  console.log(`${ax} equals ${cb}: `, ax.equals(cb));
-  console.log(`${ax} equals ${cb2}: `, ax.equals(cb2));*/
-
-  const hexGrid = HexGrid.createRectangle(100, 100);
+  const hexGrid = HexGrid.createRectangle(10, 10);
 
   //0,0
   const ptc0 = new hexGrid.getCoordAt(0, 0);
@@ -24,10 +18,6 @@ function test1() {
   const ptc2 = new hexGrid.getCoordAt(0, 2);
 
   ptc1.add(ptc1).equals(ptc2);
-
-  console.log(hexGrid._data);
-
-  console.log(ptc0, ptc1, ptc2);
 }
 
 test1();

@@ -7,11 +7,11 @@ import {DataPools} from "./DataPools";
 export class HexGrid {
   constructor(shape, firstColumn) {
     if(!shape || !(shape instanceof Array)) {
-      throw new TypeError('Invalid argument for "shape", must be of type array');
+      throw new TypeError('Invalid argument for "shape", must be of type "Array"');
     }
 
     if(!firstColumn || !(firstColumn instanceof Array)) {
-      throw new TypeError('Invalid argument for "firstColumn", must be of type array');
+      throw new TypeError('Invalid argument for "firstColumn", must be of type "Array"');
     }
 
     const data = this._data = {};
@@ -57,7 +57,32 @@ export class HexGrid {
   }
 
   //public methods
+  forEach(callback) {
+    const data = this._data;
 
+    for(let hash in data) {
+      callback(data[hash]);
+    }
+  }
+
+  lineTo (start, end) {
+    if(!(start instanceof HexCoords)) {
+      throw new TypeError('Invalid argument for "start", must be of type "HexCoords"');
+    }
+
+    if(!(end instanceof HexCoords)) {
+      throw new TypeError('Invalid argument for "end", must be of type "HexCoords"');
+    }
+
+    const distance = start.distanceTo(end);
+    const results = [];
+
+    /*for() {
+
+    }*/
+
+    return results;
+  }
 
   //getters/setters
   get cols() { return this._cols; }

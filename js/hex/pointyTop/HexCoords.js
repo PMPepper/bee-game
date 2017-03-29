@@ -13,6 +13,9 @@ export class HexCoords{
       throw new TypeError('Invalid argument "pool" must be of type DataPool');
     }
 
+    this._data = {};
+    this._modules = {};
+
     this._pool = pool;
   }
 
@@ -36,6 +39,7 @@ export class HexCoords{
     this._hash = HexCoords.getHashFor(col, row);
 
     //Other stuff
+
     this._grid = grid;
     this._orientation = Orientations.pointyTop;
     this._neighbours = null;
@@ -51,13 +55,11 @@ export class HexCoords{
 
   get hash () { return this._hash; }
 
-  get grid () {
-    return this._grid;
-  }
+  get data () { return this._data; }
+  get modules () { return this._modules; }
 
-  get orientation () {
-    return this._orientation;
-  }
+  get grid () { return this._grid; }
+  get orientation () { return this._orientation; }
 
   //internal methods
   reset() {
@@ -65,6 +67,20 @@ export class HexCoords{
     this._row = null;
 
     this._hash = null;
+
+    this._data = null;
+    this._modules = null;
+
+    const data = this._data;
+    const modules = this._modules;
+
+    for(let key in data) {
+      delete data[key];
+    }
+
+    for(let key in modules) {
+      delete modules[key];
+    }
 
     this._grid = null;
     this._orientation = null;
@@ -75,6 +91,7 @@ export class HexCoords{
   release() {
     this._pool.release(this);
   }
+
   add (coord) {
     if(!coord) {
       throw new Error('Null argument error: coord cannot be null');
@@ -186,8 +203,6 @@ export class HexCoords{
     return this.neighbours[direction];
   }
 
-
-
   toString () {
     return `HexCoords {col: ${this.col}, row: ${this.row}, orientation: ${this.orientation}}`;
   }
@@ -208,3 +223,14 @@ export class HexCoords{
     return col+','+row;
   }
 }
+
+/*class Neighbours {
+  constructor() {
+
+    Object.freeze(this);
+  }
+
+  forEach(callback) {
+
+  }
+}*/
