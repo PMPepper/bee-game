@@ -135,7 +135,6 @@ $(() => {
   let center = null;
 
   $canvas.on('click', (e) => {
-    console.log(e);
     let coord = HexGrid.HexCoords.from2dCoords(e.offsetX - cameraX, e.offsetY - cameraY, hexSize);
 
     center = grid.getHexAt(coord);
@@ -176,12 +175,94 @@ $(() => {
   step();
 });
 
+
+$(() => {
+  const grid = HexGrid.createHexagon(6, 0, 0);
+  const $canvas = $('#rotate');
+  const renderer = new RenderHexCanvas($canvas[0], grid);
+
+  let cameraX = 200;
+  let cameraY = 160;
+  let hexSize = 16;
+
+  renderer.hexSize = hexSize;
+
+  let changedHexes = [];
+
+  //Init custom renderer
+  grid.forEach((hex) => {
+    hex.modules[renderer.customRendererModuleName] = new CustomHexRenderer(hex, '#333', 'rgb(200,200,255)', '#000');
+  });
+
+
+  let center = grid.getHexAt(0, 0);
+  center.modules[renderer.customRendererModuleName].fillStyle = 'rgb(255,255,255)';
+
+
+  function step(timestamp) {
+    renderer.render(cameraX, cameraY);
+
+    window.requestAnimationFrame(step);
+  }
+
+  $canvas.on('mousemove', (e) => {
+    //reset styles
+    changedHexes.forEach((hex) => {
+      hex.modules[renderer.customRendererModuleName].fillStyle = 'rgb(200,200,255)';
+    });
+
+    changedHexes.length = 0;
+
+    center.modules[renderer.customRendererModuleName].fillStyle = 'rgb(255,255,255)';
+
+    let coord = HexGrid.HexCoords.from2dCoords(e.offsetX - cameraX, e.offsetY - cameraY, hexSize);
+
+    let initial = grid.getHexAt(coord);
+
+    if(initial) {
+      changedHexes.push(initial);
+
+      for(let i = 1; i <= 6; i++) {
+        let rotatedCoord = initial.rotateStep(i);
+
+        let rotatedHex = grid.getHexAt(rotatedCoord);
+
+        if(rotatedHex) {
+          rotatedHex.modules[renderer.customRendererModuleName].fillStyle = 'rgb(200,'+Math.ceil(220 + ((35 / 6) * i))+',200)';
+          changedHexes.push(rotatedHex);
+        }
+
+        rotatedCoord.release();
+      }
+    }
+
+    coord.release();
+  });
+
+  step();
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function paintHexes(hexes, fillColour) {
   hexes.forEach((hex) => {
     hex.modules['render-content-2d'].fillStyle = fillColour;
   });
 }
-
 
 /*
 

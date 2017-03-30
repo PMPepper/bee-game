@@ -199,6 +199,50 @@ export class HexGrid {
 
     return new HexGrid(shape, firstColumn);
   }
+
+  static createHexagon(radius, offsetCol = 0, offsetRow = 0) {
+    if(!Number.isInteger(radius) && radius > 0) {
+      throw new TypeError('Invalid argument "radius", must be an integer greater than 0, current value is "'+steps.toString()+'"');
+    }
+
+    //
+    const shape = [];
+    const firstColumn = [];
+
+    let rows = (radius * 2) - 1;
+    let cols = rows;
+    //let edgeSize = radius + 1;
+    //let rowNum = null;
+
+    shape.start = 1 + offsetRow - radius;
+
+    for(let r = 0; r < rows; r++) {
+      //rowNum = r + shape.start;
+
+      if(r+1 < radius) {
+        shape.push(makeShapeRow(cols + 1 + (r - radius)));
+        firstColumn.push( -(r - offsetCol));
+      } else if(r+1 == radius) {
+        shape.push(makeShapeRow(cols));
+        firstColumn.push(1-radius + offsetCol);
+      } else {
+        shape.push(makeShapeRow(cols + radius - r - 1));
+        firstColumn.push(1-radius + offsetCol);
+      }
+    }
+
+    return new HexGrid(shape, firstColumn);
+  }
+}
+
+function makeShapeRow(length) {
+  var row = [];
+
+  for(let i = 0; i < length; i++) {
+    row[i] = true;
+  }
+
+  return row;
 }
 
 DataPools.init();

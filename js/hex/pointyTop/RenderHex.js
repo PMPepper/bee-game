@@ -8,10 +8,15 @@ export class RenderHex {
     }
 
     this._grid = grid;
+    this._customRendererModuleName = '';
   }
 
   get grid () {
     return this._grid;
+  }
+
+  get customRendererModuleName () {
+    return this._customRendererModuleName;
   }
 
   render (x, y) {

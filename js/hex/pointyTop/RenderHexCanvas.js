@@ -9,6 +9,7 @@ export class RenderHexCanvas extends RenderHex {
     }
     this._canvas = element;
     this._context = element.getContext('2d');
+    this._customRendererModuleName = 'render-content-2d';
 
     this._hexSize = 16;
   }
@@ -58,8 +59,8 @@ export class RenderHexCanvas extends RenderHex {
     for(let i = 0; i < hexes.length; i++ ) {
       let hex = hexes[i];
 
-      if(hex.modules['render-content-2d']) {
-        hex.modules['render-content-2d'].render(x, y, hexSize, ctx);
+      if(hex.modules[this.customRendererModuleName]) {
+        hex.modules[this.customRendererModuleName].render(x, y, hexSize, ctx);
       } else {
         this.renderHexAt(x + (hex.col * width) + (hex.row * width * 0.5), y + (hex.row * hexSize * 1.5), hexSize, hex.hash, '#000000', '#CCCCCC', '#000000');
       }

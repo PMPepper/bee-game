@@ -138,6 +138,52 @@ export class HexCoords{
           + abs(this.row - coord.row)) / 2;
   }
 
+  rotateStep (steps) {
+    if(!Number.isInteger(steps)) {
+      throw new TypeError('Invalid argument "steps", must be an integer, current value is "'+steps.toString()+'"');
+    }
+
+    steps = (((steps%6)+6)%6)-3;
+
+    let x = this.x;
+    let y = this.y;
+    let z = this.z;
+
+    let rx = 0;
+    let ry = 0;
+    let rz = 0;
+
+    if(steps > 0){
+      for(let i = 0; i < steps; i++) {
+        //    [ x,  y,  z]
+        //to  [-z, -x, -y]
+        rx = -z;
+        ry = -x;
+        rz = -y;
+
+        x = rx;
+        y = ry;
+        z = rz;
+      }
+    } else {
+      steps = -steps;
+
+      for(let i = 0; i < steps; i++) {
+        //   [ x,  y,  z]
+        //to [-y, -z, -x]
+        rx = -y;
+        ry = -z;
+        rz = -x;
+
+        x = rx;
+        y = ry;
+        z = rz;
+      }
+    }
+
+    return DataPools.coordsPool.take(x, y);
+  }
+
   isNeighbour(coord) {
     return this.distanceTo(coord) == 1;
   }
