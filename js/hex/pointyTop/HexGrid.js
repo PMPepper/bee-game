@@ -145,8 +145,11 @@ export class HexGrid {
     for(let i = 0; i < distance; i++) {
       let fractionCoord = cubeLerp(start, end, 1.0/distance * i);
       let roundedCoord = fractionCoord.round();
+      let hex = this.getHexAt(roundedCoord)
 
-      results.push(this.getHexAt(roundedCoord));
+      if(hex) {
+        results.push(hex);
+      }
 
       fractionCoord.release();
       roundedCoord.release();

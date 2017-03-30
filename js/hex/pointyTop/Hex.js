@@ -30,7 +30,7 @@ export class Hex extends HexCoords{
     if(!Number.isInteger(row)) {
       throw new Error( `Invalid Argument: "row" must be an integer, value was "${row}"` );
     }
-    
+
     if(grid && !(grid instanceof HexGrid)) {
       throw new TypeError("Argument 'grid' must be of type 'HexGrid'");
     }
@@ -120,6 +120,33 @@ export class Hex extends HexCoords{
   //Public methods
   release() {
     this._pool.release(this);
+  }
+
+  hexesInRange(distance) {
+    if(!Number.isInteger(distance) && distance > 0) {
+      throw new TypeError('Invalid argument "distance", must be a positive integer, current value is "'+distance.toString()+'"');
+    }
+
+    var results = [];
+
+    for(let dx = -distance; dx <= distance; dx++) {
+      //for each max(-N, -dx-N) ≤ dy ≤ min(N, -dx+N):
+      for(let dy = Math.max(-distance, -dx-distance); dy <= Math.min(distance, -dx+distance); dy++) {
+        //let dz = -dx-dy;
+        let offset = DataPools.coordsPool.take(dx, dy);
+        let coord = this.add(offset);
+        let hex = this._grid.getHexAt(coord);
+
+        if(hex) {
+          results.push(hex);//cube_add(center, Cube(dx, dy, dz))
+        }
+
+        offset.release();
+        coord.release();
+      }
+    }
+
+    return results;
   }
 
   isNeighbour (hex, direction = null) {

@@ -7,6 +7,7 @@ const $ = require('./../bower_components/jquery/dist/jquery');
 $(() => {
   const grid = HexGrid.createRectangle(10, 10);
   const $canvas = $('#canvas');
+  const $output = $('#output');
   const renderer = new RenderHexCanvas($canvas[0], grid);
 
   grid.forEach((hex) => {
@@ -36,7 +37,7 @@ $(() => {
   let hexSize = 16;
 
   $canvas.on('mousemove', (e)=>{
-    let coord = HexGrid.HexCoords.from2dCoords(e.clientX - cameraX, e.clientY - cameraY, hexSize);
+    let coord = HexGrid.HexCoords.from2dCoords(e.offsetX - cameraX, e.offsetY - cameraY, hexSize);
 
     let hex = grid.getHexAt(coord);
 
@@ -58,9 +59,11 @@ $(() => {
   let lineHexes = null;
 
   $canvas.on('click', (e) => {
-    let coord = HexGrid.HexCoords.from2dCoords(e.clientX - cameraX, e.clientY - cameraY, hexSize);
+    let coord = HexGrid.HexCoords.from2dCoords(e.offsetX - cameraX, e.offsetY - cameraY, hexSize);
 
     let hex = grid.getHexAt(coord);
+
+    coord.release();
 
     if(hex) {
       hex.modules['render-content-2d'].fillStyle = '#F66';
@@ -76,6 +79,7 @@ $(() => {
               hex.modules['render-content-2d'].fillStyle = 'rgb(200,200,255)';
             }
 
+            $output.text('');
           });
 
           lineHexes = null;
@@ -89,6 +93,8 @@ $(() => {
 
               hex.modules['render-content-2d'].fillStyle = '#6F6';
             });
+
+            $output.text(lineStart.distanceTo(lineEnd).toString());
           } else {
             lineStart = lineEnd = null;
           }
@@ -103,6 +109,78 @@ $(() => {
   window.requestAnimationFrame(step);
 });
 
+
+$(() => {
+  const grid = HexGrid.createRectangle(20, 20);
+  const $canvas = $('#distance');
+  const renderer = new RenderHexCanvas($canvas[0], grid);
+
+  let cameraX = 20;
+  let cameraY = 20;
+  let hexSize = 16;
+
+  renderer.hexSize = hexSize;
+
+  //Init custom renderer
+  grid.forEach((hex) => {
+    hex.modules['render-content-2d'] = new CustomHexRenderer(hex, '#333', 'rgb(200,200,255)', '#000');
+  });
+
+  function step(timestamp) {
+    renderer.render(cameraX, cameraY);
+
+    window.requestAnimationFrame(step);
+  }
+
+  let center = null;
+
+  $canvas.on('click', (e) => {
+    console.log(e);
+    let coord = HexGrid.HexCoords.from2dCoords(e.offsetX - cameraX, e.offsetY - cameraY, hexSize);
+
+    center = grid.getHexAt(coord);
+
+    coord.release();
+  });
+
+  let rangeHexes = null;
+
+  $canvas.on('mousemove', (e) => {
+    if(!center) {
+      return;
+    }
+
+    let coord = HexGrid.HexCoords.from2dCoords(e.offsetX - cameraX, e.offsetY - cameraY, hexSize);
+
+    let hexAtMouse = grid.getHexAt(coord);
+
+    coord.release();
+
+    if(!hexAtMouse) {// || hexAtMouse == center
+      return;
+    }
+
+    let distance = center.distanceTo(hexAtMouse);
+
+    let hexesInRange = center.hexesInRange(distance);
+
+    if(rangeHexes) {
+      paintHexes(rangeHexes, 'rgb(200,200,255)');
+    }
+
+    paintHexes(hexesInRange, '#f99');
+
+    rangeHexes = hexesInRange;
+  });
+
+  step();
+});
+
+function paintHexes(hexes, fillColour) {
+  hexes.forEach((hex) => {
+    hex.modules['render-content-2d'].fillStyle = fillColour;
+  });
+}
 
 
 /*
