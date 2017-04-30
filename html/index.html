@@ -1,18 +1,7 @@
 {% extends "layout.nunjucks" %}
 
 {% block contents %}
-<div id="">
-  <h2>Hex lines</h2>
-  <canvas id="canvas" width="300" height="300"></canvas>
-  <div>Distance: <span id="output"></span></div>
-</div>
-<br />
-<div id="">
-  <h2>Hexes in Range</h2>
-  <canvas id="distance" width="600" height="600"></canvas>
-</div>
-<div id="">
-  <h2>Rotate Hexes</h2>
-  <canvas id="rotate" width="600" height="600"></canvas>
+<div id="game">
+  <canvas id="system"></canvas>
 </div>
 {% endblock %}
