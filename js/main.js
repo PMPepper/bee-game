@@ -1,4 +1,8 @@
 const $ = require('./../bower_components/jquery/dist/jquery');
+//require('./interface/jquery-mousewheel.js')($);
+
+
+require('./interface/jquery-mousewheel.js').init($);
 
 import {System} from './systems/System';
 import {Star} from './systems/Star';
