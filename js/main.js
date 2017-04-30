@@ -1,13 +1,11 @@
 const $ = require('./../bower_components/jquery/dist/jquery');
-//require('./interface/jquery-mousewheel.js')($);
-
-
 require('./interface/jquery-mousewheel.js').init($);
+
+require('./example.jsx')
 
 import {System} from './systems/System';
 import {Star} from './systems/Star';
-import {RockyPlanet} from './systems/RockyPlanet';
-import {Moon} from './systems/Moon';
+import {Planet} from './systems/Planet';
 
 
 import {SystemRendererCanvas} from './render/SystemRendererCanvas';
@@ -36,9 +34,11 @@ $(() => {
 
 
   //Test code
-  const solA = new Star('Sol A', 1.9891e30);
-  const earth = new RockyPlanet('Earth', 5.972e24, solA, 149600000000, 0);
-  const luna = new Moon('Luna', 7.34767309e22, earth, 384399000, 0)
+  //name, mass, radius, parent, orbitRadius, orbitOffset
+  const solA = new Star('Sol A', 1.9891e30, 695700000);
+  //name, mass, radius, parent, orbitRadius, orbitOffset, albedo, minerals, colonies, atmosphere, type
+  const earth = new Planet('Earth', 5.972e24, 6371000, solA, 149600000000, 0, 0.3, null, 'planet');
+  const luna = new Planet('Luna', 7.34767309e22, 1737000, earth, 384399000, 0, 0.12, null, 'moon');
 
   const bodies = [
     solA,
@@ -50,6 +50,7 @@ $(() => {
 
   console.log(earth.orbitalPeriod);
   console.log(earth.getOrbitAngle(0)+', '+earth.getOrbitAngle(earth.orbitalPeriod * 0.5)+', '+earth.getOrbitAngle(86400));
+  console.log(earth.surfaceGravity+', '+luna.surfaceGravity);
 
   //renderer
   const canvas = $('#system')[0];

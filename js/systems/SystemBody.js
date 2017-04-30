@@ -3,9 +3,10 @@ import {Constants} from '../Constants';
 import {Circle} from '../graphics/Circle';
 
 export class SystemBody {
-  constructor (name, mass, parent, orbitRadius, orbitOffset) {
+  constructor (name, mass, radius, parent, orbitRadius, orbitOffset) {
     this._name = name;
     this._mass = mass;
+    this._radius = radius;
     this._parent = parent || null;
     this._orbitRadius = orbitRadius;
     this._orbitOffset = orbitOffset;
@@ -17,6 +18,22 @@ export class SystemBody {
 
   get mass () {
     return this._mass;
+  }
+
+  get radius () {
+    return this._radius;
+  }
+
+  get density () {
+    return this.mass / this.density;
+  }
+
+  get volume () {
+    return (4/3)*Math.PI*Math.pow( this.radius, 3);
+  }
+
+  get surfaceGravity () {
+    return (Constants.GRAVITATIONAL_CONSTANT * this.mass) / (this.radius * this.radius);
   }
 
   get parent () {
@@ -33,6 +50,10 @@ export class SystemBody {
 
   get system () {
     return this._system;
+  }
+
+  get type () {
+    throw new Error('Not implemented');
   }
 
   get orbitalPeriod () {

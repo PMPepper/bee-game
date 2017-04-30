@@ -84,7 +84,7 @@ config.images = {
 config.js = {
   devOutputPath: config.devOutputPath + '/js',
   buildOutputPath: config.buildOutputPath + '/js',
-  watch: ['js/**/*.+(js|json)', config.images.mapOptions.path+'/'+config.images.mapOptions.filename],
+  watch: ['js/**/*.+(js|json|jsx)', config.images.mapOptions.path+'/'+config.images.mapOptions.filename],
   entry: npmConfig.main,//used by webpack, instead of src
   devSourcemaps: {
     enabled: true
@@ -129,7 +129,16 @@ config.webpack = {
           exclude: /(node_modules|bower_components)/,
           loader: 'babel-loader',
           query: {
-            presets: ['es2017'],
+            presets: ['es2017', 'react'],
+            plugins: ['transform-runtime']
+          }
+        },
+        {
+          test : /\.jsx?/,
+          exclude: /(node_modules|bower_components)/,
+          loader: 'babel-loader',
+          query: {
+            presets: ['es2017', 'react'],
             plugins: ['transform-runtime']
           }
         }
@@ -164,7 +173,16 @@ config.webpack = {
           exclude: /(node_modules|bower_components)/,
           loader: 'babel-loader',
           query: {
-            presets: ['es2017'],
+            presets: ['es2017', 'react'],
+            plugins: ['transform-runtime']
+          }
+        },
+        {
+          test : /\.jsx?/,
+          exclude: /(node_modules|bower_components)/,
+          loader: 'babel-loader',
+          query: {
+            presets: ['es2017', 'react'],
             plugins: ['transform-runtime']
           }
         }
