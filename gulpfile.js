@@ -21,6 +21,8 @@ const uglify = require('gulp-uglify');
 const cssnano = require('gulp-cssnano');
 const directoryMap = require("gulp-directory-map");
 const del = require('del');
+const notify = require("gulp-notify");
+const plumber = require("gulp-plumber");
 
 const config = {
   devOutputPath:'develop',
@@ -91,6 +93,16 @@ config.js = {
   },
   buildSourcemaps: {
     enabled: false //TODO make this work (need to use filter before uglify?)
+  }
+};
+
+config.notify = {
+  js: 'Error: <%= error.message %>'
+};
+
+config.plumber = {
+  js: {
+    errorHandler: notify.onError(config.notify.js)
   }
 };
 
@@ -222,6 +234,7 @@ function gulpImagesSrc() {
 //-JS tasks
 gulp.task('js-dev', ['js-clean-dev'], () => {
   return gulpJsSrc()
+    .pipe(plumber(config.plumber.js))
     .pipe(config.js.devSourcemaps.enabled ? sourcemaps.init(config.js.devSourcemaps.options) : filter(['**/*']))
     .pipe(webpack(config.webpack.dev))
     .pipe(config.js.devSourcemaps.enabled ? sourcemaps.write(config.js.devSourcemaps.path, config.js.devSourcemaps.writeOptions) : filter(['**/*']))
@@ -236,6 +249,7 @@ gulp.task('js-watch', ['js-dev'], () => {
 
 gulp.task('js-build', ['js-clean-build'], function() {
   return gulpJsSrc()
+    .pipe(plumber(config.plumber.js))
     .pipe(config.js.buildSourcemaps.enabled ? sourcemaps.init(config.js.buildSourcemaps.options) : filter(['**/*']))
     .pipe(webpack(config.webpack.build))
     .pipe(uglify(config.uglify.build))

@@ -84,4 +84,4 @@ function getColourAlpha(colour) {
 
 //styles
 const starCircle = new Circle(5, 0xFFFFFFDD);
-const planetCircle = new Circle(4, 0xFF3333FF);
+const planetCircle = new Circle(4, 0xFFFF33FF);
