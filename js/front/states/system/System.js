@@ -2,6 +2,8 @@ import {Immutable} from '../../../core/Immutable';
 
 export class System extends Immutable {
   constructor(name, bodies) {
+    super();
+    
     this._name = name;
     this._bodies = bodies ? bodies.slice() : [];
     this._stars = [];

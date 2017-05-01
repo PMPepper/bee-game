@@ -1,3 +1,5 @@
+import {Game} from './Game';
+
 import {GasGiant} from './system/GasGiant';
 import {OrbitRegular} from './system/OrbitRegular';
 import {Planet} from './system/Planet';
@@ -10,7 +12,20 @@ import {Coord} from '../../core/Coord';
 
 export const Factory = {
   getState: (data, params) => {
+
+    if(data instanceof Array) {
+
+    }
+
     switch(data['class']) {
+      case 'Game':
+        return Factory.getGame(data, params);
+      case 'StepEvents':
+        return null;//TODO
+      case 'stepEvent':
+        return null;//TODO
+        
+      //System states
       case 'System':
         return Factory.getSystem(data, params);
       case 'SystemBodyState':
@@ -22,11 +37,25 @@ export const Factory = {
       case 'Orbit':
       case 'OrbitRegular':
         return Factory.getOrbit(data, params);
+
+      //Misc
       case 'Coord':
         return new Coord(coord.x, coord.y);
     }
 
     return null;
+  },
+  getArray: (arr) => {
+    const output = [];
+
+    arr.forEach((data) => {
+      output.push(Factory.getState(data));
+    });
+
+    return output;
+  },
+  getGame: (data) => {
+    return new Game(data.time, Factory.getState(data.systems), Factory.getState(data.events));
   },
   getSystemBodyState: (data) => {
     return new SystemBodyState(

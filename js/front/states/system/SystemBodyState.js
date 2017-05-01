@@ -2,6 +2,8 @@ import {Immutable} from '../../../core/Immutable';
 
 export class SystemBodyState extends Immutable {
   constructor(body, position, orbit) {
+    super();
+    
     this._body = body;
     this._position = position;
     this._orbit = orbit;

@@ -1,41 +1,23 @@
 const $ = require('./../bower_components/jquery/dist/jquery');
 require('./front/interface/jquery-mousewheel.js').init($);
 
+import {Client} from './front/logic/Client';
+
+import {ConnectorBasic} from './core/connector/ConnectorBasic';
+
 import {Engine} from './back/engine/Engine';
 import {Factory} from './back/models/Factory';
-//import {SystemRendererCanvas} from './front/render/SystemRendererCanvas';
 
+window.$ = $;
 
-//import {SystemBody} from './core/models/system/SystemBody';
-require('./front/example.jsx')
 
 $(() => {
-  let lastTime = Date.now();
 
-  let time = 0;
-
-  function step(timestamp) {
-    /*
-    const now = Date.now();
-    const frameTime = now - lastTime;
-
-    time += frameTime * 100;
-
-    solRenderer.render(time);
-
-    //Repeat
-    lastTime = now;*/
-
-    //const state = engine.update(5);
-    //console.log(state);
-    window.requestAnimationFrame(step);
-  }
-
-  window.requestAnimationFrame(step);
 
 
   //Test code
 
+  //Initialise world
   const systems = [];
 
   (() => {
@@ -46,13 +28,14 @@ $(() => {
     });
   })();
 
-console.log('??????');
-  console.log(systems);
-
+  //Create game engine
   const engine = new Engine(0, systems);
 
-  const state = engine.update(5);
-  console.log(state);
+  //Create frontend
+  const client = new Client($('#app'));
+
+  //Create Connector
+  const connector = new ConnectorBasic(engine, client);
 /*
   const earth = systems[0].getBodyByName('Earth');
   const luna = systems[0].getBodyByName('Luna');

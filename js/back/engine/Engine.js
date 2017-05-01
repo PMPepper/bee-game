@@ -8,7 +8,7 @@ export class Engine {
     this._systems = systems;
     this._time = time;
 
-    this._lastStepEvents = null;
+    this._lastStepEvents = [];
   }
 
   update(deltaTime) {
@@ -35,7 +35,7 @@ export class Engine {
     });
 
     return {
-      'class': 'Engine',
+      'class': 'Game',
       time: this.time,
       systems: systems,
       events: this._getEventsState()

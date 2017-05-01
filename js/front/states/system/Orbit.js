@@ -2,6 +2,8 @@ import {Immutable} from '../../../core/Immutable';
 
 export class Orbit extends Immutable{
   constructor (period, radius, angle, minRadius, maxRadius) {
+    super();
+    
     this._period = period;
     this._radius = radius;
     this._angle = angle;

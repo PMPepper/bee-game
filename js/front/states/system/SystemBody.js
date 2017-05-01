@@ -3,6 +3,8 @@ import {Immutable} from '../../../core/Immutable';
 
 export class SystemBody extends Immutable {
   constructor (name, mass, radius, parent) {
+    super();
+    
     this._name = name;
     this._mass = mass;
     this._radius = radius;
