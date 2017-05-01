@@ -73,6 +73,19 @@
           "radius": 227939200000,
           "offset": 0
         }
+      },
+      {
+        "name": "Phobos",
+        "type": "moon",
+        "parent": "Mars",
+        "mass": 1.0659e16,
+        "radius": 11266,
+        "albedo": 0.071,
+        "orbit": {
+          "type": "regular",
+          "radius": 9376000,
+          "offset": 0
+        }
       }
     ]
   }

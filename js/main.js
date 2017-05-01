@@ -39,48 +39,41 @@ $(() => {
 
 
   //Test code
-  const systemsData = require('./data/systems');
+
   const systems = [];
 
-  systemsData.forEach((system) => {
-    const bodies = [];
-    const bodiesByName = {};
+  (() => {
+    const systemsData = require('./data/systems');
 
-    system.bodies.forEach((data) => {
-      const body = Factory.getBody(data, bodiesByName);
+    systemsData.forEach((system) => {
+      const bodies = [];
+      const bodiesByName = {};
 
-      bodiesByName[body.name] = body;
-      bodies.push(body);
+      system.bodies.forEach((data) => {
+        const body = Factory.getBody(data, bodiesByName);
+
+        bodiesByName[body.name] = body;
+        bodies.push(body);
+      });
+
+      systems.push(new System(system.name, bodies));
     });
-
-    systems.push(new System(system.name, bodies));
-  });
-
-  /*
-  //name, mass, radius, parent, orbit, luminosity
-  const solA = new Star('Sol A', 1.9891e30, 695700000, null, null, 3.846e26);
-  //name, mass, radius, parent, orbit, albedo, minerals, colonies, atmosphere, type
-  const earth = new Planet('Earth', 5.972e24, 6371000, solA, new RegularOrbit(149600000000, 0), 0.3, null, 'planet');
-  const luna = new Planet('Luna', 7.34767309e22, 1737000, earth, new RegularOrbit(384399000, 0), 0.12, null, 'moon');
-
-  const bodies = [
-    solA,
-    earth,
-    luna
-  ];
-
-  const system = new System( 'Sol', bodies);*/
+  })();
 
   const earth = systems[0].getBodyByName('Earth');
   const luna = systems[0].getBodyByName('Luna');
   const solA = systems[0].getBodyByName('Sol A');
 
+  const mars = systems[0].getBodyByName('Mars');
+  const phobos = systems[0].getBodyByName('Phobos');
+
+
   console.log('Earth surface gravity: '+earth.surfaceGravity+', Luna surface gravity'+luna.surfaceGravity);
 
-  console.log('Min distance between sun and moon: '+SystemBody.getMinBodyDistance(solA, luna));
-  console.log('Max distance between sun and moon: '+SystemBody.getMaxBodyDistance(solA, luna));
-  console.log('Avg distance between sun and moon: '+SystemBody.getAvgBodyDistance(solA, luna));
-  console.log('Earth surface heating (k): '+earth.minSurfaceHeating+' / '+earth.maxSurfaceHeating+' / '+earth.avgSurfaceHeating);
+  console.log('Min distance between Phobos and Luna: '+SystemBody.getMinBodyDistance(phobos, luna));
+  console.log('Max distance between Phobos and Luna: '+SystemBody.getMaxBodyDistance(phobos, luna));
+  console.log('Avg distance between Phobos and Luna: '+SystemBody.getAvgBodyDistance(phobos, luna));
+  console.log('Luna surface heating (k): '+luna.minSurfaceHeating+' / '+luna.maxSurfaceHeating+' / '+luna.avgSurfaceHeating);
   console.log('Earth escape velocity: '+earth.escapeVelocity+', Luna: '+luna.escapeVelocity+', sol: '+solA.escapeVelocity);
 
   //renderer
@@ -90,6 +83,4 @@ $(() => {
   canvas.height = document.body.clientHeight; //document.height is obsolete
 
   const solRenderer = new SystemRendererCanvas(systems[0], canvas);
-
-
 });

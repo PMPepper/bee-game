@@ -107,9 +107,6 @@ function getCommonAncestors(body1, body2) {
   const body2Ancestors = body2.getAncestors();
   let commonAncestor = null;
 
-  let commonAncestorDepth1 = 0;
-  let commonAncestorDepth2 = 0;
-
   body1Ancestors.unshift(body1);
   body2Ancestors.unshift(body2);
 
@@ -123,7 +120,7 @@ function getCommonAncestors(body1, body2) {
   let i = 0;
 
   for( i = 0; i < minLength; i++) {
-    if(body2Ancestors[i] != body2Ancestors[i]) {
+    if(body1Ancestors[i] != body2Ancestors[i]) {
       if(i ==0) {
         throw new Error('This should never happen!');
       } else {
@@ -164,29 +161,69 @@ SystemBody.getMinBodyDistance = (body1, body2) => {
   //TODO work out the closest possible arrangement
 
   //get list of distances
-  const minDistances1 = [];
+  /*const minDistances1 = [];
   const maxDistances1 = [];
   const minDistances2 = [];
-  const maxDistances2 = [];
+  const maxDistances2 = [];*/
 
-  let i = 0;
+  const distances = [];
 
-  for(i = ancestors.ancestorPos+1; i < ancestors.body1Ancestors.length; i++) {
-    minDistances1.push(ancestors.body1Ancestors[i].orbit.minRadius);
-    maxDistances1.push(ancestors.body1Ancestors[i].orbit.maxRadius);
+  for(let i = ancestors.ancestorPos+1; i < ancestors.body1Ancestors.length; i++) {
+    let curAncestor = ancestors.body1Ancestors[i];
+
+    distances.push({
+      name: curAncestor.name +'-'+curAncestor.parent.name,
+      min: curAncestor.orbit.minRadius,
+      max: curAncestor.orbit.maxRadius
+    });
   }
 
-  for(i = ancestors.ancestorPos+1; i < ancestors.body2Ancestors.length; i++) {
-    minDistances2.push(ancestors.body2Ancestors[i].orbit.minRadius);
-    maxDistances2.push(ancestors.body2Ancestors[i].orbit.maxRadius);
+  for(let i = ancestors.ancestorPos+1; i < ancestors.body2Ancestors.length; i++) {
+    let curAncestor = ancestors.body2Ancestors[i];
+
+    distances.push({
+      name: curAncestor.name +'-'+curAncestor.parent.name,
+      min: curAncestor.orbit.minRadius,
+      max: curAncestor.orbit.maxRadius
+    });
   }
 
+  distances.sort((a, b) => {
+    return b.min - a.min;
+  });
+
+  let largestReduction = 0;
+
+  for( let i = 1; i < distances.length; i++) {
+    largestReduction += distances[i].max;
+  }
+
+  if(largestReduction > distances[0].min) {
+    //I don't think this can happen in a real solar system, so not worrying about writing code to make it work
+    console.log(`TODO improve min distance calculation, this pair of systems is not being calculated properly: ${body1.name} - ${body2.name}`);
+
+    return Math.abs(largestReduction - distances[0].min);
+  }
+
+  return distances[0].min - largestReduction;
+/*
+  minDistances1.reverse();
+  maxDistances1.reverse();
+
+  const distances = [];
+
+  const minDistances = minDistances1.concat(minDistances2);
+  const maxDistances = maxDistances1.concat(maxDistances2);
+
+  //
   console.log('min distances 1: '+minDistances1);
   console.log('max distances 1: '+maxDistances1);
   console.log('min distances 2: '+minDistances2);
   console.log('max distances 2: '+maxDistances2);
+  console.log('all min distances: '+minDistances);
+  console.log('all max distances: '+maxDistances);
+*/
 
-  
 
   return SystemBody.getMaxBodyDistance(body1, body2);
 }
