@@ -7,6 +7,7 @@ import {System} from './systems/System';
 import {SystemBody} from './systems/SystemBody';
 import {Star} from './systems/Star';
 import {Planet} from './systems/Planet';
+import {RegularOrbit} from './systems/RegularOrbit';
 
 
 import {SystemRendererCanvas} from './render/SystemRendererCanvas';
@@ -35,11 +36,11 @@ $(() => {
 
 
   //Test code
-  //name, mass, radius, parent, orbitRadius, orbitOffset
-  const solA = new Star('Sol A', 1.9891e30, 695700000, null, 0, 0, 3.846e26);
-  //name, mass, radius, parent, orbitRadius, orbitOffset, albedo, minerals, colonies, atmosphere, type
-  const earth = new Planet('Earth', 5.972e24, 6371000, solA, 149600000000, 0, 0.3, null, 'planet');
-  const luna = new Planet('Luna', 7.34767309e22, 1737000, earth, 384399000, 0, 0.12, null, 'moon');
+  //name, mass, radius, parent, orbit, luminosity
+  const solA = new Star('Sol A', 1.9891e30, 695700000, null, null, 3.846e26);
+  //name, mass, radius, parent, orbit, albedo, minerals, colonies, atmosphere, type
+  const earth = new Planet('Earth', 5.972e24, 6371000, solA, new RegularOrbit(149600000000, 0), 0.3, null, 'planet');
+  const luna = new Planet('Luna', 7.34767309e22, 1737000, earth, new RegularOrbit(384399000, 0), 0.12, null, 'moon');
 
   const bodies = [
     solA,

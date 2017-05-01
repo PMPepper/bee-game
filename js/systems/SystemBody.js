@@ -1,16 +1,18 @@
 import {Coord} from '../Coord';
 import {Constants} from '../Constants';
-import {Circle} from '../graphics/Circle';
 
 export class SystemBody {
-  constructor (name, mass, radius, parent, orbitRadius, orbitOffset) {
+  constructor (name, mass, radius, parent, orbit) {
     this._name = name;
     this._mass = mass;
     this._radius = radius;
     this._parent = parent || null;
-    this._orbitRadius = orbitRadius;
-    this._orbitOffset = orbitOffset;
+    this._orbit = orbit;
     this._system = null;
+
+    if(orbit) {
+      orbit._body = this;
+    }
   }
 
   get name () {
@@ -49,12 +51,8 @@ export class SystemBody {
     return this._parent;
   }
 
-  get orbitRadius () {
-    return this._orbitRadius;
-  }
-
-  get orbitOffset () {
-    return this._orbitOffset;
+  get orbit () {
+    return this._orbit;
   }
 
   get system () {
@@ -65,41 +63,8 @@ export class SystemBody {
     throw new Error('Not implemented');
   }
 
-  get orbitalPeriod () {
-    const parent = this.parent;
-
-    if(!parent) {
-      return null;
-    }
-
-    const a = Math.pow(this.orbitRadius, 3);
-    const b = Constants.GRAVITATIONAL_CONSTANT * parent.mass;
-
-    const period = 2 * Math.PI * Math.sqrt(a/b);
-
-    return period;
-  }
-
-  getOrbitAngle (time) {
-    const orbitalPeriod = this.orbitalPeriod;
-
-    time += orbitalPeriod * this.orbitOffset;
-
-    const orbitFraction = (time % orbitalPeriod)/orbitalPeriod;
-
-    return orbitFraction * Math.PI * 2;
-  }
-
-  getPosition (time) {
-    if(!this.parent) {
-      return Coord.ORIGIN;
-    }
-
-    const orbitRadius = this.orbitRadius;
-    const parentCoord = this.parent.getPosition(time);
-    const orbitAngle = this.getOrbitAngle(time);
-
-    return new Coord(parentCoord.x + (orbitRadius * Math.cos(orbitAngle)), parentCoord.y + (orbitRadius * Math.sin(orbitAngle)));
+  getPosition(time){
+    return this.orbit ? this.orbit.getPosition(time) : Coord.ORIGIN;
   }
 
   getAncestors () {
@@ -183,11 +148,11 @@ SystemBody.getMaxBodyDistance = (body1, body2) => {
   let distance = 0;
 
   for(i = ancestors.ancestorPos+1; i < ancestors.body1Ancestors.length; i++) {
-    distance += ancestors.body1Ancestors[i].orbitRadius;
+    distance += ancestors.body1Ancestors[i].orbit.maxRadius;
   }
 
   for(i = ancestors.ancestorPos+1; i < ancestors.body2Ancestors.length; i++) {
-    distance += ancestors.body2Ancestors[i].orbitRadius;
+    distance += ancestors.body2Ancestors[i].orbit.maxRadius;
   }
 
   return distance;

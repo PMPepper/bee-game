@@ -1,6 +1,6 @@
 import {SystemRenderer} from './SystemRenderer';
 
-import {Circle} from '../graphics/Circle';
+import {Circle} from './Circle';
 
 export class SystemRendererCanvas extends SystemRenderer {
   constructor(system, element) {
@@ -21,13 +21,18 @@ export class SystemRendererCanvas extends SystemRenderer {
     system.bodies.forEach((systemBody) => {
       const position = this.systemToScreen(systemBody.getPosition(time));
 
-      this.renderObject(systemBody.renderStyle, position);
+      this.renderObject(systemBody, position);
     }, this);
   }
 
-  renderObject(renderable, coord) {
-    if(renderable instanceof Circle) {
-      return this.renderCircle( renderable, coord);
+  renderObject(systemBody, coord) {
+    switch(systemBody.type) {
+      case 'star':
+        return this.renderCircle(starCircle, coord);
+      case 'planet':
+      default:
+        return this.renderCircle(planetCircle, coord);
+
     }
   }
 
@@ -75,3 +80,8 @@ function colourToCss(colour) {
 function getColourAlpha(colour) {
   return ((colour >> 24) & 0xFF)/0xFF;
 }
+
+
+//styles
+const starCircle = new Circle(5, 0xFFFFFFDD);
+const planetCircle = new Circle(4, 0xFF3333FF);

@@ -1,0 +1,68 @@
+import {Orbit} from './Orbit';
+import {Constants} from '../Constants';
+import {Coord} from '../Coord';
+
+export class RegularOrbit extends Orbit {
+  constructor(radius, offset) {
+    super();
+
+    this._radius = radius;
+    this._offset = offset;
+  }
+
+  get radius() {
+    return this._radius;
+  }
+
+
+  get minRadius() {
+    return this.radius;
+  }
+
+  get maxRadius() {
+    return this.radius;
+  }
+
+  get offset() {
+    return this._offset;
+  }
+
+  get period () {
+    const parent = this.body.parent;
+
+    if(!parent) {
+      return null;
+    }
+
+    const a = Math.pow(this.radius, 3);
+    const b = Constants.GRAVITATIONAL_CONSTANT * parent.mass;
+
+    const period = 2 * Math.PI * Math.sqrt(a/b);
+
+    return period;
+  }
+
+  getAngle (time) {
+    const orbitalPeriod = this.period;
+
+    time += orbitalPeriod * this.offset;
+
+    const orbitFraction = (time % orbitalPeriod)/orbitalPeriod;
+
+    return orbitFraction * Math.PI * 2;
+  }
+
+  getPosition (time) {
+    const parent = this.body.parent;
+
+    if(!parent) {
+      return Coord.ORIGIN;
+    }
+
+    const orbitRadius = this.radius;
+    const parentCoord = parent.getPosition(time);
+    const orbitAngle = this.getAngle(time);
+
+    return new Coord(parentCoord.x + (orbitRadius * Math.cos(orbitAngle)), parentCoord.y + (orbitRadius * Math.sin(orbitAngle)));
+  }
+}

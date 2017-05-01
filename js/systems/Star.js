@@ -1,8 +1,8 @@
 import {SystemBody} from './SystemBody';
 
 export class Star extends SystemBody {
-  constructor (name, mass, radius, parent, orbitRadius, orbitOffset, luminosity) {
-    super(name, mass, radius, parent, orbitRadius, orbitOffset);
+  constructor (name, mass, radius, parent, orbit, luminosity) {
+    super(name, mass, radius, parent, orbit);
 
     this._luminosity = luminosity || null;
   }
