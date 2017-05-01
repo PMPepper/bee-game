@@ -1,5 +1,5 @@
-import {Coord} from '../Coord';
-import {Constants} from '../Constants';
+import {Constants} from '../../../core/Constants';
+import {Coord} from '../../../core/Coord';
 
 export class SystemBody {
   constructor (name, mass, radius, parent, orbit) {
@@ -13,6 +13,40 @@ export class SystemBody {
     if(orbit) {
       orbit._body = this;
     }
+
+    this._position = null;
+    this._time = 0;
+
+    this._bodyState = {
+      name: name,
+      mass: mass,
+      radius: radius,
+      parent: parent ? parent.name : null
+    };
+  }
+
+  update(newTime, events) {
+    this._position = this.getPosition(newTime);
+    if(this.orbit) {
+      this.orbit.update(newTime, events);
+    }
+  }
+
+  getState() {
+    return {
+      'class': 'SystemBodyState',
+      body: this._bodyState,
+      position: this.position,
+      orbit: this.orbit ? this.orbit.getState() : null
+    };
+  }
+
+  get position() {
+    return this._position;
+  }
+
+  get time() {
+    return this._time;
   }
 
   get name () {

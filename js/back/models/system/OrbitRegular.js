@@ -1,13 +1,17 @@
 import {Orbit} from './Orbit';
-import {Constants} from '../Constants';
-import {Coord} from '../Coord';
+import {Constants} from '../../../core/Constants';
+import {Coord} from '../../../core/Coord';
 
-export class RegularOrbit extends Orbit {
+export class OrbitRegular extends Orbit {
   constructor(radius, offset) {
     super();
 
     this._radius = radius;
     this._offset = offset;
+  }
+
+  getState() {
+
   }
 
   get radius() {

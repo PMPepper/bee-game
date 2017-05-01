@@ -5,6 +5,11 @@ export class Star extends SystemBody {
     super(name, mass, radius, parent, orbit);
 
     this._luminosity = luminosity || null;
+
+    this._bodyState['class'] = 'Star';
+    this._bodyState.luminosity = luminosity;
+
+    //TODO freeze state object
   }
 
   get luminosity () {
@@ -14,5 +19,4 @@ export class Star extends SystemBody {
   get type () {
     return 'star';
   }
-
 }

@@ -1,11 +1,13 @@
 import {SubStellarBody} from './SubStellarBody';
 
 export class Planet extends SubStellarBody {
-  constructor (name, mass, radius, parent, orbit, albedo, minerals, colonies, atmosphere, type) {
-    super(name, mass, radius, parent, orbit, albedo, minerals, colonies);
+  constructor (name, mass, radius, parent, albedo, minerals, colonies, atmosphere, type) {
+    super(name, mass, radius, parent, albedo, minerals, colonies);
 
     this._atmosphere = atmosphere;
     this._type;
+
+    this._freeze(Planet);
   }
 
   get atmosphere () {

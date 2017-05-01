@@ -40,4 +40,22 @@ export class System {
     return null;
   }
 
+  update (newTime, events) {
+    this.bodies.forEach((body) => { body.update(newTime, events) } );
+  }
+
+  getState() {
+    const bodies = [];
+
+    this.bodies.forEach((body) => {
+      body.getState();
+    });
+
+    return {
+      'class': 'System',
+      name: this.name,
+      bodies: bodies
+    };
+  }
+
 }

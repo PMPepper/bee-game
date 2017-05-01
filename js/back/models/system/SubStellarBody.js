@@ -7,6 +7,16 @@ export class SubStellarBody extends SystemBody {
     this._albedo = albedo;
     this._minerals = minerals || null;
     this._colonies = colonies ? colonies.slice() : [];
+
+    this._bodyState.albedo = albedo;
+  }
+
+  update(newTime, events) {
+    const lastTime = this.time;
+
+    super.update(newTime, events);
+
+    //TODO update colonies, minerals, etc
   }
 
   get albedo () {
@@ -22,8 +32,7 @@ export class SubStellarBody extends SystemBody {
   }
 
   getColony(faction) {
-    //TODO
-    return null;
+    throw new Error('TODO Not implemented yet');
   }
 
   get minSurfaceHeating () {
@@ -68,4 +77,7 @@ export class SubStellarBody extends SystemBody {
     return this.avgSurfaceHeating;
   }
 
+  getSurfaceTemp (time) {
+    throw new Error('TODO Not implemented yet');
+  }
 }

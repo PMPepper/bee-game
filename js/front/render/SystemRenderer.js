@@ -1,4 +1,4 @@
-import {Coord} from '../Coord';
+import {Coord} from '../../core/Coord';
 
 export class SystemRenderer {
   constructor (system) {

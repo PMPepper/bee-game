@@ -5,9 +5,15 @@ export class GasGiant extends SubStellarBody {
     super(name, mass, radius, parent, orbit, -1, minerals, colonies);
   }
 
+  update(newTime) {
+    const lastTime = this.time;
+
+    super.update(newTime);
+
+    //TODO update colonies, minerals, etc
+  }
 
   get type () {
     return 'gas giant';
   }
-
 }

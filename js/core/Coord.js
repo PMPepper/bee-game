@@ -2,6 +2,8 @@ export class Coord {
   constructor (x, y) {
     this._x = x;
     this._y = y;
+
+    Object.freeze(this);
   }
 
   get x () {
@@ -14,6 +16,7 @@ export class Coord {
 }
 
 Coord.ORIGIN = new Coord(0,0);
+
 
 Coord.distance = (c1, c2) => {
   const dx = c1.x - c2.x;

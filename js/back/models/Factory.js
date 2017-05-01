@@ -1,9 +1,23 @@
-import {Star} from './Star';
-import {GasGiant} from './GasGiant';
-import {Planet} from './Planet';
-import {RegularOrbit} from './RegularOrbit';
+import {System} from './system/System';
+import {Star} from './system/Star';
+import {GasGiant} from './system/GasGiant';
+import {Planet} from './system/Planet';
+import {OrbitRegular} from './system/OrbitRegular';
 
 export const Factory = {
+  getSystem: (system) => {
+    const bodies = [];
+    const bodiesByName = {};
+
+    system.bodies.forEach((data) => {
+      const body = Factory.getBody(data, bodiesByName);
+
+      bodiesByName[body.name] = body;
+      bodies.push(body);
+    });
+
+    return new System(system.name, bodies);
+  },
   getBody: (body, otherBodiesByName) => {
     const orbit = Factory.getOrbit(body.orbit);
 
@@ -34,7 +48,7 @@ export const Factory = {
 
     switch(data.type) {
       case 'regular':
-        return new RegularOrbit(data.radius, data.offset);
+        return new OrbitRegular(data.radius, data.offset);
       default:
         throw new Error('Not implemented');
     }
