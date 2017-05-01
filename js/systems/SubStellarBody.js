@@ -26,4 +26,46 @@ export class SubStellarBody extends SystemBody {
     return null;
   }
 
+  get minSurfaceHeating () {
+    const stars = this.system.stars;
+    const albedo = this.albedo;
+
+    let heating = 0;
+
+    stars.forEach((star) => {
+      heating += SystemBody.getSurfaceHeating(star.luminosity, albedo, SystemBody.getMinBodyDistance(this, star));
+    });
+
+    return Math.pow(heating, 0.25);
+  }
+
+  get maxSurfaceHeating () {
+    const stars = this.system.stars;
+    const albedo = this.albedo;
+
+    let heating = 0;
+
+    stars.forEach((star) => {
+      heating += SystemBody.getSurfaceHeating(star.luminosity, albedo, SystemBody.getMaxBodyDistance(this, star));
+    });
+
+    return Math.pow(heating, 0.25);
+  }
+
+  get avgSurfaceHeating () {
+    return (this.minSurfaceHeating + this.maxSurfaceHeating)/2;
+  }
+
+  get minSurfaceTemp () {
+    return this.minSurfaceHeating;
+  }
+
+  get maxSurfaceTemp () {
+    return this.maxSurfaceHeating;
+  }
+
+  get avgSurfaceTemp () {
+    return this.avgSurfaceHeating;
+  }
+
 }
