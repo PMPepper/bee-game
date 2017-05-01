@@ -1,0 +1,79 @@
+[
+  {
+    "name":"Sol",
+    "bodies":[
+      {
+        "name":"Sol A",
+        "type": "star",
+        "mass": 1.9891e30,
+        "radius": 695700000,
+        "luminosity": 3.846e26
+      },
+      {
+        "name": "Mercury",
+        "type": "planet",
+        "parent": "Sol A",
+        "mass": 3.285e23,
+        "radius": 2440000,
+        "albedo": 0.068,
+        "orbit": {
+          "type": "regular",
+          "radius": 57909050000,
+          "offset": 0
+        }
+      },
+      {
+        "name": "Venus",
+        "type": "planet",
+        "parent": "Sol A",
+        "mass": 4.8675e24,
+        "radius": 6051000,
+        "albedo": 0.77,
+        "orbit": {
+          "type": "regular",
+          "radius": 108208000000,
+          "offset": 0
+        }
+      },
+      {
+        "name": "Earth",
+        "type": "planet",
+        "parent": "Sol A",
+        "mass": 5.972e24,
+        "radius": 6371000,
+        "albedo": 0.29,
+        "orbit": {
+          "type": "regular",
+          "radius": 149600000000,
+          "offset": 0
+        }
+      },
+      {
+        "name": "Luna",
+        "type": "moon",
+        "parent": "Earth",
+        "mass": 7.34767309e22,
+        "radius": 1737000,
+        "albedo": 0.12,
+        "orbit": {
+          "type": "regular",
+          "radius": 384399000,
+          "offset": 0
+        }
+      },
+      {
+        "name": "Mars",
+        "type": "planet",
+        "parent": "Sol A",
+        "mass": 6.4171e23,
+        "radius": 3389000,
+        "albedo": 0.25,
+        "orbit": {
+          "type": "regular",
+          "radius": 227939200000,
+          "offset": 0
+        }
+      }
+    ]
+  }
+]

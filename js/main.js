@@ -10,6 +10,9 @@ import {Planet} from './systems/Planet';
 import {RegularOrbit} from './systems/RegularOrbit';
 
 
+import {Factory} from './systems/Factory';
+
+
 import {SystemRendererCanvas} from './render/SystemRendererCanvas';
 
 $(() => {
@@ -36,6 +39,24 @@ $(() => {
 
 
   //Test code
+  const systemsData = require('./data/systems');
+  const systems = [];
+
+  systemsData.forEach((system) => {
+    const bodies = [];
+    const bodiesByName = {};
+
+    system.bodies.forEach((data) => {
+      const body = Factory.getBody(data, bodiesByName);
+
+      bodiesByName[body.name] = body;
+      bodies.push(body);
+    });
+
+    systems.push(new System(system.name, bodies));
+  });
+
+  /*
   //name, mass, radius, parent, orbit, luminosity
   const solA = new Star('Sol A', 1.9891e30, 695700000, null, null, 3.846e26);
   //name, mass, radius, parent, orbit, albedo, minerals, colonies, atmosphere, type
@@ -48,7 +69,11 @@ $(() => {
     luna
   ];
 
-  const system = new System( 'Sol', bodies);
+  const system = new System( 'Sol', bodies);*/
+
+  const earth = systems[0].getBodyByName('Earth');
+  const luna = systems[0].getBodyByName('Luna');
+  const solA = systems[0].getBodyByName('Sol A');
 
   console.log('Earth surface gravity: '+earth.surfaceGravity+', Luna surface gravity'+luna.surfaceGravity);
 
@@ -64,7 +89,7 @@ $(() => {
   canvas.width = document.body.clientWidth; //document.width is obsolete
   canvas.height = document.body.clientHeight; //document.height is obsolete
 
-  const solRenderer = new SystemRendererCanvas(system, canvas);
+  const solRenderer = new SystemRendererCanvas(systems[0], canvas);
 
 
 });

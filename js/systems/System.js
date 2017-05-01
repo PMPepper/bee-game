@@ -28,4 +28,16 @@ export class System {
     return this._stars;
   }
 
+  getBodyByName(name) {
+    const bodies = this.bodies;
+
+    for( let i = 0; i < bodies.length; i++) {
+      if(bodies[i].name == name) {
+        return bodies[i];
+      }
+    }
+
+    return null;
+  }
+
 }

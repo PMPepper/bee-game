@@ -146,7 +146,7 @@ config.webpack = {
           }
         },
         {
-          test : /\.jsx?/,
+          test : /\.jsx$/,
           exclude: /(node_modules|bower_components)/,
           loader: 'babel-loader',
           query: {
@@ -190,7 +190,7 @@ config.webpack = {
           }
         },
         {
-          test : /\.jsx?/,
+          test : /\.jsx$/,
           exclude: /(node_modules|bower_components)/,
           loader: 'babel-loader',
           query: {

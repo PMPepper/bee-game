@@ -164,19 +164,29 @@ SystemBody.getMinBodyDistance = (body1, body2) => {
   //TODO work out the closest possible arrangement
 
   //get list of distances
-  /*const distances1 = [];
-  const distances2 = [];
+  const minDistances1 = [];
+  const maxDistances1 = [];
+  const minDistances2 = [];
+  const maxDistances2 = [];
 
-  for(i = ancestorPos+1; i < body1Ancestors.length; i++) {
-    distances1.push(body1Ancestors[i].orbitRadius);
+  let i = 0;
+
+  for(i = ancestors.ancestorPos+1; i < ancestors.body1Ancestors.length; i++) {
+    minDistances1.push(ancestors.body1Ancestors[i].orbit.minRadius);
+    maxDistances1.push(ancestors.body1Ancestors[i].orbit.maxRadius);
   }
 
-  for(i = ancestorPos+1; i < body2Ancestors.length; i++) {
-    distances2.push(body2Ancestors[i].orbitRadius);
+  for(i = ancestors.ancestorPos+1; i < ancestors.body2Ancestors.length; i++) {
+    minDistances2.push(ancestors.body2Ancestors[i].orbit.minRadius);
+    maxDistances2.push(ancestors.body2Ancestors[i].orbit.maxRadius);
   }
 
-  console.log(distances1);
-  console.log(distances2);*/
+  console.log('min distances 1: '+minDistances1);
+  console.log('max distances 1: '+maxDistances1);
+  console.log('min distances 2: '+minDistances2);
+  console.log('max distances 2: '+maxDistances2);
+
+  
 
   return SystemBody.getMaxBodyDistance(body1, body2);
 }
