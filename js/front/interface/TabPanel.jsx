@@ -7,11 +7,18 @@ export class TabPanel extends BEMComponent {
 
     this.title = props.title;
     this.name = this.props.name || 'tabPanel' + this.key;
+
+    this._modifiers = {
+      'active': {type:'boolean', preset:false}
+    };
   }
 
   get id () {
     return this.props.tabName + '-' + this.name;
   }
+
+  /*componentDidMount() {
+  }*/
 
   render() {
     if(this.props.asHeader) {
@@ -22,7 +29,7 @@ export class TabPanel extends BEMComponent {
   }
 
   renderHeader () {
-    return <a href={'#'+this.id}>{this.title}</a>
+    return <li className={this.blockClasses}><a className={this.element( 'link' )} href={'#'+this.id} onClick={this.props.onClick}>{this.title}</a></li>
   }
 
   renderBody() {

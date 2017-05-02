@@ -9,7 +9,18 @@ export class Tabs extends BEMComponent {
     super(props, 'tabs');
 
     this.name = props.name || 'tabs'+this.key;
+    this._activeTab = +(props.activeTab || 0);
   }
+
+  componentWillMount() {
+    this._updateState();
+  }
+
+  /*componentDidMount() {
+  }
+
+  componentWillUnmount() {
+  }*/
 
   render() {
     return <div className={this.blockName}>
@@ -32,11 +43,31 @@ export class Tabs extends BEMComponent {
     }
 
     return this.props.children.map((item, index) => {
-      return <li className={this.element('header-list-item')}>
-        {React.cloneElement(item, {asHeader: true, key:item.props.name||index, tabName:this.name, blockName: this.element('contents-list-item')})}
-      </li>
+      return React.cloneElement(item, {
+          key: index,
+          asHeader: true,
+          tabName:this.name,
+          blockName: this.element('header-list-item'),
+          active: index == this.state.activeTab ? 'true' : 'false',
+          onClick:(e) => {this._setActiveTab(index); e.preventDefault(); }
+        })
     });
 
+  }
+
+  _setActiveTab(tabIndex) {
+    if(this._activeTab == tabIndex) {
+      return;
+    }
+    this._activeTab = tabIndex;
+
+    this._updateState();
+  }
+
+  _updateState() {
+    this.setState({
+      activeTab: this._activeTab
+    });
   }
 
   getContents() {
@@ -45,7 +76,12 @@ export class Tabs extends BEMComponent {
     }
 
     return this.props.children.map((item, index) => {
-      return React.cloneElement(item, {key:item.props.name||index, tabName:this.name, blockName: this.element('contents-list-item')})
+      return React.cloneElement(item, {
+        key:item.props.name||index,
+        tabName:this.name,
+        blockName: this.element('contents-list-item'),
+        active: index == this.state.activeTab ? 'true' : 'false',
+      })
     });
   }
 
