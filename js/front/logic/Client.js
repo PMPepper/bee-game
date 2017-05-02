@@ -1,7 +1,7 @@
 import {Factory} from './../states/Factory';
 import React from 'react';
 import {render} from 'react-dom';
-import {SystemView} from '../interface/SystemView.jsx';
+import {SystemMapCanvasRenderer} from '../interface/SystemMapCanvasRenderer.jsx';
 
 export class Client {
   constructor($element) {
@@ -13,9 +13,8 @@ export class Client {
   update(newStateObj) {
     this._getStateFromObj(newStateObj);
 
-
-
-    render(<SystemView/>, this.$element[0]);
+    this._systemMap = render(<SystemMapCanvasRenderer/>, this.$element[0]);
+    this._systemMap.setSystemState(this._state.systems[0]);
   }
 
   _getStateFromObj(newStateObj) {

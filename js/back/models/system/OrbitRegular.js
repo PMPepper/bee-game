@@ -11,7 +11,12 @@ export class OrbitRegular extends Orbit {
   }
 
   getState() {
-
+    return {
+      'class':'OrbitRegular',
+      period:this.period,
+      angle:123,
+      radius:this.radius
+    };
   }
 
   get radius() {

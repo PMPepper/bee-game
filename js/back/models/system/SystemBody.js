@@ -21,7 +21,8 @@ export class SystemBody {
       name: name,
       mass: mass,
       radius: radius,
-      parent: parent ? parent.name : null
+      parent: parent ? parent.name : null,
+      type: this.type
     };
   }
 
@@ -36,7 +37,7 @@ export class SystemBody {
     return {
       'class': 'SystemBodyState',
       body: this._bodyState,
-      position: this.position,
+      position: this.position.getState(),
       orbit: this.orbit ? this.orbit.getState() : null
     };
   }

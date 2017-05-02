@@ -12,9 +12,12 @@ import {Coord} from '../../core/Coord';
 
 export const Factory = {
   getState: (data, params) => {
+    if(!data) {
+      return null;
+    }
 
     if(data instanceof Array) {
-
+      return Factory.getArray(data);
     }
 
     switch(data['class']) {
@@ -24,7 +27,7 @@ export const Factory = {
         return null;//TODO
       case 'stepEvent':
         return null;//TODO
-        
+
       //System states
       case 'System':
         return Factory.getSystem(data, params);
@@ -40,7 +43,7 @@ export const Factory = {
 
       //Misc
       case 'Coord':
-        return new Coord(coord.x, coord.y);
+        return new Coord(data.x, data.y);
     }
 
     return null;
@@ -57,9 +60,9 @@ export const Factory = {
   getGame: (data) => {
     return new Game(data.time, Factory.getState(data.systems), Factory.getState(data.events));
   },
-  getSystemBodyState: (data) => {
+  getSystemBodyState: (data, params) => {
     return new SystemBodyState(
-      Factory.getState(data.body),
+      Factory.getState(data.body, params),
       Factory.getState(data.position),
       Factory.getState(data.orbit));
   },
@@ -102,8 +105,8 @@ export const Factory = {
       return null;
     }
 
-    switch(data.type) {
-      case 'regular':
+    switch(data['class']) {
+      case 'OrbitRegular':
         //period, radius, angle
         return new OrbitRegular(data.period, data.radius, data.angle);
       default:

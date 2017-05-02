@@ -9,6 +9,7 @@ export class Engine {
     this._time = time;
 
     this._lastStepEvents = [];
+    this._updateTimeStep(0, this._lastStepEvents);
   }
 
   update(deltaTime) {

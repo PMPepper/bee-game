@@ -48,7 +48,7 @@ export class System {
     const bodies = [];
 
     this.bodies.forEach((body) => {
-      body.getState();
+      bodies.push(body.getState());
     });
 
     return {

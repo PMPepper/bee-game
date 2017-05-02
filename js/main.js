@@ -18,24 +18,26 @@ $(() => {
   //Test code
 
   //Initialise world
+  setTimeout(() => {
   const systems = [];
 
-  (() => {
-    const systemsData = require('./data/systems');
+    (() => {
+      const systemsData = require('./data/systems');
 
-    systemsData.forEach((system) => {
-      systems.push(Factory.getSystem(system));
-    });
-  })();
+      systemsData.forEach((system) => {
+        systems.push(Factory.getSystem(system));
+      });
+    })();
 
-  //Create game engine
-  const engine = new Engine(0, systems);
+    //Create game engine
+    const engine = new Engine(0, systems);
 
-  //Create frontend
-  const client = new Client($('#app'));
+    //Create frontend
+    const client = new Client($('#app'));
 
-  //Create Connector
-  const connector = new ConnectorBasic(engine, client);
+    //Create Connector
+    const connector = new ConnectorBasic(engine, client);
+  }, 0);
 /*
   const earth = systems[0].getBodyByName('Earth');
   const luna = systems[0].getBodyByName('Luna');

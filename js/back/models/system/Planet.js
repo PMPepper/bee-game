@@ -5,7 +5,7 @@ export class Planet extends SubStellarBody {
     super(name, mass, radius, parent, orbit, albedo, minerals, colonies);
 
     this._atmosphere = atmosphere;
-    this._type;
+    this._type = type;
 
     this._bodyState.type = type;
   }

@@ -13,6 +13,10 @@ export class Coord {
   get y () {
     return this._y;
   }
+
+  getState() {
+    return {'class':'Coord', x: this.x, y: this.y};
+  }
 }
 
 Coord.ORIGIN = new Coord(0,0);
