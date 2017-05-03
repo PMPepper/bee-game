@@ -71,19 +71,21 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
 
     switch(systemBody.body.type) {
       case 'star':
-        this.renderCircle(ctx, starCircle, coord, systemBody.body.radius * this.zoom);
+        this.renderCircle(ctx, starCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name);
         break;
       case 'moon':
-        this.renderCircle(ctx, moonCircle, coord, systemBody.body.radius * this.zoom);
+        this.renderCircle(ctx, moonCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name);
         break;
       case 'planet':
       default:
-        this.renderCircle(ctx, planetCircle, coord, systemBody.body.radius * this.zoom);
+        this.renderCircle(ctx, planetCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name);
         break;
     }
+
+
   }
 
-  renderCircle(ctx, circle, coord, minRadius) {
+  renderCircle(ctx, circle, coord, minRadius, label) {
     const hasFill = getColourAlpha(circle.fillColour) != 0;
     const hasStroke = circle.edgeThickness > 0;
     const radius = Math.max(circle.radius, minRadius);
@@ -100,6 +102,14 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
       ctx.strokeStyle = colourToCss(circle.edgeColour);
       ctx.lineWidth = circle.edgeThickness;
       ctx.stroke();
+    }
+
+    if(label) {
+      ctx.font = '11px Arial, Helvetica, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgb(255,255,255)';
+
+      ctx.fillText(label, coord.x, coord.y + radius + 15);
     }
   }
 }
