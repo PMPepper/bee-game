@@ -73,7 +73,7 @@ export const Factory = {
     system.bodies.forEach((data) => {
       const body = Factory.getState(data, bodiesByName);
 
-      bodiesByName[body.name] = body;
+      bodiesByName[body.body.name] = body;
       bodies.push(body);
     });
 

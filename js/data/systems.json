@@ -19,7 +19,7 @@
         "orbit": {
           "type": "regular",
           "radius": 57909050000,
-          "offset": 0
+          "offset": 0.15
         }
       },
       {
@@ -32,7 +32,7 @@
         "orbit": {
           "type": "regular",
           "radius": 108208000000,
-          "offset": 0
+          "offset": 0.52
         }
       },
       {
@@ -71,7 +71,7 @@
         "orbit": {
           "type": "regular",
           "radius": 227939200000,
-          "offset": 0
+          "offset": 0.23
         }
       },
       {

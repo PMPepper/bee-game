@@ -2,7 +2,7 @@ import {SystemBody} from './SystemBody';
 
 export class SubStellarBody extends SystemBody {
   constructor (name, mass, radius, parent, albedo, minerals, colonies, surfaceTemp, minSurfaceHeating, maxSurfaceHeating, avgSurfaceHeating, minSurfaceTemp, maxSurfaceTemp, avgSurfaceTemp) {
-    super(name, mass, radius, parent, orbit);
+    super(name, mass, radius, parent);
 
     this._albedo = albedo;
     this._minerals = minerals || null;

@@ -8,6 +8,8 @@ export class Planet extends SubStellarBody {
     this._type = type;
 
     this._bodyState.type = type;
+
+    this._bodyState['class'] = 'Planet';
   }
 
 

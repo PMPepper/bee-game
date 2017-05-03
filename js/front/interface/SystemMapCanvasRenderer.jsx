@@ -54,7 +54,7 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
   }
 
   renderObject(ctx, systemBody, coord) {
-    switch(systemBody.type) {
+    switch(systemBody.body.type) {
       case 'star':
         return this.renderCircle(ctx, starCircle, coord);
       case 'planet':
