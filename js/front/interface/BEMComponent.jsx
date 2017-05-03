@@ -86,4 +86,23 @@ export class BEMComponent extends React.Component {
   }
 }
 
+BEMComponent.getModifierFromElement = (element, name) => {
+  const baseClassName = element.classList[0];
+
+  for(let i = 1; i < element.classList.length; i++) {
+    let classNameParts = element.classList[i].split(modifierSep);
+
+    if(classNameParts[1] != name) {
+      continue;
+    }
+
+    classNameParts.shift();
+    classNameParts.shift();
+
+    return classNameParts.join(modifierSep);
+  }
+
+  return null;
+};
+
 let key = 0;

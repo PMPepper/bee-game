@@ -19,7 +19,7 @@ export class SystemView extends BEMComponent {
 
     this.componentResized = this.componentResized.bind(this);
     this._topMenuClicked = this._topMenuClicked.bind(this);
-    this._gameSpeedClicked = this._gameSpeedClicked.bind(this);
+    this._gameStepClicked = this._gameStepClicked.bind(this);
   }
 
   render () {
@@ -32,10 +32,14 @@ export class SystemView extends BEMComponent {
           </div>
           <div className={this.element('gameSpeed')}>
             <Date date={this.props.gameState.time}/>
-            <div className={this.element('gameSpeeds')} onClick={this._gameSpeedClicked}>
-              <button className={this.element('gameSpeedButton', {speed:'0'})}>Pause</button>
-              <button className={this.element('gameSpeedButton', {speed:'1'})}>Play</button>
-              <button className={this.element('gameSpeedButton', {speed:'2'})}>Fast</button>
+            <div>
+              <label>Constant play: <input type="checkbox" value="constant" checked={this.props.constantPlayOn? 'checked' : false} onChange={(e)=>{this.props.onConstantPlayToggle();}} /></label>
+            </div>
+            <div className={this.element('gameSpeeds')} onClick={this._gameStepClicked}>
+              <button className={this.element('gameSpeedButton', {step:'5'})}>5 sec</button>
+              <button className={this.element('gameSpeedButton', {step:'3600'})}>1 hour</button>
+              <button className={this.element('gameSpeedButton', {step:'86400'})}>1 day</button>
+              <button className={this.element('gameSpeedButton', {step:'2592000'})}>30 days</button>
             </div>
           </div>
         </div>
@@ -52,8 +56,10 @@ export class SystemView extends BEMComponent {
     e.target;
   }
 
-  _gameSpeedClicked(e) {
-    e.target;
+  _gameStepClicked(e) {
+    const stepSize = +BEMComponent.getModifierFromElement(e.target, 'step');
+
+    this.props.onGameStepSelected(stepSize);
   }
 
   get selectedSystem () {

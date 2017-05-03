@@ -2,11 +2,9 @@ import {Factory} from './../states/Factory';
 import React from 'react';
 import {render} from 'react-dom';
 
-
-//import {Window} from '../interface/Window.jsx';
-//import {Windowing} from '../interface/Windowing.jsx';
-
 import {SystemView} from '../interface/SystemView.jsx';
+
+const minTimeSinceLastUpdate = 0.1;
 
 export class Client {
   constructor($element) {
@@ -14,8 +12,12 @@ export class Client {
     this._connector = null;
     this._state;
 
-    this._isPaused = false;
-    this._playSpeed = 500;//seconds per update
+    this._constantPlay = false;
+    this._isPlaying = false;
+    this._lastUpdateTime = 0;
+
+    this._engineUpdatePeriod = 86400;//time in seconds
+
     this._isAwaitingEngineUpdate = false;
 
     this._isDestroyed = false;
@@ -28,7 +30,27 @@ export class Client {
     this._isAwaitingEngineUpdate = false;
     this._getStateFromObj(newStateObj);
 
-    this._systemView = render(<SystemView selecteSystemIndex="0" gameState={this._state} />, this.$element[0]);
+    this._lastUpdateTime = Date.now() / 1000;
+
+    this.doRender();
+  }
+
+  doRender() {
+    this._systemView = render(<SystemView
+      selecteSystemIndex="0"
+      gameState={this._state}
+      constantPlayOn={this._constantPlay}
+      onConstantPlayToggle={() => {
+        this._constantPlay = !this._constantPlay;
+        this._isPlaying = false;
+
+        this.doRender();
+      }}
+      onGameStepSelected={(stepSize)=>{
+        this._engineUpdatePeriod = stepSize;
+        this._isPlaying = true;
+      }}
+    />, this.$element[0]);
   }
 
   _getStateFromObj(newStateObj) {
@@ -36,16 +58,30 @@ export class Client {
   }
 
   tick () {
-    if(this._isDestroyed) {
+    if(this._isDestroyed ) {
       return;
     }
 
-    if(!this._isPaused && !this._isAwaitingEngineUpdate) {
-      this._isAwaitingEngineUpdate = true;
-      this._connector.updateEngine(this._playSpeed);
+    window.requestAnimationFrame(this.tick);
+
+    if(this._isAwaitingEngineUpdate || !this._isPlaying) {
+      return ;
     }
 
-    window.requestAnimationFrame(this.tick);
+    if(!this._constantPlay) {
+      this._doEngineUpdate();
+    } else if((Date.now()/1000) > (this._lastUpdateTime + minTimeSinceLastUpdate)) {
+      this._doEngineUpdate();
+    }
+  }
+
+  _doEngineUpdate() {
+    if(this._isAwaitingEngineUpdate) {
+      return;
+    }
+    this._isAwaitingEngineUpdate = true;
+    this._isPlaying = this._constantPlay;
+    this._connector.updateEngine(this._engineUpdatePeriod);
   }
 
   get $element() {
