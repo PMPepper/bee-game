@@ -3,22 +3,172 @@ import {render} from 'react-dom';
 import {Coord} from '../../core/Coord';
 import {BEMComponent} from './BEMComponent.jsx';
 
+const zoomSpeed = 1.5;
+const easeFactor = 1/10;//must be less than or equal to 0
 
 export class ASystemMapRenderer extends BEMComponent {
   constructor(props, block) {
     super(props, block);
 
+
+    this._element = null;
     this._zoom = +this.props.zoom || 1/1000000000;
     this._x = +this.props.x ||0;
     this._y = +this.props.y ||0;
     this._cx = +this.props.cx ||0.5;
     this._cy = +this.props.cy ||0.5;
 
+    this._targetX = this._x;
+    this._targetY = this._y;
+    this._targetZoom = this._zoom;
+
     this._renderDirty = true;
+
+    this.tick = this.tick.bind(this);
+    this._onClick = this._onClick.bind(this);
+    this._onMouseDown = this._onMouseDown.bind(this);
+    this._onMouseMove = this._onMouseMove.bind(this);
+    this._onMouseUp = this._onMouseUp.bind(this);
+    this._onMouseWheel = this._onMouseWheel.bind(this);
+
+    this._lastCoord = null;
+    this._ignoreNextClick = false;
+
+    this.setElement = this.setElement.bind(this);
 
     if(new.target == ASystemMapRenderer) {
       throw new Error('Class ASystemMapRenderer cannot be instanciated directly');
     }
+  }
+
+  _onClick (e) {
+    if(this._ignoreNextClick) {
+      this._ignoreNextClick = false;
+      return;
+    }
+    const screenPos = this._getElementPosFromPage(e.pageX, e.pageY);
+
+    const pos = this.screenToSystem(this._getElementPosFromPage(e.pageX, e.pageY));
+
+    this.panTo(pos.x, pos.y);
+  }
+
+  _onMouseDown(e) {
+    $(window)
+      .on('mousemove', this._onMouseMove)
+      .on('mouseup mouseleave', this._onMouseUp);
+
+    this._lastCoord = this._getElementPosFromPage(e.pageX, e.pageY);
+    this._ignoreNextClick = false;
+  }
+
+  _onMouseMove(e) {
+    const mousePos = this._getElementPosFromPage(e.pageX, e.pageY);
+    const deltaMousePos = mousePos.subtract(this._lastCoord);
+
+    this.x -= deltaMousePos.x / this.zoom;
+    this.y -= deltaMousePos.y / this.zoom;
+
+    this._lastCoord = mousePos;
+    this._ignoreNextClick = true;
+  }
+
+  _onMouseUp(e) {
+    $(window)
+      .off('mousemove', this._onMouseMove)
+      .off('mouseup mouseleave', this._onMouseUp);
+
+    this._lastCoord = null;
+  }
+
+  _onMouseWheel(e) {
+    const mousePos = this.screenToSystem(this._getElementPosFromPage(e.pageX, e.pageY));
+
+    this.zoomTo((e.deltaY < 0 ? zoomSpeed : 1/zoomSpeed), mousePos.x, mousePos.y);
+  }
+
+  _getElementPosFromPage(x, y) {
+    let offset = $(this._element).offset();
+
+    return new Coord(x - offset.left, y - offset.top);
+  }
+
+  panTo(x, y) {
+    this._targetX = x;
+    this._targetY = y;
+  }
+
+  zoomTo(deltaZoom, x, y) {
+    const targetZoom = this.zoom * deltaZoom;
+
+    const screenPos = this.systemToScreen(x, y);
+    const targetPos = this.systemToScreen(x, y, targetZoom);
+
+    const deltaX = (targetPos.x - screenPos.x)/targetZoom;
+    const deltaY = (targetPos.y - screenPos.y)/targetZoom;
+
+    this._targetZoom = targetZoom;
+    this._targetX = this.x + deltaX;
+    this._targetY = this.y + deltaY;
+  }
+
+  tick(timestamp) {
+    if(!this._isMounted) {
+      return;
+    }
+
+    //TODO Improve easing - not  currently equal
+    if(this._targetX != this._x) {
+      this._x += (this._targetX - this._x) * easeFactor;//TODO take into account frameTime
+
+      if(Math.abs(this._x - this._targetX) < 1) {
+        this._x = this._targetX
+      }
+
+      this._renderDirty = true;
+    }
+
+    if(this._targetY != this._y) {
+      this._y += (this._targetY - this._y) * easeFactor;//TODO take into account frameTime
+
+      if(Math.abs(this._y - this._targetY) < 1) {
+        this._y = this._targetY
+      }
+
+      this._renderDirty = true;
+    }
+
+    if(this._targetZoom != this._zoom) {
+      this._zoom += (this._targetZoom - this._zoom) * easeFactor;//TODO take into account frameTime
+
+      if(Math.abs(this._zoom - this._targetZoom) < 1/10000000000000) {
+        this._zoom = this._targetZoom
+      }
+
+      this._renderDirty = true;
+    }
+
+    this.renderSystem();
+
+    window.requestAnimationFrame(this.tick);
+  }
+
+  componentDidMount() {
+    this._isMounted = true;
+    this.tick();
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  componentDidUpdate (prevProps, prevState) {
+    this._renderDirty = true;
+  }
+
+  setElement(element) {
+    this._element = element;
+    this._renderDirty = true;
   }
 
   get zoom() {
@@ -26,7 +176,7 @@ export class ASystemMapRenderer extends BEMComponent {
   }
 
   set zoom(newZoom) {
-    this.zoom = newZoom;
+    this._targetZoom = this._zoom = newZoom;
     this._renderDirty = true;
   }
 
@@ -35,7 +185,7 @@ export class ASystemMapRenderer extends BEMComponent {
   }
 
   set x(newX) {
-    this._x = newX;
+    this._targetX = this._x = newX;
     this._renderDirty = true;
   }
 
@@ -45,8 +195,8 @@ export class ASystemMapRenderer extends BEMComponent {
   }
 
   set y(newY) {
-    this._y = newY;
-      this._renderDirty = true;
+    this._targetY = this._y = newY;
+    this._renderDirty = true;
   }
 
   get width () {
@@ -65,22 +215,33 @@ export class ASystemMapRenderer extends BEMComponent {
     return this._cy;
   }
 
-  systemToScreen(coords) {
-    const zoom = this.zoom;
+  systemToScreen(x, y, zoom) {
+    if(x instanceof Coord) {
+      zoom = y === undefined ? this.zoom : y;
+      y = x.y;
+      x = x.x;
+    } else {
+      zoom = zoom === undefined ? this.zoom : zoom;
+    }
 
-    let x;
-    let y;
-
-    x = (coords.x * zoom) + (this.width*this.cx);
-    y = (coords.y * zoom) + (this.height*this.cy);
-
-    return new Coord(x, y);
+    return new Coord(
+      ((x - this.x) * zoom) + (this.width*this.cx),
+      ((y - this.y) * zoom) + (this.height*this.cy),
+    );
   }
 
-  screenToSystem(coords) {
-    let x;
-    let y;
+  screenToSystem(x, y, zoom) {
+    if(x instanceof Coord) {
+      zoom = y === undefined ? this.zoom : y;
+      y = x.y;
+      x = x.x;
+    } else {
+      zoom = zoom === undefined ? this.zoom : zoom;
+    }
 
-    return new Coord(x, y);
+    return new Coord(
+      ((x - (this.cx * this.width)) / zoom) + this.x,
+      ((y - (this.cy * this.height)) / zoom) + this.y
+    );
   }
 }

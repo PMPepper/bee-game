@@ -17,6 +17,14 @@ export class Coord {
   getState() {
     return {'class':'Coord', x: this.x, y: this.y};
   }
+
+  subtract (coord) {
+    return new Coord(this.x - coord.x, this.y - coord.y);
+  }
+
+  add (coord) {
+    return new Coord(this.x + coord.x, this.y + coord.y);
+  }
 }
 
 Coord.ORIGIN = new Coord(0,0);

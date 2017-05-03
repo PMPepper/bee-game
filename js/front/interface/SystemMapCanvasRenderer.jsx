@@ -8,34 +8,20 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
   constructor(props) {
     super(props, 'systemMapCanvasRenderer');
 
-    this._canvas = null;
     this._isMounted = false;
     this._renderDirty = true;
 
-    this.tick = this.tick.bind(this);
-    this.setCanvasElement = this.setCanvasElement.bind(this);
   }
 
   render () {
-    return <canvas className={this.blockName} ref={this.setCanvasElement} width={this.props.width} height={this.props.height}></canvas>;
-  }
-
-  setCanvasElement(element) {
-    this._canvas = element;
-    this._renderDirty = true;
-  }
-
-  componentDidMount() {
-    this._isMounted = true;
-    this.tick();
-  }
-
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-
-  componentDidUpdate (prevProps, prevState) {
-    this._renderDirty = true;
+    return <canvas
+            onClick={this._onClick}
+            onMouseDown={this._onMouseDown}
+            onWheel={this._onMouseWheel}
+            className={this.blockName}
+            ref={this.setElement}
+            width={this.props.width}
+            height={this.props.height}></canvas>;
   }
 
   get width () {
@@ -46,27 +32,19 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
     return this.props.height;
   }
 
-  tick() {
-    if(!this._isMounted) {
-      return;
-    }
-    this.renderSystem();
-
-    window.requestAnimationFrame(this.tick);
-  }
-
   renderSystem() {
     if(!this._renderDirty || !this.props.system) {
       return;
     }
+
     const system = this.props.system;
-    const element = this._canvas;
+    const element = this._element;
     const ctx = element.getContext('2d');
 
     ctx.fillStyle = 'rgb(0, 0, 50)';
     ctx.fillRect(0, 0, element.width, element.width);
 
-    system.bodies.forEach((systemBody) => {//debugger;
+    system.bodies.forEach((systemBody) => {
       const position = this.systemToScreen(systemBody.position);
 
       this.renderObject(ctx, systemBody, position);
