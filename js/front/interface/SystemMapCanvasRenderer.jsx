@@ -56,20 +56,21 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
   renderObject(ctx, systemBody, coord) {
     switch(systemBody.body.type) {
       case 'star':
-        return this.renderCircle(ctx, starCircle, coord);
+        return this.renderCircle(ctx, starCircle, coord, systemBody.body.radius * this.zoom);
       case 'planet':
       default:
-        return this.renderCircle(ctx, planetCircle, coord);
+        return this.renderCircle(ctx, planetCircle, coord, systemBody.body.radius * this.zoom);
 
     }
   }
 
-  renderCircle(ctx, circle, coord) {
+  renderCircle(ctx, circle, coord, bodyRadius) {
     const hasFill = getColourAlpha(circle.fillColour) != 0;
     const hasStroke = circle.edgeThickness > 0;
+    const radius = Math.max(circle.radius, bodyRadius);
 
     ctx.beginPath();
-    ctx.arc(coord.x, coord.y, circle.radius, 0, Math.PI*2, false);
+    ctx.arc(coord.x, coord.y, radius, 0, Math.PI*2, false);
 
     if(hasFill) {
       ctx.fillStyle = colourToCss(circle.fillColour);
