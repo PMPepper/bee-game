@@ -25,6 +25,10 @@ export class Coord {
   add (coord) {
     return new Coord(this.x + coord.x, this.y + coord.y);
   }
+
+  round() {
+    return new Coord(Math.round(this.x), Math.round(this.y));
+  }
 }
 
 Coord.ORIGIN = new Coord(0,0);

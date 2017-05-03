@@ -2,6 +2,7 @@ import React from 'react';
 import {render} from 'react-dom';
 import {ASystemMapRenderer} from './ASystemMapRenderer.jsx';
 import {Circle} from '../graphics/Circle';
+import {Coord} from '../../core/Coord';
 
 
 export class SystemMapCanvasRenderer extends ASystemMapRenderer {
@@ -54,20 +55,38 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
   }
 
   renderObject(ctx, systemBody, coord) {
+    const minBodyOrbitRenderSize = 3;
+
+    if(systemBody.orbit && (systemBody.orbit.radius*this.zoom < minBodyOrbitRenderSize)) {
+      return;
+    }
+
+    if(systemBody.orbit) {
+      switch(systemBody.orbit.type) {
+        case 'OrbitRegular':
+          this.renderCircle(ctx, orbitCircle, this.systemToScreen(systemBody.body.parent ? systemBody.body.parent.position : Coord.ORIGIN), systemBody.orbit.radius * this.zoom);
+          break;
+      }
+    }
+
     switch(systemBody.body.type) {
       case 'star':
-        return this.renderCircle(ctx, starCircle, coord, systemBody.body.radius * this.zoom);
+        this.renderCircle(ctx, starCircle, coord, systemBody.body.radius * this.zoom);
+        break;
+      case 'moon':
+        this.renderCircle(ctx, moonCircle, coord, systemBody.body.radius * this.zoom);
+        break;
       case 'planet':
       default:
-        return this.renderCircle(ctx, planetCircle, coord, systemBody.body.radius * this.zoom);
-
+        this.renderCircle(ctx, planetCircle, coord, systemBody.body.radius * this.zoom);
+        break;
     }
   }
 
-  renderCircle(ctx, circle, coord, bodyRadius) {
+  renderCircle(ctx, circle, coord, minRadius) {
     const hasFill = getColourAlpha(circle.fillColour) != 0;
     const hasStroke = circle.edgeThickness > 0;
-    const radius = Math.max(circle.radius, bodyRadius);
+    const radius = Math.max(circle.radius, minRadius);
 
     ctx.beginPath();
     ctx.arc(coord.x, coord.y, radius, 0, Math.PI*2, false);
@@ -101,5 +120,8 @@ function getColourAlpha(colour) {
 
 
 //styles
-const starCircle = new Circle(5, 0xFFFFFFDD);
-const planetCircle = new Circle(4, 0xFF3333FF);
+const starCircle = new Circle(10, 0xFFFFFFDD);
+const planetCircle = new Circle(6, 0xFF3333FF);
+const moonCircle = new Circle(5, 0xFF3333FF);
+
+const orbitCircle = new Circle(1, null, 0x66FFFFFF, 0.8);
