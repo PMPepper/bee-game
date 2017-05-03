@@ -3,7 +3,7 @@ import {BEMComponent} from './BEMComponent.jsx';
 
 export class Example extends BEMComponent {
   constructor(props) {
-    super(props);
+    super(props, 'exampleBlockName');
   }
 
   render() {

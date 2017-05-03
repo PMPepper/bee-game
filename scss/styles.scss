@@ -1,6 +1,9 @@
 @import "susy/sass/susy";
 
+@import "mixins";
 
+
+@import "blocks/systemView";
 @import "blocks/tabs";
 
 body, html {
@@ -9,8 +12,4 @@ body, html {
   background: #FFF;
   height:100%;
   overflow: hidden;
-}
-
-canvas {
-
 }

@@ -14,7 +14,7 @@ export class BEMComponent extends React.Component {
 
     this._modifiers = {};
   }
-  
+
   get key () {
     return this._key;
   }
@@ -27,8 +27,8 @@ export class BEMComponent extends React.Component {
     return this._bemClasses(this.blockName);
   }
 
-  element(name, props) {
-    return this._bemClasses(this.blockName+elementSep+name);
+  element(name, extras) {
+    return this._bemClasses(this.blockName+elementSep+name, extras);
   }
 
   _getModifierValue(name) {
@@ -69,11 +69,17 @@ export class BEMComponent extends React.Component {
     return ' '+baseClassName+modifierSep+name_modifierSep+value;
   }
 
-  _bemClasses(baseClassName) {
+  _bemClasses(baseClassName, extras) {
     let className = baseClassName;
 
     for(let name in this._modifiers) {
       className += this._getModifierClass(name, baseClassName);
+    }
+
+    if(extras) {
+      for(let mod in extras) {
+        className += ' '+baseClassName+modifierSep+mod+modifierSep+extras[mod];
+      }
     }
 
     return className;

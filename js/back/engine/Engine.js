@@ -61,7 +61,10 @@ export class Engine {
     const eventsState = [];
     const events = this._lastStepEvents;
 
-    events.forEach((stepEvents) => {events.push(stepEvents.getState())});
+    events.forEach((stepEvents) => {
+      //console.log(stepEvents);
+      eventsState.push(stepEvents.getState())
+    });
 
     return eventsState;
   }

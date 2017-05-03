@@ -1,0 +1,8 @@
+@mixin panel() {
+  background:#EEE;
+  padding: 4px 5px;
+  border: 1px solid #CCC;
+  box-sizing: border-box;
+  border-radius:3px;
+  margin:5px 5px 0;
+}

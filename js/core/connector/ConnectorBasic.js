@@ -8,4 +8,14 @@ export class ConnectorBasic {
     //Set initial state
     client.update(engine.getState());
   }
+
+  updateEngine(time) {
+    const newState = this._engine.update(time);
+    const self = this;
+
+    //fake async for now
+    setTimeout(() => {
+      self._client.update(newState);
+    }, 0)
+  }
 }

@@ -1,0 +1,33 @@
+@import "../mixins";
+
+.systemView {
+  &-holder{
+    position: absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:0;
+    width:100%;
+  }
+
+  &-topMenu {
+    @include panel();
+    margin-right: 310px;
+    display: inline-block;
+    vertical-align: top;
+
+  }
+
+  &-gameSpeed {
+    @include panel();
+    position: absolute;
+    top:0;
+    right:0;
+    width:300px;
+  }
+
+  &-panel {
+    @include panel();
+    display: inline-block;
+  }
+}
