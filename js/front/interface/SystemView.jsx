@@ -1,20 +1,33 @@
 import React from 'react';
 import {render} from 'react-dom';
+import {BEMComponent} from './BEMComponent.jsx';
+import {SystemMapCanvasRenderer} from '../interface/SystemMapCanvasRenderer.jsx';
 
 
-export class SystemView extends React.Component {
-  constructor() {
-    super();
+import {UList} from '../interface/UList.jsx';
+import {OList} from '../interface/OList.jsx';
+import {Tabs} from '../interface/Tabs.jsx';
+import {TabPanel} from '../interface/TabPanel.jsx';
 
-    this._canvas;
+
+export class SystemView extends BEMComponent {
+  constructor(props) {
+    super(props, 'systemView');
 
     this.componentResized = this.componentResized.bind(this);
   }
 
   render () {
-    return <canvas ref={(element) => {this._canvas = element}} width={this.state.width} height={this.state.height}></canvas>;
+    return <div className={this.blockClasses}>
+      <SystemMapCanvasRenderer system={this.selectedSystem} width={this.state.width} height={this.state.height} />
+    </div>;
   }
 
+  get selectedSystem () {
+    return this.props.gameState.systems[this.props.selecteSystemIndex || 0];
+  }
+
+  //deal with resizing
   componentWillMount() {
     this.componentResized();
   }
@@ -28,6 +41,9 @@ export class SystemView extends React.Component {
   }
 
   componentResized(e) {
-    this.setState({width:document.body.clientWidth, height:document.body.clientHeight});
+    this.setState({
+      width:document.body.clientWidth,
+      height:document.body.clientHeight
+    })
   }
 }

@@ -5,56 +5,45 @@ import {Circle} from '../graphics/Circle';
 
 
 export class SystemMapCanvasRenderer extends ASystemMapRenderer {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props, 'systemMapCanvasRenderer');
 
     this._canvas = null;
     this._isMounted = false;
+    this._renderDirty = true;
 
-    this.componentResized = this.componentResized.bind(this);
     this.tick = this.tick.bind(this);
+    this.setCanvasElement = this.setCanvasElement.bind(this);
   }
 
   render () {
-    return <canvas ref={(element) => {this._canvas = element}} width={this.state.width} height={this.state.height}></canvas>;
+    return <canvas className={this.blockName} ref={this.setCanvasElement} width={this.props.width} height={this.props.height}></canvas>;
   }
 
-  componentWillMount() {
-    this.componentResized();
+  setCanvasElement(element) {
+    this._canvas = element;
+    this._renderDirty = true;
   }
 
   componentDidMount() {
-    $(window).on('resize', this.componentResized);
-
     this._isMounted = true;
     this.tick();
-
   }
 
   componentWillUnmount() {
-    $(window).off('resize', this.componentResized);
-
     this._isMounted = false;
   }
 
-  componentResized(e) {
-    this.setState({width:document.body.clientWidth, height:document.body.clientHeight});
-
+  componentDidUpdate (prevProps, prevState) {
     this._renderDirty = true;
   }
 
   get width () {
-    return this.state.width;
+    return this.props.width;
   }
 
   get height () {
-    return this.state.height;
-  }
-
-  setSystemState(systemState) {
-    this._systemState = systemState;
-
-    this._renderDirty = true;
+    return this.props.height;
   }
 
   tick() {
@@ -67,10 +56,10 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
   }
 
   renderSystem() {
-    if(!this._renderDirty || !this._systemState) {
+    if(!this._renderDirty || !this.props.system) {
       return;
     }
-    const system = this._systemState;
+    const system = this.props.system;
     const element = this._canvas;
     const ctx = element.getContext('2d');
 
