@@ -1,23 +1,14 @@
-export class System {
-  constructor(name, bodies) {
-    this._name = name;
+import {Model} from '../Model';
+
+export class System extends Model {
+  constructor(id, bodies) {
+    super(id);
+
     this._bodies = bodies ? bodies.slice() : [];
-    this._stars = [];
 
     this._bodies.forEach((body)=>{
       body.setSystem(this);
-
-      if(body.type == 'star') {
-        this._stars.push(body);
-      }
     })
-
-    Object.freeze(this._bodies);
-    Object.freeze(this._stars);
-  }
-
-  get name () {
-    return this._name;
   }
 
   get bodies () {
@@ -25,10 +16,23 @@ export class System {
   }
 
   get stars () {
-    return this._stars;
+    return this._bodies.filter((body) => {
+      return body.type == 'star';
+    });
   }
 
-  getBodyByName(name) {
+  getBodyById (id) {
+    for(let i = 0;i < this.bodies.length; i++) {
+      if(this.bodies[i].id == id) {
+        return this.bodies[i];
+      }
+    }
+
+    return null;
+  }
+
+  //TODO ???
+  getBodyByName (name) {
     const bodies = this.bodies;
 
     for( let i = 0; i < bodies.length; i++) {
@@ -49,17 +53,9 @@ export class System {
   }
 
   getState() {
-    const bodies = [];
-
-    this.bodies.forEach((body) => {
-      bodies.push(body.getState());
+    return this._state({
+      bodies: this.getArrayState(this.bodies)
     });
-
-    return {
-      'class': 'System',
-      name: this.name,
-      bodies: bodies
-    };
   }
 
 }

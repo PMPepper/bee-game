@@ -4,9 +4,8 @@ import {StepEvents} from './StepEvents';
 const minTimeStep = 5;
 
 export class Engine {
-  constructor(time, systems) {
-    this._systems = systems;
-    this._time = time;
+  constructor(time, gameMode) {
+    this._gameModel = gameModel;
 
     this._lastStepEvents = [];
     this._updateTimeStep(0, this._lastStepEvents);
@@ -29,20 +28,9 @@ export class Engine {
   }
 
   getState() {
-    const systems = [];
-
-    this.systems.forEach((system) => {
-      systems.push(system.getState());
-    });
-
-    return {
-      'class': 'Game',
-      time: this.time,
-      systems: systems,
-      events: this._getEventsState()
-    };
+    return this._gameModel.getState();
   }
-
+//TODO fix all this
   _updateTimeStep(timeStep, events) {
     const oldTime = this.time;
     const newTime = oldTime + timeStep;

@@ -4,35 +4,45 @@ import {GasGiant} from './system/GasGiant';
 import {Planet} from './system/Planet';
 import {OrbitRegular} from './system/OrbitRegular';
 
+let id = 0;
+
+const getId = (data) => {
+  if('id' in data) {
+    return data.id;
+  }
+
+  return id++;
+}
+
 export const Factory = {
   getSystem: (system) => {
     const bodies = [];
-    const bodiesByName = {};
+    const bodiesById = {};
 
     system.bodies.forEach((data) => {
-      const body = Factory.getBody(data, bodiesByName);
+      const body = Factory.getBody(data, bodiesById);
 
-      bodiesByName[body.name] = body;
+      bodiesById[body.id] = body;
       bodies.push(body);
     });
 
-    return new System(system.name, bodies);
+    return new System(getId(system), bodies);
   },
-  getBody: (body, otherBodiesByName) => {
+  getBody: (body, otherModelsById) => {
     const orbit = Factory.getOrbit(body.orbit);
 
     switch(body.type) {
       case 'star':
-        //name, mass, radius, day, axialTilt, tidalLock, parent, orbit, luminosity
-        return new Star(body.name, +body.mass, +body.radius, +body.day, +body.axialTilt, !!body.tidalLock, otherBodiesByName[body.parent] || null, orbit, body.luminosity );
+        //id, mass, radius, day, axialTilt, tidalLock, parent, orbit, luminosity
+        return new Star(getId(body), +body.mass, +body.radius, +body.day, +body.axialTilt, !!body.tidalLock, otherModelsById[body.parent] || null, orbit, body.luminosity );
       case 'gas giant':
-        //name, mass, radius, day, axialTilt, tidalLock, parent, orbit, minerals, colonies
-        return new GasGiant(body.name, +body.mass, +body.radius, +body.day, +body.axialTilt, !!body.tidalLock, otherBodiesByName[body.parent] || null, orbit, null, null );
+        //id, mass, radius, day, axialTilt, tidalLock, parent, orbit, minerals, colonies
+        return new GasGiant(getId(body), +body.mass, +body.radius, +body.day, +body.axialTilt, !!body.tidalLock, otherModelsById[body.parent] || null, orbit, null, null );
       case 'planet':
       case 'dwarf planet':
       case 'moon':
-        //name, mass, radius, day, axialTilt, tidalLock, parent, orbit, albedo, minerals, colonies, atmosphere, type
-        return new Planet(body.name, +body.mass, +body.radius, +body.day, +body.axialTilt, !!body.tidalLock, otherBodiesByName[body.parent] || null, orbit, body.albedo, null, null, null, body.type );
+        //id, mass, radius, day, axialTilt, tidalLock, parent, orbit, albedo, minerals, colonies, atmosphere, type
+        return new Planet(getId(body), +body.mass, +body.radius, +body.day, +body.axialTilt, !!body.tidalLock, otherModelsById[body.parent] || null, orbit, body.albedo, null, null, null, body.type );
       case 'asteroid':
         throw new Error('Not implemented');
       case 'comet':
@@ -48,7 +58,7 @@ export const Factory = {
 
     switch(data.type) {
       case 'regular':
-        return new OrbitRegular(data.radius, data.offset);
+        return new OrbitRegular(getId(data), data.radius, data.offset);
       default:
         throw new Error('Not implemented');
     }

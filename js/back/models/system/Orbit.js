@@ -1,5 +1,9 @@
-export class Orbit{
-  constructor () {
+import {Model} from '../Model';
+
+export class Orbit extends Model{
+  constructor (id) {
+    super(id);
+
     this._body = null;
   }
 
@@ -8,7 +12,7 @@ export class Orbit{
   }
 
   getState() {
-
+    return this._state({});
   }
 
   get body () {

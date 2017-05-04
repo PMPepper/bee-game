@@ -8,6 +8,13 @@ import {ConnectorBasic} from './core/connector/ConnectorBasic';
 import {Engine} from './back/engine/Engine';
 import {Factory} from './back/models/Factory';
 
+
+
+import {Faction} from './back/models/factions/Faction';
+import {Colony} from './back/models/Colony';
+import {Game} from './back/models/Game';
+
+
 window.$ = $;
 
 
@@ -18,6 +25,7 @@ $(() => {
   //Test code
 
   //Initialise world
+  //-init systems
   setTimeout(() => {
   const systems = [];
 
@@ -29,8 +37,30 @@ $(() => {
       });
     })();
 
+    console.log(systems);
+
+
+    //-init faction
+    const sol = systems[0];
+    const faction = new Faction('faction-1', colonies, craft, knownTechnologies, knownFactions, knownSystems, knownContacts);
+    faction.addKnownSystem(sol, 'Sol');
+    faction.addColony(new Colony('colony-1', sol.getBodyById('Earth'), 500000000, null));
+
+    //set names (TODO language/localise)
+    sol.bodies.forEach((body) => {
+      faction.setSystemBodyName(body, body.id);
+    });
+
+    const gameModel = new Game(Math.floor(Date.now()));
+
+    systems.forEach((system) => {
+      gameModel.addSystem(system);
+    });
+
+    gameModel.addFaction(faction);
+
     //Create game engine
-    const engine = new Engine(0, systems);
+    const engine = new Engine(0, gameModel);
 
     //Create frontend
     const client = new Client($('#app'));

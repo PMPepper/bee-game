@@ -2,8 +2,8 @@ import {SystemBody} from './SystemBody';
 import {Coord} from '../../../core/Coord';
 
 export class SubStellarBody extends SystemBody {
-  constructor (name, mass, radius, day, axialTilt, tidalLock, parent, orbit, albedo, minerals, colonies) {
-    super(name, mass, radius, day, axialTilt, tidalLock, parent, orbit);
+  constructor (id, mass, radius, day, axialTilt, tidalLock, parent, orbit, albedo, minerals, colonies) {
+    super(id, mass, radius, day, axialTilt, tidalLock, parent, orbit);
 
     this._albedo = albedo;
     this._minerals = minerals || null;

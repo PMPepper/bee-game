@@ -3,26 +3,24 @@ import {Constants} from '../../../core/Constants';
 import {Coord} from '../../../core/Coord';
 
 export class OrbitRegular extends Orbit {
-  constructor(radius, offset) {
-    super();
+  constructor(id, radius, offset) {
+    super(id);
 
     this._radius = radius;
     this._offset = offset;
   }
 
   getState() {
-    return {
-      'class':'OrbitRegular',
+    return this._state({
       period:this.period,
       angle:123,
       radius:this.radius
-    };
+    });
   }
 
   get radius() {
     return this._radius;
   }
-
 
   get minRadius() {
     return this.radius;

@@ -1,9 +1,12 @@
 import {Constants} from '../../../core/Constants';
 import {Coord} from '../../../core/Coord';
 
-export class SystemBody {
-  constructor (name, mass, radius, day, axialTilt, tidalLock, parent, orbit) {
-    this._name = name;
+import {Model} from '../Model';
+
+export class SystemBody extends Model{
+  constructor (id, mass, radius, day, axialTilt, tidalLock, parent, orbit) {
+    super(id);
+
     this._mass = mass;
     this._radius = radius;
     this._day = day;
@@ -21,13 +24,12 @@ export class SystemBody {
     this._time = 0;
 
     this._bodyState = {
-      name: name,
       mass: mass,
       radius: radius,
       day: day,
       axialTilt: axialTilt,
       tidalLock: tidalLock,
-      parent: parent ? parent.name : null,
+      parent: parent ? parent.id : null,
       type: this.type
     };
   }
@@ -52,12 +54,11 @@ export class SystemBody {
   }
 
   getState() {
-    return {
-      'class': 'SystemBodyState',
+    return this._state({
       body: this._bodyState,
       position: this.position.getState(),
       orbit: this.orbit ? this.orbit.getState() : null
-    };
+    });
   }
 
   get position() {
@@ -66,10 +67,6 @@ export class SystemBody {
 
   get time() {
     return this._time;
-  }
-
-  get name () {
-    return this._name;
   }
 
   get mass () {
