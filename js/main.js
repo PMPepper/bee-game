@@ -51,7 +51,7 @@ $(() => {
       faction.setSystemBodyName(body, body.id);
     });
 
-    const gameModel = new Game(Math.floor(Date.now()));
+    const gameModel = new Game('game-1', Math.floor(Date.now()/1000));
 
     systems.forEach((system) => {
       gameModel.addSystem(system);

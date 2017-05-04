@@ -27,6 +27,9 @@ export class Client {
   }
 
   update(newStateObj) {
+    console.log(newStateObj);
+    return;
+
     this._isAwaitingEngineUpdate = false;
     this._getStateFromObj(newStateObj);
 

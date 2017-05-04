@@ -130,11 +130,12 @@ export class Faction extends Model {
   getState () {
     return this._state({
       colonies:           this.getObjectState(this.colonies),
-      craft:              this.getObjectState(this.colonies),
+      craft:              this.getObjectState(this.craft),
       knownTechnologies:  this.getObjectState(this.knownTechnologies),
       knownFactions:      this.getObjectState(this.knownFactions),
       knownSystems:       this.getObjectState(this.knownSystems),
-      knownContacts:      this.getObjectState(this.knownContacts)
+      knownContacts:      this.getObjectState(this.knownContacts),
+      systemBodyNames:     this.getObjectState(this._systemBodyNames)
     });
   }
 }
