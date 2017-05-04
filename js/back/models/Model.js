@@ -1,3 +1,4 @@
+
 export class Model {
   constructor(id) {
     this._id = id;

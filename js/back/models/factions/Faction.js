@@ -6,7 +6,7 @@ import {KnownContact} from './KnownContact';
 import {Colony} from '../Colony';
 import {FactionSystemBodyName} from './FactionSystemBodyName';
 
-export class Faction extends Model () {
+export class Faction extends Model {
   constructor (id, colonies, craft, knownTechnologies, knownFactions, knownSystems, knownContacts, systemBodyNames) {
     super(id);
 

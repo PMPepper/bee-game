@@ -4,7 +4,7 @@ export class Colony extends Model {
   constructor (id, systemBody, population, minerals) {
     super(id);
 
-    this._faction = faction;
+    this._faction = null;
     this._systemBody = systemBody;
     this._population = population;
     this._minerals = minerals
@@ -35,7 +35,7 @@ export class Colony extends Model {
       faction:this.faction.id,
       systemBody: this.systemBody.id,
       population: this.population,
-      minerals: this.minerals.getState()
+      minerals: this.minerals ? this.minerals.getState() : null
     });
   }
 }

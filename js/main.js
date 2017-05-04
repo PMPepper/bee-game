@@ -22,12 +22,12 @@ $(() => {
 
 
 
-  //Test code
+  //Temp game start code code
 
-  //Initialise world
-  //-init systems
   setTimeout(() => {
-  const systems = [];
+    //Initialise world
+    //-init systems
+    const systems = [];
 
     (() => {
       const systemsData = require('./data/systems');
@@ -37,12 +37,12 @@ $(() => {
       });
     })();
 
-    console.log(systems);
-
-
     //-init faction
     const sol = systems[0];
-    const faction = new Faction('faction-1', colonies, craft, knownTechnologies, knownFactions, knownSystems, knownContacts);
+
+    //id, colonies, craft, knownTechnologies, knownFactions, knownSystems, knownContacts
+    const faction = new Faction('faction-1', {}, {}, {}, {}, {}, {});
+    faction.addKnownFaction(faction, 'Hoomuns');
     faction.addKnownSystem(sol, 'Sol');
     faction.addColony(new Colony('colony-1', sol.getBodyById('Earth'), 500000000, null));
 
@@ -58,9 +58,10 @@ $(() => {
     });
 
     gameModel.addFaction(faction);
+    //-end init
 
     //Create game engine
-    const engine = new Engine(0, gameModel);
+    const engine = new Engine(gameModel);
 
     //Create frontend
     const client = new Client($('#app'));

@@ -1,6 +1,6 @@
 import {Model} from './Model';
 
-export class Game extends Model () {
+export class Game extends Model {
   constructor (id, time, factions, systems, colonies, craft) {
     super(id);
 
@@ -9,6 +9,15 @@ export class Game extends Model () {
     this._systems = systems ? Object.assign({}, systems) : {};
     this._colonies = colonies ? Object.assign({}, colonies) : {};
     this._craft = craft ? Object.assign({}, craft) : {};
+  }
+
+  update(newTime, stepEvents) {
+    //TODO, like everything else
+    this._time = newTime;
+
+    for(let prop in this.systems) {
+      this.systems[prop].update(newTime, stepEvents)
+    }
   }
 
   addFaction(faction) {
@@ -43,10 +52,10 @@ export class Game extends Model () {
     return this._state({
       'class': 'Game',
       time: this.time,
-      systems: Model.getObjectState(systems),
-      factions: Model.getObjectState(factions),
-      colonies: Model.getObjectState(colonies),
-      craft: Model.getObjectState(craft)
+      systems: this.getObjectState(this.systems),
+      factions: this.getObjectState(this.factions),
+      colonies: this.getObjectState(this.colonies),
+      craft: this.getObjectState(this.craft)
     });
   }
 }
