@@ -47,7 +47,7 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
   }
 
   renderObject(ctx, systemBody, coord) {
-    const minBodyOrbitRenderSize = 3;
+    const minBodyOrbitRenderSize = 5;
 
     if(systemBody.orbit && (systemBody.orbit.radius*this.zoom < minBodyOrbitRenderSize)) {
       return;
@@ -130,8 +130,8 @@ function getColourAlpha(colour) {
 
 
 //styles
-const starCircle = new Circle(10, 0xFFFFFFDD);
-const planetCircle = new Circle(6, 0xFF3333FF);
-const moonCircle = new Circle(5, 0xFF3333FF);
+const starCircle = new Circle(7, 0xFFFFFFDD);
+const planetCircle = new Circle(5, 0xFF3333FF);
+const moonCircle = new Circle(4, 0xFF3333FF);
 
 const orbitCircle = new Circle(1, null, 0x66FFFFFF, 0.8);

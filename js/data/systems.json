@@ -123,6 +123,70 @@
           "radius": 23463200,
           "offset": 0
         }
+      },
+      {
+        "name": "Jupiter",
+        "type": "gas giant",
+        "parent": "Sol A",
+        "mass": 1.8986e27,
+        "radius": 71492000,
+        "day": 35760,
+        "axialTilt": 0.05462881,
+        "tidalLock": false,
+        "albedo": 0.343,
+        "orbit": {
+          "type": "regular",
+          "radius": 778299000000,
+          "offset": 0.74
+        }
+      },
+      {
+        "name": "Saturn",
+        "type": "gas giant",
+        "parent": "Sol A",
+        "mass": 5.6836e26,
+        "radius": 58232000,
+        "day": 38520,
+        "axialTilt": 0.4660029,
+        "tidalLock": false,
+        "albedo": 	0.342,
+        "orbit": {
+          "type": "regular",
+          "radius": 1429000000000,
+          "offset": 0.15
+        }
+      },
+      {
+        "name": "Uranus",
+        "type": "gas giant",
+        "parent": "Sol A",
+        "mass": 8.6810e25,
+        "radius": 25362000,
+        "day": 62040,
+        "axialTilt": 1.71042,
+        "tidalLock": false,
+        "albedo": 0.3,
+        "orbit": {
+          "type": "regular",
+          "radius": 2875040000000,
+          "offset": 0.77
+        }
+      },
+      {
+        "name": "Neptune",
+        "type": "gas giant",
+        "parent": "Sol A",
+        "mass": 1.0243e26,
+        "radius": 24622000,
+        "day": 57960,
+        "axialTilt": 0.49427724,
+        "tidalLock": false,
+        "albedo": 0.290,
+        "orbit": {
+          "type": "regular",
+          "radius": 4504450000000,
+          "offset": 0.8
+        }
       }
     ]
   }
