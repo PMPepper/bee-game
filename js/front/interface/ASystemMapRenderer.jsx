@@ -34,6 +34,8 @@ export class ASystemMapRenderer extends BEMComponent {
     this._lastCoord = null;
     this._ignoreNextClick = false;
 
+    this._clickTargets = [];
+
     this.setElement = this.setElement.bind(this);
 
     if(new.target == ASystemMapRenderer) {
@@ -47,6 +49,19 @@ export class ASystemMapRenderer extends BEMComponent {
       return;
     }
     const screenPos = this._getElementPosFromPage(e.pageX, e.pageY);
+
+
+    for(let i = 0; i < this._clickTargets.length; i++) {
+      let clickTarget = this._clickTargets[i];
+      let distance2 = Math.pow(screenPos.x - clickTarget.x, 2) + Math.pow(screenPos.y - clickTarget.y, 2);
+
+      if(distance2 < clickTarget.radius) {
+        clickTarget.handler();
+
+        return;
+      }
+    }
+
 
     const pos = this.screenToSystem(this._getElementPosFromPage(e.pageX, e.pageY));
 
@@ -171,6 +186,14 @@ export class ASystemMapRenderer extends BEMComponent {
     this._renderDirty = true;
   }
 
+  get width () {
+    return this.props.width;
+  }
+
+  get height () {
+    return this.props.height;
+  }
+
   get zoom() {
     return this._zoom;
   }
@@ -189,7 +212,6 @@ export class ASystemMapRenderer extends BEMComponent {
     this._renderDirty = true;
   }
 
-
   get y() {
     return this._y;
   }
@@ -197,14 +219,6 @@ export class ASystemMapRenderer extends BEMComponent {
   set y(newY) {
     this._targetY = this._y = newY;
     this._renderDirty = true;
-  }
-
-  get width () {
-    return 100;
-  }
-
-  get height () {
-    return 100;
   }
 
   get cx () {
@@ -243,5 +257,18 @@ export class ASystemMapRenderer extends BEMComponent {
       ((x - (this.cx * this.width)) / zoom) + this.x,
       ((y - (this.cy * this.height)) / zoom) + this.y
     );
+  }
+
+  clearClickTarget () {
+    this._clickTargets.length = 0;
+  }
+
+  addClickTarget(screenX, screenY, radius, clickHandler) {
+    this._clickTargets.push({
+      x:screenX,
+      y:screenY,
+      radius:radius*radius,
+      handler:clickHandler
+    })
   }
 }

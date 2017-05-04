@@ -2,10 +2,13 @@ import {Constants} from '../../../core/Constants';
 import {Coord} from '../../../core/Coord';
 
 export class SystemBody {
-  constructor (name, mass, radius, parent, orbit) {
+  constructor (name, mass, radius, day, axialTilt, tidalLock, parent, orbit) {
     this._name = name;
     this._mass = mass;
     this._radius = radius;
+    this._day = day;
+    this._axialTilt = axialTilt;
+    this._tidalLock = tidalLock;
     this._parent = parent || null;
     this._orbit = orbit;
     this._system = null;
@@ -21,16 +24,31 @@ export class SystemBody {
       name: name,
       mass: mass,
       radius: radius,
+      day: day,
+      axialTilt: axialTilt,
+      tidalLock: tidalLock,
       parent: parent ? parent.name : null,
       type: this.type
     };
   }
 
-  update(newTime, events) {
+  setSystem(system) {
+    if(this._system){
+      throw new Error('can only set system once');
+    }
+
+    this._system = system;
+  }
+
+  updatePosition(newTime) {
     this._position = this.getPosition(newTime);
     if(this.orbit) {
-      this.orbit.update(newTime, events);
+      this.orbit.update(newTime);
     }
+  }
+
+  update(newTime, events) {
+
   }
 
   getState() {
@@ -60,6 +78,18 @@ export class SystemBody {
 
   get radius () {
     return this._radius;
+  }
+
+  get day () {
+    return this._day;
+  }
+
+  get axialTilt () {
+    return this._axialTilt;
+  }
+
+  get tidalLock () {
+    return this._tidalLock;
   }
 
   get diameter () {
@@ -192,15 +222,6 @@ SystemBody.getMaxBodyDistance = (body1, body2) => {
 
 SystemBody.getMinBodyDistance = (body1, body2) => {
   const ancestors = getCommonAncestors(body1, body2);
-
-  //TODO work out the closest possible arrangement
-
-  //get list of distances
-  /*const minDistances1 = [];
-  const maxDistances1 = [];
-  const minDistances2 = [];
-  const maxDistances2 = [];*/
-
   const distances = [];
 
   for(let i = ancestors.ancestorPos+1; i < ancestors.body1Ancestors.length; i++) {

@@ -82,16 +82,35 @@ export const Factory = {
   getBody: (body, otherBodiesByName) => {
     switch(body.type) {
       case 'star':
-        //name, mass, radius, parent, luminosity
-        return new Star(body.name, body.mass, body.radius, otherBodiesByName[body.parent] || null, body.luminosity );
+        //name, mass, radius, day, axialTilt, tidalLock, parent, luminosity
+        return new Star(body.name, body.mass, body.radius, body.day, body.axialTilt, body.tidalLock, otherBodiesByName[body.parent] || null, body.luminosity );
       case 'gas giant':
-        //name, mass, radius, parent, minerals, colonies
-        return new GasGiant(body.name, body.mass, body.radius, otherBodiesByName[body.parent] || null, null, null );
+        //name, mass, radius, day, axialTilt, tidalLock, parent, minerals, colonies
+        return new GasGiant(body.name, body.mass, body.radius, body.day, body.axialTilt, body.tidalLock, otherBodiesByName[body.parent] || null, null, null );
       case 'planet':
       case 'dwarf planet':
       case 'moon':
-        //name, mass, radius, parent, albedo, minerals, colonies, atmosphere, type
-        return new Planet(body.name, body.mass, body.radius, otherBodiesByName[body.parent] || null, body.albedo, null, null, null, body.type );
+        //name, mass, radius, day, axialTilt, tidalLock, parent, albedo, minerals, colonies, surfaceHeating, minSurfaceHeating, maxSurfaceHeating, avgSurfaceHeating, surfaceTemp, minSurfaceTemp, maxSurfaceTemp, avgSurfaceTemp, atmosphere, type
+        return new Planet(
+            body.name,
+            body.mass,
+            body.radius,
+            body.day,
+            body.axialTilt,
+            body.tidalLock,
+            otherBodiesByName[body.parent] || null,
+            body.albedo,
+            null,
+            null,
+            body.surfaceHeating,
+            body.minSurfaceHeating,
+            body.maxSurfaceHeating,
+            body.avgSurfaceHeating,
+            body.surfaceTemp,
+            body.minSurfaceTemp,
+            body.maxSurfaceTemp,
+            body.avgSurfaceTemp,
+            body.type );
       case 'asteroid':
         throw new Error('Not implemented');
       case 'comet':

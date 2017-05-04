@@ -25,14 +25,6 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
             height={this.props.height}></canvas>;
   }
 
-  get width () {
-    return this.props.width;
-  }
-
-  get height () {
-    return this.props.height;
-  }
-
   renderSystem() {
     if(!this._renderDirty || !this.props.system) {
       return;
@@ -69,23 +61,27 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
       }
     }
 
+    const selectedHandler = () => {
+      console.log( 'selected!: ', systemBody );
+    }
+
     switch(systemBody.body.type) {
       case 'star':
-        this.renderCircle(ctx, starCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name);
+        this.renderCircle(ctx, starCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name, selectedHandler);
         break;
       case 'moon':
-        this.renderCircle(ctx, moonCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name);
+        this.renderCircle(ctx, moonCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name, selectedHandler);
         break;
       case 'planet':
       default:
-        this.renderCircle(ctx, planetCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name);
+        this.renderCircle(ctx, planetCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name, selectedHandler);
         break;
     }
 
 
   }
 
-  renderCircle(ctx, circle, coord, minRadius, label) {
+  renderCircle(ctx, circle, coord, minRadius, label, selectedHandler) {
     const hasFill = getColourAlpha(circle.fillColour) != 0;
     const hasStroke = circle.edgeThickness > 0;
     const radius = Math.max(circle.radius, minRadius);
@@ -110,6 +106,10 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
       ctx.fillStyle = 'rgb(255,255,255)';
 
       ctx.fillText(label, coord.x, coord.y + radius + 15);
+    }
+
+    if(selectedHandler) {
+      this.addClickTarget(coord.x, coord.y, radius, selectedHandler);
     }
   }
 }

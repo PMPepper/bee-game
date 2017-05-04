@@ -2,12 +2,15 @@ import {Constants} from '../../../core/Constants';
 import {Immutable} from '../../../core/Immutable';
 
 export class SystemBody extends Immutable {
-  constructor (name, mass, radius, parent) {
+  constructor (name, mass, radius, day, axialTilt, tidalLock, parent) {
     super();
-    
+
     this._name = name;
     this._mass = mass;
     this._radius = radius;
+    this._day = day;
+    this._axialTilt = axialTilt;
+    this._tidalLock = tidalLock;
     this._parent = parent || null;
     this._system = null;
 
@@ -32,6 +35,18 @@ export class SystemBody extends Immutable {
 
   get radius () {
     return this._radius;
+  }
+
+  get day () {
+    return this._day;
+  }
+
+  get axialTilt () {
+    return this._axialTilt;
+  }
+
+  get tidalLock () {
+    return this._tidalLock;
   }
 
   get diameter () {

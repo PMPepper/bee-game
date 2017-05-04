@@ -23,16 +23,16 @@ export const Factory = {
 
     switch(body.type) {
       case 'star':
-        //name, mass, radius, parent, orbit, luminosity
-        return new Star(body.name, body.mass, body.radius, otherBodiesByName[body.parent] || null, orbit, body.luminosity );
+        //name, mass, radius, day, axialTilt, tidalLock, parent, orbit, luminosity
+        return new Star(body.name, +body.mass, +body.radius, +body.day, +body.axialTilt, !!body.tidalLock, otherBodiesByName[body.parent] || null, orbit, body.luminosity );
       case 'gas giant':
-        //name, mass, radius, parent, orbit, minerals, colonies
-        return new GasGiant(body.name, body.mass, body.radius, otherBodiesByName[body.parent] || null, orbit, null, null );
+        //name, mass, radius, day, axialTilt, tidalLock, parent, orbit, minerals, colonies
+        return new GasGiant(body.name, +body.mass, +body.radius, +body.day, +body.axialTilt, !!body.tidalLock, otherBodiesByName[body.parent] || null, orbit, null, null );
       case 'planet':
       case 'dwarf planet':
       case 'moon':
-        //name, mass, radius, parent, orbit, albedo, minerals, colonies, atmosphere, type
-        return new Planet(body.name, body.mass, body.radius, otherBodiesByName[body.parent] || null, orbit, body.albedo, null, null, null, body.type );
+        //name, mass, radius, day, axialTilt, tidalLock, parent, orbit, albedo, minerals, colonies, atmosphere, type
+        return new Planet(body.name, +body.mass, +body.radius, +body.day, +body.axialTilt, !!body.tidalLock, otherBodiesByName[body.parent] || null, orbit, body.albedo, null, null, null, body.type );
       case 'asteroid':
         throw new Error('Not implemented');
       case 'comet':

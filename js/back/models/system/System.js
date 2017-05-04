@@ -5,7 +5,7 @@ export class System {
     this._stars = [];
 
     this._bodies.forEach((body)=>{
-      body._system = this;
+      body.setSystem(this);
 
       if(body.type == 'star') {
         this._stars.push(body);
@@ -41,6 +41,10 @@ export class System {
   }
 
   update (newTime, events) {
+    //need to update position..
+    this.bodies.forEach((body) => { body.updatePosition(newTime) } );
+
+    //then see what has happened as a result
     this.bodies.forEach((body) => { body.update(newTime, events) } );
   }
 
