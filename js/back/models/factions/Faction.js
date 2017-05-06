@@ -7,8 +7,8 @@ import {Colony} from '../Colony';
 import {FactionSystemBodyName} from './FactionSystemBodyName';
 
 export class Faction extends Model {
-  constructor (id, colonies, craft, knownTechnologies, knownFactions, knownSystems, knownContacts, systemBodyNames) {
-    super(id);
+  constructor (colonies, craft, knownTechnologies, knownFactions, knownSystems, knownContacts, systemBodyNames) {
+    super();
 
     this._colonies = colonies ? Object.assign(colonies, {}) : {};
     this._craft = craft ? Object.assign(craft, {}) : {};
@@ -20,6 +20,25 @@ export class Faction extends Model {
 
 
     this._systemBodyNames = systemBodyNames ? Object.assign(systemBodyNames, {}) : {};
+
+    this.updateUntil = null;
+    this._events = [];
+  }
+
+  addEvent(event) {
+    this._events.push();
+  }
+
+  getEventsStateAndReset() {
+    const events = [];
+
+    this._events.forEach((event) => {
+      events.push(event.getState());
+    });
+
+    this._events.length = 0;
+
+    return events;
   }
 
   addColony(colony) {

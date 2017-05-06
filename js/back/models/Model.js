@@ -1,7 +1,13 @@
+let id = 0;
+
+const allModelsById = {};
+
 
 export class Model {
-  constructor(id) {
-    this._id = id;
+  constructor() {
+    this._id = id++;
+
+    allModelsById[this._id] = this;
   }
 
   get id () {
@@ -15,28 +21,26 @@ export class Model {
     return obj;
   }
 
-  getArrayState (arr) {
+  /*getArrayState (arr) {
     const state = [];
 
     arr.forEach((val) => {state.push(val.getState());});
 
     return state;
-  }
+  }*/
 
   getStateIds (arr) {
-    const state = [];
-
-    arr.forEach((val) => {state.push(arr.id);});
-
-    return state;
+    return arr.map((val) => {
+      return Model.id(val);
+    });
   }
 
   getObjectState (obj) {
     const state = [];
 
-    for( let prop in obj) {
-      if(obj.hasOwnProperty(prop)) {
-        state.push(obj[prop].getState());
+    for( let id in obj) {
+      if(obj.hasOwnProperty(prop) && (obj[id] instanceof Model)) {
+        state.push(id);
       }
     }
 
@@ -49,12 +53,28 @@ export class Model {
       id: this.id
     };
   }
+
+  discard() {
+    if(!this.isDiscarded) {
+      delete allModelsById[this._id];
+    }
+  }
+
+  gt isDiscarded() {
+    return allModelsById[this._id] != this;
+  }
 }
 
 Model.id = (model) => {
   if(model instanceof Model) {
     return model.id;
+  } else if(!model) {
+    return null;
   }
 
   return model;
 }
+
+Model.getById = (id) => {
+  return allModelsById[id] || null;
+};

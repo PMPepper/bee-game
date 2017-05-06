@@ -1,8 +1,8 @@
 import {Model} from '../Model';
 
 export class KnownSystem extends Model {
-  constructor (id, system, name, knownJumpPoints) {
-    super(id);
+  constructor (system, name, knownJumpPoints) {
+    super();
 
     this._system = system;
     this._name = name;
@@ -23,7 +23,7 @@ export class KnownSystem extends Model {
 
   getState () {
     return this._state({
-      system: this.system.id,
+      system: Model.id(this.system),
       name:this.name,
       knownJumpPoints: null //TODO
     });

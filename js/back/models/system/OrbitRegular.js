@@ -3,8 +3,8 @@ import {Constants} from '../../../core/Constants';
 import {Coord} from '../../../core/Coord';
 
 export class OrbitRegular extends Orbit {
-  constructor(id, radius, offset) {
-    super(id);
+  constructor(radius, offset) {
+    super();
 
     this._radius = radius;
     this._offset = offset;
@@ -13,7 +13,6 @@ export class OrbitRegular extends Orbit {
   getState() {
     return this._state({
       period:this.period,
-      angle:123,
       radius:this.radius
     });
   }

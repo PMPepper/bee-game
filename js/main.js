@@ -66,6 +66,8 @@ $(() => {
     //Create frontend
     const client = new Client($('#app'));
 
+    client.addFaction(faction.id);
+
     //Create Connector
     const connector = new ConnectorBasic(engine, client);
   }, 0);

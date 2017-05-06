@@ -1,21 +1,50 @@
+//Basic connector connects Client to engine running on th same machine, in the same thread.
+//Only really exists for development purposes. Real connectors would be split into two parts
+//And the logic would deal with communications. This class fakes asyncrononus.
+
 export class ConnectorBasic {
   constructor (engine, client) {
     this._engine = engine;
     this._client = client;
 
-    client.setConnector(this);
-
-    //Set initial state
-    client.update(engine.getState());
+    client.setConnector(this, engine.getState(client.factions));
   }
 
-  updateEngine(time) {
-    const newState = this._engine.update(time);
-    const self = this;
+  ////////////////////////////////
+  // Client side of connections //
+  ////////////////////////////////
 
-    //fake async for now
+  updateEngine(factionUpdates) {
+    //TODO flatten/serialise data
+    const factionUpdatesData = factionUpdates;
+
+    //Simulate sending data to engine-side of connector
     setTimeout(() => {
-      self._client.update(newState);
-    }, 0)
+      this._applyFactionUpdates(factionUpdatesData);
+    }, 0);
+  }
+
+  //-This is called when a faction gets updated
+  _updateClient(gameState) {
+    /*
+    //Parse faction state data into actual state objects and update client
+    const factionState = StateFactory.getFaction(factionStateData);
+    const factionEvents = StateFactory.getEvents(factionEventsData);
+
+    this.client.updateFaction(factionState, factionEvents);*/
+  }
+
+  //////////////////////////////
+  // Engine side of connector //
+  //////////////////////////////
+
+  _applyFactionUpdates(factionUpdates) {
+    this.engine.addFactionUpdates(factionUpdates);
+  }
+
+  doClientUpdate(gameState) {
+    setTimeout(() => {
+      this._updateClient(gameState);
+    }, 0);
   }
 }

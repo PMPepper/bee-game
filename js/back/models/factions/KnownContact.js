@@ -3,8 +3,8 @@ import {Model} from '../Model';
 //TODO
 
 export class KnownContact extends Model {
-  constructor (id) {
-    super(id);
+  constructor () {
+    super();
   }
 
   getState () {

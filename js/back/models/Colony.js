@@ -1,8 +1,8 @@
 import {Model} from './Model'
 
 export class Colony extends Model {
-  constructor (id, systemBody, population, minerals) {
-    super(id);
+  constructor (systemBody, population, minerals) {
+    super();
 
     this._faction = null;
     this._systemBody = systemBody;
@@ -32,10 +32,10 @@ export class Colony extends Model {
 
   getState () {
     return this._state({
-      faction:this.faction.id,
-      systemBody: this.systemBody.id,
-      population: this.population,
-      minerals: this.minerals ? this.minerals.getState() : null
+      faction:Model.id(this.faction),
+      systemBody: Model.id(this.systemBody),
+      population: Model.id(this.population,
+      minerals: Model.id(this.minerals);
     });
   }
 }

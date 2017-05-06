@@ -5,13 +5,13 @@
 import {Model} from './Model'
 
 export class Minerals extends Model {
-  constructor (id) {
-    super(id);
+  constructor () {
+    super();
   }
 
   getState () {
     return this._state({
-      
+
     });
   }
 }

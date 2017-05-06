@@ -1,5 +1,7 @@
 //import {Mineral} from './Mineral';
 
+//TODO change this to be more dynamic?
+
 export class Minerals {
   constructor (corbynite, neutronium, quadlithium, kriptinite, blairite, meseonite, selenicite, thatcherite, baryonium, hadronium, brownite, leonium) {
     this._corbynite = corbynite;

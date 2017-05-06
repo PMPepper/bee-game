@@ -1,8 +1,8 @@
 import {Model} from '../Model';
 
 export class System extends Model {
-  constructor(id, bodies) {
-    super(id);
+  constructor(bodies) {
+    super();
 
     this._bodies = bodies ? bodies.slice() : [];
 
@@ -31,19 +31,6 @@ export class System extends Model {
     return null;
   }
 
-  //TODO ???
-  getBodyByName (name) {
-    const bodies = this.bodies;
-
-    for( let i = 0; i < bodies.length; i++) {
-      if(bodies[i].name == name) {
-        return bodies[i];
-      }
-    }
-
-    return null;
-  }
-
   update (newTime, events) {
     //need to update position..
     this.bodies.forEach((body) => { body.updatePosition(newTime) } );
@@ -54,7 +41,7 @@ export class System extends Model {
 
   getState() {
     return this._state({
-      bodies: this.getArrayState(this.bodies)
+      bodies: this.getStateIds(this.bodies);
     });
   }
 

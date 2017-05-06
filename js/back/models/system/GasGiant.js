@@ -1,8 +1,8 @@
 import {SubStellarBody} from './SubStellarBody';
 
 export class GasGiant extends SubStellarBody {
-  constructor (id, mass, radius, day, axialTilt, tidalLock, parent, orbit, minerals, colonies) {
-    super(id, mass, radius, day, axialTilt, tidalLock, parent, orbit, -1, minerals, colonies);
+  constructor (mass, radius, day, axialTilt, tidalLock, parent, orbit, minerals, colonies) {
+    super(mass, radius, day, axialTilt, tidalLock, parent, orbit, -1, minerals, colonies);
 
     this._bodyState['class'] = 'GasGiant';
   }

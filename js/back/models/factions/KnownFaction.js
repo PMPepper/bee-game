@@ -1,8 +1,8 @@
 import {Model} from '../Model';
 
 export class KnownFaction extends Model {
-  constructor(id, faction, name) {
-    super(id);
+  constructor(faction, name) {
+    super();
 
     this._faction = faction;
     this._name = name;
@@ -18,7 +18,7 @@ export class KnownFaction extends Model {
 
   getState () {
     return this._state({
-      faction: this.faction.id,
+      faction: Model.id(this.faction),
       name:this.name
     });
   }

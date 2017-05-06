@@ -4,8 +4,8 @@ import {Coord} from '../../../core/Coord';
 import {Model} from '../Model';
 
 export class SystemBody extends Model{
-  constructor (id, mass, radius, day, axialTilt, tidalLock, parent, orbit) {
-    super(id);
+  constructor (mass, radius, day, axialTilt, tidalLock, parent, orbit) {
+    super();
 
     this._mass = mass;
     this._radius = radius;
@@ -29,7 +29,7 @@ export class SystemBody extends Model{
       day: day,
       axialTilt: axialTilt,
       tidalLock: tidalLock,
-      parent: parent ? parent.id : null,
+      parent: Model.id(parent),
       type: this.type
     };
   }
@@ -57,7 +57,7 @@ export class SystemBody extends Model{
     return this._state({
       body: this._bodyState,
       position: this.position.getState(),
-      orbit: this.orbit ? this.orbit.getState() : null
+      orbit: Model.id(this.orbit);
     });
   }
 

@@ -1,8 +1,8 @@
 import {Model} from '../Model';
 
 export class Orbit extends Model{
-  constructor (id) {
-    super(id);
+  constructor () {
+    super();
 
     this._body = null;
   }

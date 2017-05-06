@@ -24,6 +24,25 @@ export class Client {
 
     this.tick = this.tick.bind(this);
 
+    this._factions = [];
+  }
+
+  hasFaction(id) {
+    if(this._factions.indexOf(id) == -1) {
+      this._factions.push(id);
+    }
+  }
+
+  addFaction(id) {
+    if(this.hasFaction(id)) {
+      return;
+    }
+
+    this._factions.push(id);
+  }
+
+  get factions() {
+    return this._factions;
   }
 
   update(newStateObj) {
@@ -91,8 +110,10 @@ export class Client {
     return this._$element;
   }
 
-  setConnector(connector) {
+  setConnector(connector, initialState) {
     this._connector = connector;
+
+    this.update(initialState);
 
     this.tick();
   }
