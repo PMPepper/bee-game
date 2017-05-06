@@ -32,10 +32,10 @@ export class Colony extends Model {
 
   getState () {
     return this._state({
-      faction:Model.id(this.faction),
-      systemBody: Model.id(this.systemBody),
-      population: Model.id(this.population,
-      minerals: Model.id(this.minerals);
+      factionId:    Model.id(this.faction),
+      systemBodyId: Model.id(this.systemBody),
+      population:   Model.id(this.population),
+      mineralsId:   Model.id(this.minerals)
     });
   }
 }

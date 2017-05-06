@@ -1,9 +1,9 @@
 [
   {
-    "id":"Sol",
+    "name":"Sol",
     "bodies":[
       {
-        "id":"Sol A",
+        "name":"Sol A",
         "type": "star",
         "mass": 1.9891e30,
         "radius": 695700000,
@@ -13,7 +13,7 @@
         "luminosity": 3.846e26
       },
       {
-        "id": "Mercury",
+        "name": "Mercury",
         "type": "planet",
         "parent": "Sol A",
         "mass": 3.285e23,
@@ -29,7 +29,7 @@
         }
       },
       {
-        "id": "Venus",
+        "name": "Venus",
         "type": "planet",
         "parent": "Sol A",
         "mass": 4.8675e24,
@@ -45,7 +45,7 @@
         }
       },
       {
-        "id": "Earth",
+        "name": "Earth",
         "type": "planet",
         "parent": "Sol A",
         "mass": 5.972e24,
@@ -61,7 +61,7 @@
         }
       },
       {
-        "id": "Luna",
+        "name": "Luna",
         "type": "moon",
         "parent": "Earth",
         "mass": 7.34767309e22,
@@ -77,7 +77,7 @@
         }
       },
       {
-        "id": "Mars",
+        "name": "Mars",
         "type": "planet",
         "parent": "Sol A",
         "mass": 6.4171e23,
@@ -93,7 +93,7 @@
         }
       },
       {
-        "id": "Phobos",
+        "name": "Phobos",
         "type": "moon",
         "parent": "Mars",
         "mass": 1.0659e16,
@@ -109,7 +109,7 @@
         }
       },
       {
-        "id": "Deimos",
+        "name": "Deimos",
         "type": "moon",
         "parent": "Mars",
         "mass": 1.4762e15,
@@ -125,7 +125,7 @@
         }
       },
       {
-        "id": "Jupiter",
+        "name": "Jupiter",
         "type": "gas giant",
         "parent": "Sol A",
         "mass": 1.8986e27,
@@ -141,7 +141,7 @@
         }
       },
       {
-        "id": "Saturn",
+        "name": "Saturn",
         "type": "gas giant",
         "parent": "Sol A",
         "mass": 5.6836e26,
@@ -157,7 +157,7 @@
         }
       },
       {
-        "id": "Uranus",
+        "name": "Uranus",
         "type": "gas giant",
         "parent": "Sol A",
         "mass": 8.6810e25,
@@ -173,7 +173,7 @@
         }
       },
       {
-        "id": "Neptune",
+        "name": "Neptune",
         "type": "gas giant",
         "parent": "Sol A",
         "mass": 1.0243e26,

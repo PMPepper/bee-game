@@ -18,7 +18,7 @@ export class KnownFaction extends Model {
 
   getState () {
     return this._state({
-      faction: Model.id(this.faction),
+      factionId: Model.id(this.faction),
       name:this.name
     });
   }

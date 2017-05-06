@@ -29,7 +29,7 @@ export class SystemBody extends Model{
       day: day,
       axialTilt: axialTilt,
       tidalLock: tidalLock,
-      parent: Model.id(parent),
+      parentId: Model.id(parent),
       type: this.type
     };
   }
@@ -57,7 +57,8 @@ export class SystemBody extends Model{
     return this._state({
       body: this._bodyState,
       position: this.position.getState(),
-      orbit: Model.id(this.orbit);
+      orbitId: Model.id(this.orbit),
+      systemId: Model.id(system)
     });
   }
 

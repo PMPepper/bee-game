@@ -19,7 +19,7 @@ export class FactionSystemBodyName extends Model {
   getState() {
     return this._state({
       name: this.name,
-      systemBody: Model.id(this.systemBody)
+      systemBodyId: Model.id(this.systemBody)
     });
   }
 }

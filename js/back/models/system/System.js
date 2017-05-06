@@ -41,7 +41,7 @@ export class System extends Model {
 
   getState() {
     return this._state({
-      bodies: this.getStateIds(this.bodies);
+      bodyIds: this.getStateIds(this.bodies)
     });
   }
 

@@ -28,10 +28,11 @@ $(() => {
     //Initialise world
     //-init systems
     const systems = [];
+    const systemsData = require('./data/systems');
 
     (() => {
-      const systemsData = require('./data/systems');
 
+      //TODO this needs to be fixed to work with new ID system
       systemsData.forEach((system) => {
         systems.push(Factory.getSystem(system));
       });
@@ -41,17 +42,21 @@ $(() => {
     const sol = systems[0];
 
     //id, colonies, craft, knownTechnologies, knownFactions, knownSystems, knownContacts
-    const faction = new Faction('faction-1', {}, {}, {}, {}, {}, {});
+    const faction = new Faction( {}, {}, {}, {}, {}, {});
     faction.addKnownFaction(faction, 'Hoomuns');
     faction.addKnownSystem(sol, 'Sol');
-    faction.addColony(new Colony('colony-1', sol.getBodyById('Earth'), 500000000, null));
 
     //set names (TODO language/localise)
-    sol.bodies.forEach((body) => {
-      faction.setSystemBodyName(body, body.id);
+    sol.bodies.forEach((body, index) => {
+      faction.setSystemBodyName(body, systemsData[0].bodies[index].name);
+
+      //Add 'Colony' on Earth
+      if(systemsData[0].bodies[index].name == 'Earth') {
+        faction.addColony(new Colony(body, 500000000, null));
+      }
     });
 
-    const gameModel = new Game('game-1', Math.floor(Date.now()/1000));
+    const gameModel = new Game(Math.floor(Date.now()/1000));
 
     systems.forEach((system) => {
       gameModel.addSystem(system);

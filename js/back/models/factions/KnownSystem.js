@@ -23,7 +23,7 @@ export class KnownSystem extends Model {
 
   getState () {
     return this._state({
-      system: Model.id(this.system),
+      systemId: Model.id(this.system),
       name:this.name,
       knownJumpPoints: null //TODO
     });

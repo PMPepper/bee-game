@@ -1,6 +1,3 @@
-import {StepEvents} from './StepEvents';
-
-
 const minTimeStep = 1;
 
 export class Engine {

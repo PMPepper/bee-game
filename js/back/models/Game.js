@@ -11,18 +11,9 @@ export class Game extends Model {
     this._craft = craft ? Object.assign({}, craft) : {};
   }
 
-  /*update(newTime, stepEvents) {
-    //TODO, like everything else
-    this._time = newTime;
-
-    for(let prop in this.systems) {
-      this.systems[prop].update(newTime, stepEvents)
-    }
-  }*/
-
   getNextUpdateTime() {
     const now = this.time;
-    const nextTime = Number.MAX_VALUE;
+    let nextTime = Number.MAX_VALUE;
     let hasFactions = false;
 
     for( let id in this._factions) {
@@ -30,7 +21,7 @@ export class Game extends Model {
       let faction = this._factions[i];
 
       if(faction.updateUntil === null) {
-        nextTime = now;//a faction has not set their next update time, so no update
+        nextTime = now;//a faction has not set their next update time, so no update (game must wait for them)
         break;
       } else {
         nextTime = nextTime < faction.updateUntil ? nextTime : faction.updateUntil ;
@@ -56,24 +47,59 @@ export class Game extends Model {
     return updatedFactions;
   }
 
-  getFactionStates(factions) {
-    const factionStates = [];
+  getGameStateForFactions (factions) {
     const allModels = {};
-    const models = [];
+    const factionEvents = {};
 
-    factions.forEach({faction} => {
-      if(faction && this._factions[faction.id]) {
-        factionStates.push(faction.getState(allModels));
+    const getAndAddStateById = (id) => {
+      if(allModels.hasOwnPropery(id)) {
+        return;
       }
-    });
 
-    for(let id in allModels) {
-      models.push(allModels[id]);
+      let model = Model.getById(id);
+
+      if(!(model instanceof Model)) {
+        return;
+      }
+
+      getAllStateObjs(model.getState());
     }
 
+    const getAllStateObjs = (stateObj) => {
+      if(!stateObj || allModels.hasOwnPropery(stateObj.id)) {
+        return;
+      }
+
+      allModels[stateObj.id] = stateObj;
+
+      for(let prop in stateObj) {
+        let val = stateObj[prop];
+
+        if(prop.slice(-2) == 'Id') {
+          getAndAddStateById(val);
+        } else if(prop.slice(-2) == 'Ids') {
+          val.forEach((id) => {
+            getAndAddStateById(id);
+          });
+        }
+      }
+    }
+
+    factions.forEach((faction) => {
+      const factionStateObj = faction.getState();
+
+      //get all referenced models and flatten
+      getAllStateObjs(factionStateObj);
+
+      //TODO populate array with event state objects
+      factionEvents[factionStateObj.id] = [];
+    });
+
+
     return {
-      factionStates: factionStates,
-      models: models
+      models: allModels,
+      time: this._time,
+      factionEvents: factionEvents
     };
   }
 

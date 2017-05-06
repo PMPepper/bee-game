@@ -60,7 +60,7 @@ export class Model {
     }
   }
 
-  gt isDiscarded() {
+  get isDiscarded() {
     return allModelsById[this._id] != this;
   }
 }
