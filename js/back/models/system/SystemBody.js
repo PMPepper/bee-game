@@ -56,9 +56,9 @@ export class SystemBody extends Model{
   getState() {
     return this._state({
       body: this._bodyState,
-      position: this.position.getState(),
+      position: this.position ? this.position.getState() : null,
       orbitId: Model.id(this.orbit),
-      systemId: Model.id(system)
+      systemId: Model.id(this.system)
     });
   }
 

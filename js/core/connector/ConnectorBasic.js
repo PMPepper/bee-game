@@ -7,7 +7,11 @@ export class ConnectorBasic {
     this._engine = engine;
     this._client = client;
 
-    client.setConnector(this, engine.getState(client.factions));
+    //register client factions with engine
+    this._engine.addClientConnectorForFactions(this, client.factions);
+
+    //get initial game state
+    this.getCurrentGameState();
   }
 
   ////////////////////////////////
@@ -26,6 +30,7 @@ export class ConnectorBasic {
 
   //-This is called when a faction gets updated
   _updateClient(gameState) {
+    console.log('_updateClient: ', gameState);
     /*
     //Parse faction state data into actual state objects and update client
     const factionState = StateFactory.getFaction(factionStateData);
@@ -34,12 +39,26 @@ export class ConnectorBasic {
     this.client.updateFaction(factionState, factionEvents);*/
   }
 
+  getCurrentGameState() {
+    setTimeout(() => {
+      this._doGetCurrentGameState();
+    });
+  }
+
   //////////////////////////////
   // Engine side of connector //
   //////////////////////////////
 
   _applyFactionUpdates(factionUpdates) {
     this.engine.addFactionUpdates(factionUpdates);
+  }
+
+  _doGetCurrentGameState() {
+    const gameState = this._engine.getCurrentGameState(this._engine.getFactionsForClientConnector(this));
+
+    setTimeout(() => {
+      this._updateClient(gameState);
+    }, 0);
   }
 
   doClientUpdate(gameState) {

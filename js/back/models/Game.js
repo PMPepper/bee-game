@@ -50,9 +50,9 @@ export class Game extends Model {
   getGameStateForFactions (factions) {
     const allModels = {};
     const factionEvents = {};
-
+//debugger;
     const getAndAddStateById = (id) => {
-      if(allModels.hasOwnPropery(id)) {
+      if(allModels.hasOwnProperty(id)) {
         return;
       }
 
@@ -66,7 +66,7 @@ export class Game extends Model {
     }
 
     const getAllStateObjs = (stateObj) => {
-      if(!stateObj || allModels.hasOwnPropery(stateObj.id)) {
+      if(!stateObj || allModels.hasOwnProperty(stateObj.id)) {
         return;
       }
 
@@ -77,7 +77,7 @@ export class Game extends Model {
 
         if(prop.slice(-2) == 'Id') {
           getAndAddStateById(val);
-        } else if(prop.slice(-2) == 'Ids') {
+        } else if(prop.slice(-3) == 'Ids') {
           val.forEach((id) => {
             getAndAddStateById(id);
           });

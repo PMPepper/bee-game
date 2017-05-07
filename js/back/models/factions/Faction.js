@@ -106,7 +106,7 @@ export class Faction extends Model {
       return null;
     }
 
-    this._systemBodyNames[body.id] = new FactionSystemBodyName(this.id+':'+body.id, body, name) ;
+    this._systemBodyNames[body.id] = new FactionSystemBodyName(body, name) ;
   }
 
   getSystemBodyName(body) {
@@ -148,13 +148,13 @@ export class Faction extends Model {
 
   getState () {
     return this._state({
-      colonies:           this.getObjectState(this.colonies),
-      craft:              this.getObjectState(this.craft),
-      knownTechnologies:  this.getObjectState(this.knownTechnologies),
-      knownFactions:      this.getObjectState(this.knownFactions),
-      knownSystems:       this.getObjectState(this.knownSystems),
-      knownContacts:      this.getObjectState(this.knownContacts),
-      systemBodyNames:     this.getObjectState(this._systemBodyNames)
+      colonyIds:          this.getObjectState(this.colonies),
+      craftIds:           this.getObjectState(this.craft),
+      knownTechnologyIds: this.getObjectState(this.knownTechnologies),
+      knownFactionIds:    this.getObjectState(this.knownFactions),
+      knownSystemIds:     this.getObjectState(this.knownSystems),
+      knownContactIds:    this.getObjectState(this.knownContacts),
+      systemBodyNameIds:  this.getObjectState(this._systemBodyNames)
     });
   }
 }

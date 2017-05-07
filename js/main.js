@@ -6,17 +6,13 @@ import {Client} from './front/logic/Client';
 import {ConnectorBasic} from './core/connector/ConnectorBasic';
 
 import {Engine} from './back/engine/Engine';
-import {Factory} from './back/models/Factory';
-
-
-
 import {Faction} from './back/models/factions/Faction';
-import {Colony} from './back/models/Colony';
 import {Game} from './back/models/Game';
+
+import {InitialiseGame} from './back/InitialiseGame'
 
 
 window.$ = $;
-
 
 $(() => {
 
@@ -26,41 +22,16 @@ $(() => {
 
   setTimeout(() => {
     //Initialise world
-    //-init systems
-    const systems = [];
-    const systemsData = require('./data/systems');
-
-    (() => {
-
-      //TODO this needs to be fixed to work with new ID system
-      systemsData.forEach((system) => {
-        systems.push(Factory.getSystem(system));
-      });
-    })();
-
     //-init faction
-    const sol = systems[0];
 
     //id, colonies, craft, knownTechnologies, knownFactions, knownSystems, knownContacts
     const faction = new Faction( {}, {}, {}, {}, {}, {});
-    faction.addKnownFaction(faction, 'Hoomuns');
-    faction.addKnownSystem(sol, 'Sol');
+    faction.addKnownFaction(faction, 'Humans');
 
-    //set names (TODO language/localise)
-    sol.bodies.forEach((body, index) => {
-      faction.setSystemBodyName(body, systemsData[0].bodies[index].name);
-
-      //Add 'Colony' on Earth
-      if(systemsData[0].bodies[index].name == 'Earth') {
-        faction.addColony(new Colony(body, 500000000, null));
-      }
-    });
+    //Make this faction humans and add tSol system, on Earth
+    InitialiseGame.createHomeSystemFromKnownFor('Sol', 'Sol', faction, 'human', {population:500000000});
 
     const gameModel = new Game(Math.floor(Date.now()/1000));
-
-    systems.forEach((system) => {
-      gameModel.addSystem(system);
-    });
 
     gameModel.addFaction(faction);
     //-end init

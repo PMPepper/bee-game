@@ -39,8 +39,8 @@ export class Model {
     const state = [];
 
     for( let id in obj) {
-      if(obj.hasOwnProperty(prop) && (obj[id] instanceof Model)) {
-        state.push(id);
+      if(obj.hasOwnProperty(id) && (obj[id] instanceof Model)) {
+        state.push(obj[id].id);
       }
     }
 

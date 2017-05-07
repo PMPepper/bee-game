@@ -6,9 +6,6 @@ export class Engine {
 
     this._clientConnectors = [];
     this._factionClientConnectors = {};
-
-    this._lastStepEvents = [];
-    this._updateTimeStep(0, this._lastStepEvents);
   }
 
   addClientConnectorForFactions(clientConnector, factionIds) {
@@ -64,6 +61,10 @@ export class Engine {
       //send to clientConnector
       clientConnector.doClientUpdate(gameState);
     })
+  }
+
+  getCurrentGameState(factions) {
+    return this._gameModel.getGameStateForFactions(factions);
   }
 
   _splitFactionsByClientConnector(factions, handler) {

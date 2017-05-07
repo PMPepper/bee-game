@@ -58,7 +58,8 @@
           "type": "regular",
           "radius": 149600000000,
           "offset": 0
-        }
+        },
+        "startingColony": "human"
       },
       {
         "name": "Luna",
