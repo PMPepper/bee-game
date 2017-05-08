@@ -11,6 +11,17 @@ export class Game extends Model {
     this._craft = {};
   }
 
+
+  update(nextUpdateTime) {
+    //TODO this is gonna need work to do anything else...
+
+    for(let id in this._systems) {
+      this._systems[id].update(nextUpdateTime);
+    }
+
+    this._time = nextUpdateTime;
+  }
+
   getNextUpdateTime() {
     const now = this.time;
     let nextTime = Number.MAX_VALUE;
@@ -18,7 +29,7 @@ export class Game extends Model {
 
     for( let id in this._factions) {
       hasFactions = true;
-      let faction = this._factions[i];
+      let faction = this._factions[id];
 
       if(faction.updateUntil === null) {
         nextTime = now;//a faction has not set their next update time, so no update (game must wait for them)
@@ -50,7 +61,7 @@ export class Game extends Model {
   getGameStateForFactions (factions) {
     const allModels = {};
     const factionEvents = {};
-//debugger;
+
     const getAndAddStateById = (id) => {
       if(allModels.hasOwnProperty(id)) {
         return;

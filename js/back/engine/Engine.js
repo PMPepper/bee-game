@@ -34,13 +34,14 @@ export class Engine {
     return factions;
   }
 
+  //Expects array of faction update objects
   addFactionUpdates(factionUpdates) {
 
     //TODO update models with faction updates
     //This can wait until next phase
     //-temp code
     factionUpdates.forEach((factionUpdate) => {
-      this._gameModel.factions[factionUpdate.id].updateUntil = updateUntil;
+      this._gameModel.factions[factionUpdate.id].updateUntil = factionUpdate.updateUntil;
     });
     //END TODO
 
@@ -51,7 +52,7 @@ export class Engine {
     this._gameModel.update(nextUpdateTime);
 
     //get list of all factions that have reached their faction update time
-    const updatedFactions = this._gameMode.getUpdatedFactions();
+    const updatedFactions = this._gameModel.getUpdatedFactions();
 
     //group into clientConnectors
     this._splitFactionsByClientConnector(updatedFactions, (clientConnector, factions) => {
@@ -69,12 +70,12 @@ export class Engine {
 
   _splitFactionsByClientConnector(factions, handler) {
     this._clientConnectors.forEach((clientConnector) => {
-      const factions = factions.filter((faction) => {
+      const clientFactions = factions.filter((faction) => {
         return this._factionClientConnectors[faction.id] == clientConnector;
       });
 
-      if(factions.length > 0) {
-        handler(clientConnector, factions);
+      if(clientFactions.length > 0) {
+        handler(clientConnector, clientFactions);
       }
     });
   }

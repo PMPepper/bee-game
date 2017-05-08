@@ -101,7 +101,11 @@ export class Client {
     }
     this._isAwaitingEngineUpdate = true;
     this._isPlaying = this._constantPlay;
-    this._connector.updateEngine(this._engineUpdatePeriod);
+
+    this._connector.updateEngine([{
+      id:this._state.id,
+      updateUntil:this._engineUpdatePeriod + this._state.time
+    }]);
   }
 
   get $element() {
@@ -110,8 +114,6 @@ export class Client {
 
   setConnector(connector, initialState) {
     this._connector = connector;
-
-    this.update(initialState);
 
     this.tick();
   }

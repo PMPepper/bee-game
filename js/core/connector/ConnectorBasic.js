@@ -14,6 +14,7 @@ export class ConnectorBasic {
     this._engine.addClientConnectorForFactions(this, [client.factionId]);
 
     //get initial game state
+    client.setConnector(this);
     this.getCurrentGameState();
   }
 
@@ -52,7 +53,7 @@ export class ConnectorBasic {
   //////////////////////////////
 
   _applyFactionUpdates(factionUpdates) {
-    this.engine.addFactionUpdates(factionUpdates);
+    this._engine.addFactionUpdates(factionUpdates);
   }
 
   _doGetCurrentGameState() {
