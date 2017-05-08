@@ -1,14 +1,14 @@
 import {Model} from './Model';
 
 export class Game extends Model {
-  constructor (time, factions, systems, colonies, craft) {
+  constructor (time) {
     super();
 
     this._time = time;
-    this._factions = factions ? Object.assign({}, factions) : {};
-    this._systems = systems ? Object.assign({}, systems) : {};
-    this._colonies = colonies ? Object.assign({}, colonies) : {};
-    this._craft = craft ? Object.assign({}, craft) : {};
+    this._factions = {};
+    this._systems = {};
+    this._colonies = {};
+    this._craft = {};
   }
 
   getNextUpdateTime() {
@@ -109,6 +109,8 @@ export class Game extends Model {
 
   addSystem(system) {
     this._systems[system.id] = system;
+
+    system.update(this.time);
   }
 
   get time() {

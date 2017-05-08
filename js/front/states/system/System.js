@@ -1,10 +1,8 @@
-import {Immutable} from '../../../core/Immutable';
+//import {Immutable} from '../../../core/Immutable';
 
-export class System extends Immutable {
-  constructor(name, bodies) {
-    super();
-    
-    this._name = name;
+export class System {
+  constructor(id, bodies) {
+    this._id = id;
     this._bodies = bodies ? bodies.slice() : [];
     this._stars = [];
 
@@ -18,12 +16,10 @@ export class System extends Immutable {
 
     Object.freeze(this._bodies);
     Object.freeze(this._stars);
-
-    this._freeze(System);
   }
 
-  get name () {
-    return this._name;
+  get id() {
+    return this._id;
   }
 
   get bodies () {
@@ -34,7 +30,7 @@ export class System extends Immutable {
     return this._stars;
   }
 
-  getBodyByName(name) {
+  /*getBodyByName(name) {
     const bodies = this.bodies;
 
     for( let i = 0; i < bodies.length; i++) {
@@ -44,6 +40,5 @@ export class System extends Immutable {
     }
 
     return null;
-  }
-
+  }*/
 }

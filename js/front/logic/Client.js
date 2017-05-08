@@ -9,6 +9,7 @@ const minTimeSinceLastUpdate = 0.1;
 export class Client {
   constructor($element) {
     this._$element = $element;
+    this._factionId = null;
     this._connector = null;
     this._state;
 
@@ -17,47 +18,42 @@ export class Client {
     this._lastUpdateTime = 0;
 
     this._engineUpdatePeriod = 86400;//time in seconds
-
     this._isAwaitingEngineUpdate = false;
 
     this._isDestroyed = false;
 
     this.tick = this.tick.bind(this);
-
-    this._factions = [];
   }
 
-  hasFaction(id) {
-    if(this._factions.indexOf(id) == -1) {
-      this._factions.push(id);
-    }
+  get factionId() {
+    return this._factionId;
   }
 
-  addFaction(id) {
-    if(this.hasFaction(id)) {
-      return;
-    }
+  set factionId(value) {
+    this._factionId = value;
 
-    this._factions.push(id);
-  }
-
-  get factions() {
-    return this._factions;
+    this.doRender();
   }
 
   update(newStateObj) {
-    console.log(newStateObj);
-    return;
+    console.log('Client.update: ', newStateObj);
 
+    if(!newStateObj) {
+      return;
+    }
+
+    this._state = newStateObj;
     this._isAwaitingEngineUpdate = false;
-    this._getStateFromObj(newStateObj);
-
     this._lastUpdateTime = Date.now() / 1000;
 
     this.doRender();
   }
 
   doRender() {
+    if(!this._state) {
+      return;
+    }
+
     this._systemView = render(<SystemView
       selecteSystemIndex="0"
       gameState={this._state}
@@ -71,6 +67,8 @@ export class Client {
       onGameStepSelected={(stepSize)=>{
         this._engineUpdatePeriod = stepSize;
         this._isPlaying = true;
+
+        this.doRender();
       }}
     />, this.$element[0]);
   }

@@ -1,6 +1,7 @@
 //Basic connector connects Client to engine running on th same machine, in the same thread.
 //Only really exists for development purposes. Real connectors would be split into two parts
 //And the logic would deal with communications. This class fakes asyncrononus.
+import {FactionGameState} from '../../front/states/FactionGameState';
 
 export class ConnectorBasic {
   constructor (engine, client) {
@@ -8,7 +9,9 @@ export class ConnectorBasic {
     this._client = client;
 
     //register client factions with engine
-    this._engine.addClientConnectorForFactions(this, client.factions);
+    //engine can handle a clint with multiple factions,
+    //but right now Client is single faction.
+    this._engine.addClientConnectorForFactions(this, [client.factionId]);
 
     //get initial game state
     this.getCurrentGameState();
@@ -29,14 +32,13 @@ export class ConnectorBasic {
   }
 
   //-This is called when a faction gets updated
-  _updateClient(gameState) {
-    console.log('_updateClient: ', gameState);
-    /*
-    //Parse faction state data into actual state objects and update client
-    const factionState = StateFactory.getFaction(factionStateData);
-    const factionEvents = StateFactory.getEvents(factionEventsData);
+  _updateClient(stateObj) {
+    console.log('_updateClient: ', stateObj);
+    //convert flattened state into internal client state objects
+    const factionGameState = new FactionGameState(stateObj);
 
-    this.client.updateFaction(factionState, factionEvents);*/
+    //update client
+    this._client.update(factionGameState);
   }
 
   getCurrentGameState() {

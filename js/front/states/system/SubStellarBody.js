@@ -1,8 +1,8 @@
 import {SystemBody} from './SystemBody';
 
 export class SubStellarBody extends SystemBody {
-  constructor (name, mass, radius, day, axialTilt, tidalLock, parent, albedo, minerals, colonies, surfaceHeating, minSurfaceHeating, maxSurfaceHeating, avgSurfaceHeating, surfaceTemp, minSurfaceTemp, maxSurfaceTemp, avgSurfaceTemp) {
-    super(name, mass, radius, day, axialTilt, tidalLock, parent);
+  constructor (id, name, mass, radius, day, axialTilt, tidalLock, parent, albedo, minerals, colonies, surfaceHeating, minSurfaceHeating, maxSurfaceHeating, avgSurfaceHeating, surfaceTemp, minSurfaceTemp, maxSurfaceTemp, avgSurfaceTemp) {
+    super(id, name, mass, radius, day, axialTilt, tidalLock, parent);
 
     this._albedo = albedo;
     this._minerals = minerals || null;

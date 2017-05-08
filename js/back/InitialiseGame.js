@@ -40,7 +40,7 @@ InitialiseGame.createHomeSystemFromKnownFor = (systemName, factionSystemName, fa
   const system = InitialiseGame.createSystemFromKnown(systemName, bodiesByName, preferredEnvs);
 
   //faction knows about this system
-  faction.addKnownSystem(system, factionSystemName);
+  faction.addKnownSystem(system, factionSystemName, null);
 
   //name planets
   for(let name in bodiesByName) {

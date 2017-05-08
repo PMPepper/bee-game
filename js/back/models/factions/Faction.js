@@ -70,7 +70,7 @@ export class Faction extends Model {
       return;
     }
 
-    this._knownFactions[faction.id] = new KnownFaction(this.id+':'+faction.id, faction, name);
+    this._knownFactions[faction.id] = new KnownFaction(faction, name);
   }
 
   //known system methods
@@ -86,12 +86,13 @@ export class Faction extends Model {
     return this.isKnownSystem(system) ? this._knownSystems[Model.id(system)] : null;
   }
 
-  addKnownSystem (system, name) {
+  addKnownSystem (system, name, discoveryDate) {
     if(this.isKnownSystem(system)) {
       return;
     }
 
-    this._knownSystems[system.id] = new KnownSystem(this.id+':'+system.id, system.id, name, null);
+    //system, name, discoveryDate, knownJumpPoints
+    this._knownSystems[system.id] = new KnownSystem(system, name, discoveryDate, null);
   }
 
   //TODO known contacts methods

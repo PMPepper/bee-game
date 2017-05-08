@@ -1,5 +1,3 @@
-import {Game} from './Game';
-
 import {GasGiant} from './system/GasGiant';
 import {OrbitRegular} from './system/OrbitRegular';
 import {Planet} from './system/Planet';
@@ -11,35 +9,28 @@ import {Coord} from '../../core/Coord';
 //Generates state objects from serialised data
 
 export const Factory = {
-  getState: (data, params) => {
+  getState: (data, models, states) => {
     if(!data) {
       return null;
     }
 
     if(data instanceof Array) {
-      return Factory.getArray(data);
+      return Factory.getArray(data, models, states);
     }
 
     switch(data['class']) {
-      case 'Game':
-        return Factory.getGame(data, params);
-      case 'StepEvents':
-        return null;//TODO
-      case 'stepEvent':
-        return null;//TODO
-
       //System states
       case 'System':
-        return Factory.getSystem(data, params);
+        return Factory.getSystem(data, models, states);
       case 'SystemBodyState':
-        return Factory.getSystemBodyState(data, params)
+        return Factory.getSystemBodyState(data, models, states)
       case 'Star':
       case 'Planet':
       case 'GasGiant':
-        return Factory.getBody(data, params);
+        return Factory.getBody(data, models, states);
       case 'Orbit':
       case 'OrbitRegular':
-        return Factory.getOrbit(data, params);
+        return Factory.getOrbit(data, models, states);
 
       //Misc
       case 'Coord':
@@ -48,69 +39,74 @@ export const Factory = {
 
     return null;
   },
-  getArray: (arr) => {
+  getArray: (arr, models, states) => {
     const output = [];
 
     arr.forEach((data) => {
-      output.push(Factory.getState(data));
+      output.push(Factory.getState(data, models, states));
     });
 
     return output;
   },
-  getGame: (data) => {
-    return new Game(data.time, Factory.getState(data.systems), Factory.getState(data.events));
+  getSystemBodyState: (data, models, states) => {
+    const systemBodyState = new SystemBodyState(
+      Factory.getState(data.body, models, states),
+      Factory.getState(data.position, models, states),
+      Factory.getState(data.orbit, models, states));
+
+    states[systemBodyState.id] = systemBodyState;
+
+    return systemBodyState;
   },
-  getSystemBodyState: (data, params) => {
-    return new SystemBodyState(
-      Factory.getState(data.body, params),
-      Factory.getState(data.position),
-      Factory.getState(data.orbit));
-  },
-  getSystem: (system) => {
+  getSystem: (data, models, states) => {
     const bodies = [];
-    const bodiesByName = {};
 
-    system.bodies.forEach((data) => {
-      const body = Factory.getState(data, bodiesByName);
+    data.bodies.forEach((bodyData) => {
+      const body = Factory.getState(bodyData, models, states);
 
-      bodiesByName[body.body.name] = body;
+      states[body.id] = body;
       bodies.push(body);
     });
 
     return new System(system.name, bodies);
   },
-  getBody: (body, otherBodiesByName) => {
-    switch(body.type) {
+  getBody: (data, models, states) => {
+    let body = null;
+
+    const name = '?';//TODO get name from models
+
+    switch(data.type) {
       case 'star':
-        //name, mass, radius, day, axialTilt, tidalLock, parent, luminosity
-        return new Star(body.name, body.mass, body.radius, body.day, body.axialTilt, body.tidalLock, otherBodiesByName[body.parent] || null, body.luminosity );
+        //id, name, mass, radius, day, axialTilt, tidalLock, parent, luminosity
+        body = new Star(data.id, name, data.mass, data.radius, data.day, data.axialTilt, data.tidalLock, states[data.parentId] || null, data.luminosity );
       case 'gas giant':
-        //name, mass, radius, day, axialTilt, tidalLock, parent, minerals, colonies
-        return new GasGiant(body.name, body.mass, body.radius, body.day, body.axialTilt, body.tidalLock, otherBodiesByName[body.parent] || null, null, null );
+        //id, name, mass, radius, day, axialTilt, tidalLock, parent, minerals, colonies
+        body = new GasGiant(data.id, name, data.mass, data.radius, data.day, data.axialTilt, data.tidalLock, states[data.parentId] || null, null, null );
       case 'planet':
       case 'dwarf planet':
       case 'moon':
-        //name, mass, radius, day, axialTilt, tidalLock, parent, albedo, minerals, colonies, surfaceHeating, minSurfaceHeating, maxSurfaceHeating, avgSurfaceHeating, surfaceTemp, minSurfaceTemp, maxSurfaceTemp, avgSurfaceTemp, atmosphere, type
-        return new Planet(
-            body.name,
-            body.mass,
-            body.radius,
-            body.day,
-            body.axialTilt,
-            body.tidalLock,
-            otherBodiesByName[body.parent] || null,
-            body.albedo,
+        //id, name, mass, radius, day, axialTilt, tidalLock, parent, albedo, minerals, colonies, surfaceHeating, minSurfaceHeating, maxSurfaceHeating, avgSurfaceHeating, surfaceTemp, minSurfaceTemp, maxSurfaceTemp, avgSurfaceTemp, atmosphere, type
+        body = new Planet(
+            data.id,
+            name,
+            data.mass,
+            data.radius,
+            data.day,
+            data.axialTilt,
+            data.tidalLock,
+            states[data.parentId] || null,
+            data.albedo,
             null,
             null,
-            body.surfaceHeating,
-            body.minSurfaceHeating,
-            body.maxSurfaceHeating,
-            body.avgSurfaceHeating,
-            body.surfaceTemp,
-            body.minSurfaceTemp,
-            body.maxSurfaceTemp,
-            body.avgSurfaceTemp,
-            body.type );
+            data.surfaceHeating,
+            data.minSurfaceHeating,
+            data.maxSurfaceHeating,
+            data.avgSurfaceHeating,
+            data.surfaceTemp,
+            data.minSurfaceTemp,
+            data.maxSurfaceTemp,
+            data.avgSurfaceTemp,
+            data.type );
       case 'asteroid':
         throw new Error('Not implemented');
       case 'comet':
@@ -118,19 +114,25 @@ export const Factory = {
       default:
         throw new Error('Not implemented');
     }
+
+    states[body.id] = body;
   },
   getOrbit: (data) => {
     if(!data) {
       return null;
     }
 
+    let state = null;
+
     switch(data['class']) {
       case 'OrbitRegular':
         //period, radius, angle
-        return new OrbitRegular(data.period, data.radius, data.angle);
+        state = new OrbitRegular(data.period, data.radius, data.angle);
       default:
         throw new Error('Not implemented');
     }
+
+    states[state.id] = state;
   }
 };
 

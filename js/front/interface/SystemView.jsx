@@ -45,7 +45,7 @@ export class SystemView extends BEMComponent {
         </div>
         <br />
         <div className={this.element('panel')}>
-          <Select values={this.visibleSystemNames} onChange={(e) => {console.log('select changed: ', arguments);}} label={null} />
+          <Select values={this.knownSystemNames} onChange={(e) => {console.log('select changed: ', arguments);}} label={null} />
         </div>
       </div>
       <SystemMapCanvasRenderer system={this.selectedSystem} width={this.state.width} height={this.state.height} />
@@ -66,12 +66,12 @@ export class SystemView extends BEMComponent {
     return this.props.gameState.systems[this.props.selecteSystemIndex || 0];
   }
 
-  get visibleSystems() {
-    return this.props.gameState.systems;
+  get knownSystems() {
+    return this.props.gameState.knownSystems;
   }
 
-  get visibleSystemNames () {
-    return this.visibleSystems.map((system) => {return system.name});
+  get knownSystemNames () {
+    return this.knownSystems.map((knownSystem) => {return knownSystem.name});
   }
 
   //deal with resizing

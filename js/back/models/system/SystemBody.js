@@ -43,10 +43,11 @@ export class SystemBody extends Model{
   }
 
   updatePosition(newTime) {
-    this._position = this.getPosition(newTime);
     if(this.orbit) {
       this.orbit.update(newTime);
     }
+
+    this._position = this.getPosition(newTime);
   }
 
   update(newTime, events) {
@@ -54,12 +55,16 @@ export class SystemBody extends Model{
   }
 
   getState() {
-    return this._state({
+    const stateObj = this._state({
       body: this._bodyState,
       position: this.position ? this.position.getState() : null,
       orbitId: Model.id(this.orbit),
       systemId: Model.id(this.system)
     });
+
+    stateObj['class'] = 'SystemBodyState';
+
+    return stateObj;
   }
 
   get position() {
