@@ -6,6 +6,7 @@ import {System} from './system/System';
 import {SystemBodyState} from './system/SystemBodyState';
 import {Faction} from './Faction';
 import {KnownSystem} from './KnownSystem';
+import {KnownSystemBody} from './KnownSystemBody';
 import {KnownFaction} from './KnownFaction';
 import {Coord} from '../../core/Coord';
 
@@ -16,7 +17,10 @@ export class FactionGameState extends Faction {
 
     super(
       id,
-      model.name,
+      model.fullName,
+      model.shortName,
+      model.adjectiveName,
+      [],
       [],
       []
     );
@@ -34,6 +38,13 @@ export class FactionGameState extends Faction {
     //now fully parse the state object
     this._knownFactions = this._getState(model.knownFactionIds);
     this._knownSystems = this._getState(model.knownSystemIds);
+    this._knownSystemBodies = this._getState(model.knownSystemBodyIds);
+
+    this._knownSystemBodies.forEach((knownSystemBody) => {
+      const systemBody = knownSystemBody.systemBody;
+
+      systemBody.body.name = this.getSystemBodyName(systemBody);
+    });
 
     //Once parsing is complete
     delete this._models;
@@ -62,18 +73,15 @@ export class FactionGameState extends Faction {
       case 'KnownSystem':
         state = this._getKnownSystem(data);
         break;
-
+      case 'KnownSystemBody':
+        state = this._getKnownSystemBody(data);
+        break;
       //System states
       case 'System':
         state = this._getSystem(data);
         break;
       case 'SystemBodyState':
         state = this._getSystemBodyState(data);
-        break;
-      case 'Star':
-      case 'Planet':
-      case 'GasGiant':
-        state = this._getSystemBody(data);
         break;
       case 'Orbit':
       case 'OrbitRegular':
@@ -106,7 +114,9 @@ export class FactionGameState extends Faction {
     //id, name, knownFactions, knownSystems
     return new Faction(
       data.id,
-      data.name,
+      data.fullName,
+      data.shortName,
+      data.adjectiveName,
       this._getState(data.knownFactionIds),
       this._getState(data.knownSystemIds)
     );
@@ -118,7 +128,7 @@ export class FactionGameState extends Faction {
     }
 
     //id, faction, name
-    return new KnownFaction(data.id, this._getStateById(data.factionId), data.name);
+    return new KnownFaction(data.id, this._getStateById(data.factionId), data.fullName, data.shortName, data.adjectiveName);
   }
 
   _getKnownSystem(data) {
@@ -128,6 +138,14 @@ export class FactionGameState extends Faction {
 
     //id, system, name, discoveryDate, knownJumpPoints
     return new KnownSystem(data.id, this._getStateById(data.systemId), data.name, data.discoveryDate, data.knownJumpPoints);//TODO known jump points
+  }
+
+  _getKnownSystemBody(data) {
+    if(!data) {
+      return null;
+    }
+
+    return new KnownSystemBody(data.id, this._getStateById(data.systemBodyId), data.name);//TODO
   }
 
   _getSystem(data) {
@@ -142,7 +160,8 @@ export class FactionGameState extends Faction {
 
   _getSystemBodyState(data) {
     const state = new SystemBodyState(
-      this._getState(data.body),
+      data.id,
+      this._getSystemBody(data.body),
       this._getState(data.position),
       this._getStateById(data.orbitId));
 
@@ -157,16 +176,15 @@ export class FactionGameState extends Faction {
     switch(data.type) {
       case 'star':
         //id, name, mass, radius, day, axialTilt, tidalLock, parent, luminosity
-        state = new Star(data.id, name, data.mass, data.radius, data.day, data.axialTilt, data.tidalLock, this._getStateById(data.parentId), data.luminosity );
+        state = new Star(name, data.mass, data.radius, data.day, data.axialTilt, data.tidalLock, this._getStateById(data.parentId), data.luminosity );
       case 'gas giant':
         //id, name, mass, radius, day, axialTilt, tidalLock, parent, minerals, colonies
-        state = new GasGiant(data.id, name, data.mass, data.radius, data.day, data.axialTilt, data.tidalLock, this._getStateById(data.parentId), null, null );
+        state = new GasGiant(name, data.mass, data.radius, data.day, data.axialTilt, data.tidalLock, this._getStateById(data.parentId), null, null );
       case 'planet':
       case 'dwarf planet':
       case 'moon':
         //id, name, mass, radius, day, axialTilt, tidalLock, parent, albedo, minerals, colonies, surfaceHeating, minSurfaceHeating, maxSurfaceHeating, avgSurfaceHeating, surfaceTemp, minSurfaceTemp, maxSurfaceTemp, avgSurfaceTemp, atmosphere, type
         state = new Planet(
-          data.id,
           name,
           data.mass,
           data.radius,

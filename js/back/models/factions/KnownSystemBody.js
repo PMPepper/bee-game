@@ -1,6 +1,6 @@
 import {Model} from '../Model';
 
-export class FactionSystemBodyName extends Model {
+export class KnownSystemBody extends Model {
   constructor(systemBody, name) {
     super();
 

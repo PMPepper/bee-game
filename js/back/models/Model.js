@@ -54,13 +54,13 @@ export class Model {
     };
   }
 
-  discard() {
-    if(!this.isDiscarded) {
+  dispose() {
+    if(!this.isDisposed) {
       delete allModelsById[this._id];
     }
   }
 
-  get isDiscarded() {
+  get isDisposed() {
     return allModelsById[this._id] != this;
   }
 }

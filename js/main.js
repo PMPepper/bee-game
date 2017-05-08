@@ -20,8 +20,7 @@ $(() => {
     //-init faction
 
     //id, colonies, craft, knownTechnologies, knownFactions, knownSystems, knownContacts
-    const faction = new Faction( {}, {}, {}, {}, {}, {});
-    faction.addKnownFaction(faction, 'Humans');
+    const faction = new Faction( 'The Human Empire', 'Humanity', 'Human', {}, {}, {}, {}, {}, {});
 
     //Make this faction humans and add tSol system, on Earth
     const system = InitialiseGame.createHomeSystemFromKnownFor('Sol', 'Sol', faction, 'human', {population:500000000});

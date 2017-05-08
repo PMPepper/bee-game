@@ -4,11 +4,15 @@ import {KnownSystem} from './KnownSystem';
 import {KnownTechnology} from './KnownTechnology';
 import {KnownContact} from './KnownContact';
 import {Colony} from '../Colony';
-import {FactionSystemBodyName} from './FactionSystemBodyName';
+import {KnownSystemBody} from './KnownSystemBody';
 
 export class Faction extends Model {
-  constructor (colonies, craft, knownTechnologies, knownFactions, knownSystems, knownContacts, systemBodyNames) {
+  constructor (fullName, shortName, adjectiveName, colonies, craft, knownTechnologies, knownFactions, knownSystems, knownContacts, knownSystemBodies) {
     super();
+
+    this._fullName = fullName;
+    this._shortName = shortName;
+    this._adjectiveName = adjectiveName;
 
     this._colonies = colonies ? Object.assign(colonies, {}) : {};
     this._craft = craft ? Object.assign(craft, {}) : {};
@@ -17,9 +21,7 @@ export class Faction extends Model {
     this._knownFactions = knownFactions ? Object.assign(knownFactions, {}) : {};
     this._knownSystems = knownSystems ? Object.assign(knownSystems, {}) : {};
     this._knownContacts = knownContacts ? Object.assign(knownContacts, {}) : {};
-
-
-    this._systemBodyNames = systemBodyNames ? Object.assign(systemBodyNames, {}) : {};
+    this._knownSystemBodies = knownSystemBodies ? Object.assign(knownSystemBodies, {}) : {};
 
     this.updateUntil = null;
     this._events = [];
@@ -57,8 +59,16 @@ export class Faction extends Model {
     return !!this._knownFactions[Model.id(faction)];
   }
 
-  getFactionName (faction) {
-    return this._knownFactions[Model.id(faction)] ? this._knownFactions[Model.id(faction)].name : null;
+  getFactionFullName (faction) {
+    return this._knownFactions[Model.id(faction)] ? this._knownFactions[Model.id(faction)].fullName : null;
+  }
+
+  getFactionShortName (faction) {
+    return this._knownFactions[Model.id(faction)] ? this._knownFactions[Model.id(faction)].shortName : null;
+  }
+
+  getFactionAdjectiveName (faction) {
+    return this._knownFactions[Model.id(faction)] ? this._knownFactions[Model.id(faction)].adjectiveName : null;
   }
 
   getKnownFaction (faction) {
@@ -107,7 +117,12 @@ export class Faction extends Model {
       return null;
     }
 
-    this._systemBodyNames[body.id] = new FactionSystemBodyName(body, name) ;
+    if(this._knownSystemBodies[body.id]) {
+      this._knownSystemBodies[body.id].dispose();
+    }
+
+    //Replace whatever was there initially
+    this._knownSystemBodies[body.id] = new KnownSystemBody(body, name) ;
   }
 
   getSystemBodyName(body) {
@@ -115,12 +130,20 @@ export class Faction extends Model {
       return null;
     }
 
-    this._systemBodyNames[body.id] ? this._systemBodyNames[body.id].name : null ;
+    this._knownSystemBodies[body.id] ? this._systemBodyNames[body.id].name : null ;
   }
 
   //getter/setters
-  get name() {
-    return this.getFactionName(this.id);
+  get fullName() {
+    return this._fullName
+  }
+
+  get shortName() {
+    return this._shortName;
+  }
+
+  get adjectiveName() {
+    return this._adjectiveName;
   }
 
   get colonies () {
@@ -149,13 +172,16 @@ export class Faction extends Model {
 
   getState () {
     return this._state({
+      fullName:           this.fullName,
+      shortName:          this.shortName,
+      adjectiveName:      this.adjectiveName,
       colonyIds:          this.getObjectState(this.colonies),
       craftIds:           this.getObjectState(this.craft),
       knownTechnologyIds: this.getObjectState(this.knownTechnologies),
       knownFactionIds:    this.getObjectState(this.knownFactions),
       knownSystemIds:     this.getObjectState(this.knownSystems),
       knownContactIds:    this.getObjectState(this.knownContacts),
-      systemBodyNameIds:  this.getObjectState(this._systemBodyNames)
+      knownSystemBodyIds: this.getObjectState(this._knownSystemBodies)
     });
   }
 }
