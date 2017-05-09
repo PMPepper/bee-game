@@ -12,23 +12,30 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
     this._isMounted = false;
     this._renderDirty = true;
 
+    this._checkCursorStyle = this._checkCursorStyle.bind(this);
+
+    this.state = {style: {cursor: 'pointer'}};
   }
 
   render () {
     return <canvas
             onClick={this._onClick}
             onMouseDown={this._onMouseDown}
+            onMouseMove={this._checkCursorStyle}
             onWheel={this._onMouseWheel}
             className={this.blockName}
             ref={this.setElement}
             width={this.props.width}
-            height={this.props.height}></canvas>;
+            height={this.props.height}
+            style={this.state.style}></canvas>;
   }
 
   renderSystem() {
     if(!this._renderDirty || !this.props.system) {
       return;
     }
+
+    super.renderSystem();
 
     const system = this.props.system;
     const element = this._element;
@@ -62,7 +69,7 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
     }
 
     const selectedHandler = () => {
-      console.log( 'selected!: ', systemBody );
+      this.selectedSystemBody = systemBody;
     }
 
     switch(systemBody.body.type) {
@@ -110,6 +117,29 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
 
     if(selectedHandler) {
       this.addClickTarget(coord.x, coord.y, radius, selectedHandler);
+    }
+  }
+
+  _checkCursorStyle(e) {
+    const screenPos = this._getElementPosFromPage(e.pageX, e.pageY);
+    const currentCursor = this.state.style.cursor;
+    let newCursor = 'default';
+
+    for(let i = 0; i < this._clickTargets.length; i++) {
+      let clickTarget = this._clickTargets[i];
+      let distance2 = Math.pow(screenPos.x - clickTarget.x, 2) + Math.pow(screenPos.y - clickTarget.y, 2);
+
+      if(distance2 < clickTarget.radius) {
+        newCursor = 'pointer';
+
+        break;
+      }
+    }
+
+    if(newCursor != currentCursor) {
+      this.state.style = Object.assign({}, this.state.style, {cursor: newCursor});
+
+      this.setState(this.state);
     }
   }
 }

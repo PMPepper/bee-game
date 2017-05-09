@@ -21,6 +21,7 @@ export class ASystemMapRenderer extends BEMComponent {
     this._targetX = this._x;
     this._targetY = this._y;
     this._targetZoom = this._zoom;
+    this._selectedSystemBody = null;
 
     this._renderDirty = true;
 
@@ -43,13 +44,19 @@ export class ASystemMapRenderer extends BEMComponent {
     }
   }
 
+  renderSystem() {
+    this.clearClickTargets();
+  }
+
   _onClick (e) {
     if(this._ignoreNextClick) {
       this._ignoreNextClick = false;
       return;
     }
-    const screenPos = this._getElementPosFromPage(e.pageX, e.pageY);
 
+    this.selectedSystemBody = null;
+
+    const screenPos = this._getElementPosFromPage(e.pageX, e.pageY);
 
     for(let i = 0; i < this._clickTargets.length; i++) {
       let clickTarget = this._clickTargets[i];
@@ -62,7 +69,7 @@ export class ASystemMapRenderer extends BEMComponent {
       }
     }
 
-
+    //If you didn't click on a specific target
     const pos = this.screenToSystem(this._getElementPosFromPage(e.pageX, e.pageY));
 
     this.panTo(pos.x, pos.y);
@@ -78,6 +85,8 @@ export class ASystemMapRenderer extends BEMComponent {
   }
 
   _onMouseMove(e) {
+    this.selectedSystemBody = null;
+
     const mousePos = this._getElementPosFromPage(e.pageX, e.pageY);
     const deltaMousePos = mousePos.subtract(this._lastCoord);
 
@@ -130,6 +139,13 @@ export class ASystemMapRenderer extends BEMComponent {
   tick(timestamp) {
     if(!this._isMounted) {
       return;
+    }
+
+    if(this.selectedSystemBody) {
+      const selectedBodyPos = this.selectedSystemBody.position;
+
+      this._targetX = selectedBodyPos.x;
+      this._targetY = selectedBodyPos.y;
     }
 
     //TODO Improve easing - not  currently equal
@@ -259,7 +275,7 @@ export class ASystemMapRenderer extends BEMComponent {
     );
   }
 
-  clearClickTarget () {
+  clearClickTargets () {
     this._clickTargets.length = 0;
   }
 
@@ -270,5 +286,19 @@ export class ASystemMapRenderer extends BEMComponent {
       radius:radius*radius,
       handler:clickHandler
     })
+  }
+
+  get selectedSystemBody() {
+    if(this._selectedSystemBody == null || !this.props || !this.props.system) {
+      this._selectedSystemBody = null;
+
+      return null;
+    }
+
+    return this.props.system.getSystemBodyById(this._selectedSystemBody);
+  }
+
+  set selectedSystemBody(systemBodyState) {
+    this._selectedSystemBody = systemBodyState ? systemBodyState.id : null;
   }
 }

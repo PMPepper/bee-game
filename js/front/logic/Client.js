@@ -4,7 +4,7 @@ import {render} from 'react-dom';
 
 import {SystemView} from '../interface/SystemView.jsx';
 
-const minTimeSinceLastUpdate = 0.1;
+const minTimeSinceLastUpdate = 0;
 
 export class Client {
   constructor($element) {

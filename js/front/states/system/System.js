@@ -30,6 +30,18 @@ export class System {
     return this._stars;
   }
 
+  getSystemBodyById(id) {
+    const bodies = this.bodies;
+
+    for(let i = 0; i < bodies.length; i++) {
+      if(bodies[i].id == id) {
+        return bodies[i];
+      }
+    }
+
+    return null;
+  }
+
   /*getBodyByName(name) {
     const bodies = this.bodies;
 
