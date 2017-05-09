@@ -54,4 +54,16 @@ export class Faction {
     //TODO use naming assignment system?
     return '??';
   }
+
+  hasColonyOnBody(systemBody) {
+    return false;
+
+    systemBody.body.colonies.forEach((colony) => {
+      if(colony) {
+        
+      }
+    } );
+    //TODO implement
+    return false;
+  }
 }

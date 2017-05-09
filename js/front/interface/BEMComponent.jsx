@@ -66,7 +66,7 @@ export class BEMComponent extends React.Component {
       return ' '+baseClassName+modifierSep+name;
     }
 
-    return ' '+baseClassName+modifierSep+name_modifierSep+value;
+    return ' '+baseClassName+modifierSep+name+modifierSep+value;
   }
 
   _bemClasses(baseClassName, extras) {

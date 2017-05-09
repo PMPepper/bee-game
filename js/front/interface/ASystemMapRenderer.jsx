@@ -27,6 +27,7 @@ export class ASystemMapRenderer extends BEMComponent {
 
     this.tick = this.tick.bind(this);
     this._onClick = this._onClick.bind(this);
+    this._onContextMenu = this._onContextMenu.bind(this);
     this._onMouseDown = this._onMouseDown.bind(this);
     this._onMouseMove = this._onMouseMove.bind(this);
     this._onMouseUp = this._onMouseUp.bind(this);
@@ -58,21 +59,33 @@ export class ASystemMapRenderer extends BEMComponent {
 
     const screenPos = this._getElementPosFromPage(e.pageX, e.pageY);
 
-    for(let i = 0; i < this._clickTargets.length; i++) {
-      let clickTarget = this._clickTargets[i];
-      let distance2 = Math.pow(screenPos.x - clickTarget.x, 2) + Math.pow(screenPos.y - clickTarget.y, 2);
+    //Check for click targets
+    const clickTarget = this.getClickTargetAt(screenPos);
 
-      if(distance2 < clickTarget.radius) {
-        clickTarget.handler();
-
-        return;
-      }
+    if(clickTarget) {
+      clickTarget.clickHandler();
+      return;
     }
 
     //If you didn't click on a specific target
     const pos = this.screenToSystem(this._getElementPosFromPage(e.pageX, e.pageY));
 
     this.panTo(pos.x, pos.y);
+  }
+
+  _onContextMenu(e) {
+    e.preventDefault();
+
+    const screenPos = this._getElementPosFromPage(e.pageX, e.pageY);
+
+    //Check for click targets
+    const clickTarget = this.getClickTargetAt(screenPos);
+
+    if(clickTarget) {
+      clickTarget.contextMenuHandler(e, new Coord(clickTarget.x, clickTarget.y));
+
+      return;
+    }
   }
 
   _onMouseDown(e) {
@@ -279,13 +292,30 @@ export class ASystemMapRenderer extends BEMComponent {
     this._clickTargets.length = 0;
   }
 
-  addClickTarget(screenX, screenY, radius, clickHandler) {
+  addClickTarget(screenX, screenY, radius, clickHandler, contextMenuHandler, cursor) {
     this._clickTargets.push({
       x:screenX,
       y:screenY,
       radius:radius*radius,
-      handler:clickHandler
+      clickHandler:clickHandler,
+      contextMenuHandler: contextMenuHandler,
+      cursor: cursor || 'pointer'
     })
+  }
+
+  getClickTargetAt(screenPos) {
+    const clickTargets = this._clickTargets;
+
+    for(let i = 0; i < clickTargets.length; i++) {
+      let clickTarget = clickTargets[i];
+      let distance2 = Math.pow(screenPos.x - clickTarget.x, 2) + Math.pow(screenPos.y - clickTarget.y, 2);
+
+      if(distance2 < clickTarget.radius) {
+        return clickTarget;
+      }
+    }
+
+    return null;
   }
 
   get selectedSystemBody() {

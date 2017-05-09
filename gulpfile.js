@@ -268,6 +268,7 @@ gulp.task('js-clean-build', (done) => {
 //-CSS tasks
 function cssDev() {
   return gulpCssSrc()
+    .pipe(plumber(config.plumber.js))
     .pipe(config.css.devSourcemaps.enabled ? sourcemaps.init(config.css.devSourcemaps.options) : filter(['**/*']))
     .pipe(sass(config.sass))
     .pipe(autoprefixer(config.autoprefixer))
@@ -287,6 +288,7 @@ gulp.task('css-watch', ['css-dev'], () => {
 
 gulp.task('css-build', ['css-clean-build'], function() {
   return gulpCssSrc()
+    .pipe(plumber(config.plumber.js))
     .pipe(config.css.buildSourcemaps.enabled ? sourcemaps.init(config.css.buildSourcemaps.options) : filter(['**/*']))
     .pipe(sass(config.sass))
     .pipe(autoprefixer(config.autoprefixer))

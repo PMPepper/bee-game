@@ -20,6 +20,7 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
   render () {
     return <canvas
             onClick={this._onClick}
+            onContextMenu={this._onContextMenu}
             onMouseDown={this._onMouseDown}
             onMouseMove={this._checkCursorStyle}
             onWheel={this._onMouseWheel}
@@ -72,23 +73,27 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
       this.selectedSystemBody = systemBody;
     }
 
-    switch(systemBody.body.type) {
-      case 'star':
-        this.renderCircle(ctx, starCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name, selectedHandler);
+    const contextMenuHandler = (e, position) => {
+      this.props.onShowSystemBodyContext(position, systemBody);
+    }
+
+    switch(systemBody.body.constructor.name) {
+      case 'Star':
+        this.renderCircle(ctx, starCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name, selectedHandler, contextMenuHandler);
         break;
-      case 'moon':
-        this.renderCircle(ctx, moonCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name, selectedHandler);
+      case 'Moon':
+        this.renderCircle(ctx, moonCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name, selectedHandler, contextMenuHandler);
         break;
-      case 'planet':
+      case 'Planet':
       default:
-        this.renderCircle(ctx, planetCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name, selectedHandler);
+        this.renderCircle(ctx, planetCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name, selectedHandler, contextMenuHandler);
         break;
     }
 
 
   }
 
-  renderCircle(ctx, circle, coord, minRadius, label, selectedHandler) {
+  renderCircle(ctx, circle, coord, minRadius, label, selectedHandler, contextMenuHandler) {
     const hasFill = getColourAlpha(circle.fillColour) != 0;
     const hasStroke = circle.edgeThickness > 0;
     const radius = Math.max(circle.radius, minRadius);
@@ -116,7 +121,7 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
     }
 
     if(selectedHandler) {
-      this.addClickTarget(coord.x, coord.y, radius, selectedHandler);
+      this.addClickTarget(coord.x, coord.y, radius, selectedHandler, contextMenuHandler);
     }
   }
 
@@ -130,10 +135,16 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
       let distance2 = Math.pow(screenPos.x - clickTarget.x, 2) + Math.pow(screenPos.y - clickTarget.y, 2);
 
       if(distance2 < clickTarget.radius) {
-        newCursor = 'pointer';
+        newCursor = clickTarget.cursor;
 
         break;
       }
+    }
+
+    const clickTarget = this.getClickTargetAt(screenPos);
+
+    if(clickTarget) {
+      newCursor = clickTarget.cursor;
     }
 
     if(newCursor != currentCursor) {

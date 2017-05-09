@@ -171,21 +171,21 @@ export class FactionGameState extends Faction {
   _getSystemBody(data) {
     let state = null;
 
-    const name = '?';//TODO get name from models
-
     switch(data.type) {
       case 'star':
-        //id, name, mass, radius, day, axialTilt, tidalLock, parent, luminosity
-        state = new Star(name, data.mass, data.radius, data.day, data.axialTilt, data.tidalLock, this._getStateById(data.parentId), data.luminosity );
+        //name, mass, radius, day, axialTilt, tidalLock, parent, luminosity
+        state = new Star(null, data.mass, data.radius, data.day, data.axialTilt, data.tidalLock, this._getStateById(data.parentId), data.luminosity );
+        break;
       case 'gas giant':
-        //id, name, mass, radius, day, axialTilt, tidalLock, parent, minerals, colonies
-        state = new GasGiant(name, data.mass, data.radius, data.day, data.axialTilt, data.tidalLock, this._getStateById(data.parentId), null, null );
+        //name, mass, radius, day, axialTilt, tidalLock, parent, minerals, colonies
+        state = new GasGiant(null, data.mass, data.radius, data.day, data.axialTilt, data.tidalLock, this._getStateById(data.parentId), null, null );
+        break;
       case 'planet':
       case 'dwarf planet':
       case 'moon':
-        //id, name, mass, radius, day, axialTilt, tidalLock, parent, albedo, minerals, colonies, surfaceHeating, minSurfaceHeating, maxSurfaceHeating, avgSurfaceHeating, surfaceTemp, minSurfaceTemp, maxSurfaceTemp, avgSurfaceTemp, atmosphere, type
+        //name, mass, radius, day, axialTilt, tidalLock, parent, albedo, minerals, colonies, surfaceHeating, minSurfaceHeating, maxSurfaceHeating, avgSurfaceHeating, surfaceTemp, minSurfaceTemp, maxSurfaceTemp, avgSurfaceTemp, atmosphere, type
         state = new Planet(
-          name,
+          null,
           data.mass,
           data.radius,
           data.day,

@@ -1,0 +1,77 @@
+@import "../mixins";
+
+.dataMenu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  &-item {
+    display: block;
+    padding:0;
+    position: relative;
+
+    &_type_separator {
+      border-top:1px solid rgba(0, 0, 0, 0.2);
+      height:0;
+      margin:3px 0;
+      padding:0;
+    }
+  }
+
+  &-leaf-button,
+  &-submenu-label {
+    display: inline-block;
+    border: 0;
+    background: 0;
+    line-height: 1;
+    padding: 3px 5px;
+    margin: 0;
+    font:inherit;
+    font-size: 1.6rem;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+    white-space: nowrap;
+    cursor: default;
+  }
+
+  &-submenu-label {
+    padding-right: 15px;
+    position: relative;
+
+    &:after{
+      @include triangle(right, #000, 0.4rem);
+      position: absolute;
+      right:5px;
+      top:50%;
+    }
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  &-leaf-button:hover {
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  &-submenu-label + .dataMenu-submenu-items  {
+    @include panel();
+
+    margin:0 0 0 1px;
+    padding: 5px 0;
+    display: none;
+  }
+
+  &-item:hover > .dataMenu-submenu-items  {
+    display: block;
+  }
+
+  .dataMenu-submenu-items_direction_vertical {
+    position: absolute;
+    z-index: 1;
+    left: 100%;
+    top: 0;
+  }
+}

@@ -1,4 +1,5 @@
 import {Immutable} from '../../../core/Immutable';
+import {SubStellarBody} from './SubStellarBody';
 
 export class SystemBodyState extends Immutable {
   constructor(id, body, position, orbit) {
@@ -26,5 +27,9 @@ export class SystemBodyState extends Immutable {
 
   get orbit() {
     return this._orbit;
+  }
+
+  get isColonisable() {
+    return this.body instanceof SubStellarBody
   }
 }

@@ -48,7 +48,11 @@ export class SystemView extends BEMComponent {
           <Select values={this.knownSystemNames} onChange={(e) => {console.log('select changed: ', arguments);}} label={null} />
         </div>
       </div>
-      <SystemMapCanvasRenderer system={this.selectedSystem} width={this.state.width} height={this.state.height} />
+      <SystemMapCanvasRenderer
+        onShowSystemBodyContext={this.props.onShowSystemBodyContext}
+        system={this.selectedSystem}
+        width={this.state.width}
+        height={this.state.height} />
     </div>;
   }
 
