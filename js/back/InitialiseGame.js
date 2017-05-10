@@ -59,18 +59,15 @@ InitialiseGame.createHomeSystemFromKnownFor = (systemName, factionSystemName, fa
     throw new Error('No suitable starting planet for this faction');
   }
 
-  const colony = createColony(colonyData, startingColonySystemBody);
-
-  //Assign colony to faction
-  faction.addColony(colony);
+  const colony = createColony(colonyData, faction, startingColonySystemBody);
 
   //Done!
   return system;
 }
 
 //TODO minerals?
-function createColony(colonyData, systemBody) {
-  return new Colony(systemBody, colonyData.population, colonyData.minerals || null);
+function createColony(colonyData, faction, systemBody) {
+  return new Colony(faction, systemBody, colonyData.population, colonyData.minerals || null);
 }
 
 function getKnownSystemByName(name) {

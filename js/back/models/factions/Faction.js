@@ -45,8 +45,6 @@ export class Faction extends Model {
 
   addColony(colony) {
     this._colonies[colony.id] = colony;
-
-    colony.setFaction(this);
   }
 
   //TODO known technologies methods

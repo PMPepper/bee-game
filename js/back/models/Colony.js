@@ -1,17 +1,15 @@
 import {Model} from './Model'
 
 export class Colony extends Model {
-  constructor (systemBody, population, minerals) {
+  constructor (faction, systemBody, population, minerals) {
     super();
 
-    this._faction = null;
+    this._faction = faction;
     this._systemBody = systemBody;
     this._population = population;
     this._minerals = minerals
-  }
 
-  setFaction(faction)  {
-    this._faction = faction;
+    faction.addColony(this);
   }
 
   get faction () {

@@ -7,8 +7,8 @@ export class Game extends Model {
     this._time = time;
     this._factions = {};
     this._systems = {};
-    this._colonies = {};
-    this._craft = {};
+    //this._colonies = {};
+    //this._craft = {};
   }
 
 
