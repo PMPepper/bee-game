@@ -1,4 +1,6 @@
-export class Mineral {
+import {Model} from './Model'
+
+export class SystemBodyMineral extends Model {
   constructor (initialAmount, initialAccessibility, currentAmount) {
     this._initialAmount = initialAmount;
     this._initialAccessibility = initialAccessibility;
@@ -24,5 +26,12 @@ export class Mineral {
   get currentAccessibility () {
     //TODO
     return this.initialAccessibility;
+  }
+
+  getState() {
+    return this._state({
+      amount: this.currentAmount,
+      accessibility: this.currentAccessibility
+    })
   }
 }

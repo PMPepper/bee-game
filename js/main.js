@@ -30,7 +30,7 @@ $(() => {
     gameModel.addSystem(system);
     gameModel.addFaction(faction);
     //-end init
-
+console.log(gameModel);
     //Create game engine
     const engine = new Engine(gameModel);
 

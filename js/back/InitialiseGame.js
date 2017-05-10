@@ -12,6 +12,10 @@ export class InitialiseGame {
 
 }
 
+InitialiseGame.getGamConfig = () => {
+  return Object.freeze({});
+}
+
 InitialiseGame.createSystemFromKnown = (systemName, bodiesByName, preferredEnvs) => {
   const systemData = getKnownSystemByName(systemName);
   const bodies = [];
