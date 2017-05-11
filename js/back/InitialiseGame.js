@@ -4,7 +4,9 @@ import {System} from './models/system/System';
 import {Star} from './models/system/Star';
 import {GasGiant} from './models/system/GasGiant';
 import {Planet} from './models/system/Planet';
+import {SubStellarBody} from './models/system/SubStellarBody';
 import {OrbitRegular} from './models/system/OrbitRegular';
+import {SystemBodyMinerals} from './models/system/SystemBodyMinerals';
 import {Colony} from './models/Colony';
 
 
@@ -16,17 +18,23 @@ InitialiseGame.getGamConfig = () => {
   return Object.freeze({});
 }
 
-InitialiseGame.createSystemFromKnown = (systemName, bodiesByName, preferredEnvs) => {
+InitialiseGame.createSystemFromKnown = (systemName, bodiesByName, preferredEnvs, skipMinerals) => {
   const systemData = getKnownSystemByName(systemName);
   const bodies = [];
   bodiesByName = bodiesByName || {};
   preferredEnvs = preferredEnvs || {};
 
   systemData.bodies.forEach((bodyData) => {
-    bodies.push(createBody(bodyData, bodiesByName));
+    const body = createBody(bodyData, bodiesByName);
+
+    bodies.push(body);
 
     if(bodyData.startingColony) {
       preferredEnvs[bodyData.name] = bodyData.startingColony;
+    }
+
+    if(!skipMinerals && (body instanceof SubStellarBody)) {
+      body.minerals = SystemBodyMinerals.createMineralsFor(body, 1);//TODO vary plentifulness
     }
   });
 
@@ -41,7 +49,7 @@ InitialiseGame.createHomeSystemFromKnownFor = (systemName, factionSystemName, fa
   let startingColonySystemBody = null;
 
   //create the system
-  const system = InitialiseGame.createSystemFromKnown(systemName, bodiesByName, preferredEnvs);
+  const system = InitialiseGame.createSystemFromKnown(systemName, bodiesByName, preferredEnvs, true);
 
   //faction knows about this system
   faction.addKnownSystem(system, factionSystemName, null);
@@ -52,12 +60,26 @@ InitialiseGame.createHomeSystemFromKnownFor = (systemName, factionSystemName, fa
   }
 
   //set the starting colony for this faction
+  //TOOD this is pretty primitive, will need to improve when I put proper
+  //envirnoments and species stuff in
   for(let name in preferredEnvs) {
     if(preferredEnvs.hasOwnProperty(name) && preferredEnvs[name] == preferredEnv) {
       startingColonySystemBody = bodiesByName[name];
+
+      //mark your starting colony as surveyed
+      faction.getKnownSystemBody(startingColonySystemBody).isSurveyed = true;
       break;
     }
   }
+
+  //now init minerals
+  system.bodies.forEach((body) => {
+    if(body == startingColonySystemBody) {
+      body.minerals = SystemBodyMinerals.createMineralsFor(body, 2);//starting colony begins rich
+    } else {
+      body.minerals = SystemBodyMinerals.createMineralsFor(body, 1);//TODO vary plentifulness
+    }
+  });
 
   if(!startingColonySystemBody) {
     throw new Error('No suitable starting planet for this faction');

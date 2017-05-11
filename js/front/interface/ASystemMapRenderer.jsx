@@ -82,6 +82,10 @@ export class ASystemMapRenderer extends BEMComponent {
   }
 
   _onMouseDown(e) {
+    if(e.nativeEvent.which != 1) {
+      return;
+    }
+
     $(window)
       .on('mousemove', this._onMouseMove)
       .on('mouseup mouseleave', this._onMouseUp);

@@ -106,21 +106,36 @@ export class Faction extends Model {
   //TODO known contacts methods
 
   //System body names
-  isKnownBody(body) {
-    return this.isKnownSystem(body.system);
+  isKnownSystemBody(body) {
+    return this.isKnownSystem(body.system) && !!this._knownSystemBodies[Model.id(body)];
+  }
+
+  getKnownSystemBody(body) {
+    return this._knownSystemBodies[Model.id(body)] || null;
+  }
+
+  addKnownSystemBody(body, name, surveyed) {
+    const id = body.id;
+
+    if(!this.isKnownSystem(body.system) || this.isKnownSystemBody(body)) {
+      return false;
+    }
+
+    this._knownSystemBodies[id] = new KnownSystemBody(body, name, !!surveyed);
   }
 
   setSystemBodyName(body, name) {
-    if(!this.isKnownBody(body)) {
-      return null;
+    if(!this.isKnownSystem(body.system)) {
+      return false;
     }
 
-    if(this._knownSystemBodies[body.id]) {
-      this._knownSystemBodies[body.id].dispose();
-    }
+    let knownSystemBody = this.getKnownSystemBody(body);
 
-    //Replace whatever was there initially
-    this._knownSystemBodies[body.id] = new KnownSystemBody(body, name) ;
+    if(knownSystemBody) {
+      knownSystemBody.name = name;
+    } else {
+      this.addKnownSystemBody(body, name);
+    }
   }
 
   getSystemBodyName(body) {

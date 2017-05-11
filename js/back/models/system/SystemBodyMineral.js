@@ -1,10 +1,19 @@
-import {Model} from './Model'
+//represents the amount of a specific mineral present on a system body
+
+import {Model} from '../Model'
 
 export class SystemBodyMineral extends Model {
-  constructor (initialAmount, initialAccessibility, currentAmount) {
+  constructor (name, initialAmount, initialAccessibility, currentAmount) {
+    super();
+
+    this._name = name;
     this._initialAmount = initialAmount;
     this._initialAccessibility = initialAccessibility;
     this._currentAmount = currentAmount;
+  }
+
+  get name() {
+    return this._name;
   }
 
   get initialAmount () {
@@ -24,12 +33,13 @@ export class SystemBodyMineral extends Model {
   }
 
   get currentAccessibility () {
-    //TODO
+    //TODO adjust this towards 0 as the mineral nears depletion
     return this.initialAccessibility;
   }
 
   getState() {
     return this._state({
+      name: this.name,
       amount: this.currentAmount,
       accessibility: this.currentAccessibility
     })

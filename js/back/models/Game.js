@@ -7,8 +7,6 @@ export class Game extends Model {
     this._time = time;
     this._factions = {};
     this._systems = {};
-    //this._colonies = {};
-    //this._craft = {};
   }
 
 
@@ -149,9 +147,7 @@ export class Game extends Model {
       'class': 'Game',
       time: this.time,
       systems: this.getObjectState(this.systems),
-      factions: this.getObjectState(this.factions),
-      colonies: this.getObjectState(this.colonies),
-      craft: this.getObjectState(this.craft)
+      factions: this.getObjectState(this.factions)
     });
   }
 }

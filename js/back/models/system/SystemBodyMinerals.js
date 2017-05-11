@@ -1,8 +1,6 @@
-//represets a stockpile of minerals
+//represets the minerals present in a system body
 
-//TODO implement
-
-import {Model} from './Model'
+import {Model} from '../Model'
 import {SystemBodyMineral} from './SystemBodyMineral'
 
 export class SystemBodyMinerals extends Model {
@@ -154,7 +152,7 @@ SystemBodyMinerals.createMineralsFor = (systemBody, plentifulness) => {
 
     let accesibility = 1;//TODO base accessilbility on surface area/density and plentifulness
 
-    const mineral = new SystemBodyMineral(amount, accesibility, amount);
+    const mineral = new SystemBodyMineral(mineralName, amount, accesibility, amount);
     mineralsObjects.push(mineral);
   })
 

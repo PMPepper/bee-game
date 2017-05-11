@@ -47,6 +47,12 @@ export class SubStellarBody extends SystemBody {
     return this._minerals;
   }
 
+  set minerals(value) {
+    if(!this._minerals) {//can only set minerals if no current minerals
+      this._minerals = value;
+    }
+  }
+
   get colonies () {
     return this._colonies;
   }
