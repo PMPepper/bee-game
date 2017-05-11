@@ -4,10 +4,13 @@ import {Planet} from './system/Planet';
 import {Star} from './system/Star';
 import {System} from './system/System';
 import {SystemBodyState} from './system/SystemBodyState';
+import {SystemBodyMineral} from './system/SystemBodyMineral';
+import {SystemBodyMinerals} from './system/SystemBodyMinerals';
 import {Faction} from './Faction';
 import {KnownSystem} from './KnownSystem';
 import {KnownSystemBody} from './KnownSystemBody';
 import {KnownFaction} from './KnownFaction';
+
 import {Coord} from '../../core/Coord';
 
 export class FactionGameState extends Faction {
@@ -48,6 +51,8 @@ export class FactionGameState extends Faction {
 
     //Once parsing is complete
     delete this._models;
+
+    console.log('FactionGameState: ', this);
   }
 
   //state object parsing methods
@@ -83,10 +88,17 @@ export class FactionGameState extends Faction {
       case 'SystemBodyState':
         state = this._getSystemBodyState(data);
         break;
+      case 'SystemBodyMinerals':
+        state = this._getSystemBodyMinerals(data);
+        break;
+      case 'SystemBodyMineral':
+        state = this._getSystemBodyMineral(data);
+        break;
       case 'Orbit':
       case 'OrbitRegular':
         state = this._getOrbit(data);
         break;
+
 
       //Misc
       case 'Coord':
@@ -145,7 +157,19 @@ export class FactionGameState extends Faction {
       return null;
     }
 
-    return new KnownSystemBody(data.id, this._getStateById(data.systemBodyId), data.name);//TODO
+    return new KnownSystemBody(data.id, this._getStateById(data.systemBodyId), data.name, this._getStateById(data.mineralsId));//TODO
+  }
+
+  _getSystemBodyMinerals(data) {
+    if(!data) {
+      return null;
+    }
+
+    return new SystemBodyMinerals(data.id, this._getState(data.mineralIds));
+  }
+
+  _getSystemBodyMineral(data) {
+    return new SystemBodyMineral(data.id, data.name, data.amount, data.accessibility);
   }
 
   _getSystem(data) {

@@ -4,102 +4,33 @@ import {Model} from '../Model'
 import {SystemBodyMineral} from './SystemBodyMineral'
 
 export class SystemBodyMinerals extends Model {
-  constructor (
-      corbynite,
-      quadlithium,
-      neutronium,
-      kriptinite,
-      meseonite,
-      blairite,
-      selenicite,
-      baryonium,
-      hadronium,
-      thatcherite,
-      leonium,
-      brownite
-  ) {
+  constructor (minerals) {
     super();
 
-    this._corbynite = corbynite;
-    this._quadlithium = quadlithium;
-    this._neutronium = neutronium;
-    this._kriptinite = kriptinite;
-    this._meseonite = meseonite;
-    this._blairite = blairite;
-    this._selenicite = selenicite;
-    this._baryonium = baryonium;
-    this._hadronium = hadronium;
-    this._thatcherite = thatcherite;
-    this._leonium = leonium;
-    this._brownite = brownite;
+    this._minerals = minerals || [];
   }
 
-  get corbynite() {
-    return this._corbynite;
-  }
+  getMineralByName(name) {
+    const minerals = this.minerals;
 
-  get quadlithium() {
-    return this._quadlithium;
-  }
+    for(let i = 0; i < minerals.length; i++) {
+      if(minerals[i].name == nane) {
+        return minerals[i];
+      }
+    }
 
-  get neutronium() {
-    return this._neutronium;
-  }
-
-  get kriptinite() {
-    return this._kriptinite;
-  }
-
-  get meseonite() {
-    return this._meseonite;
-  }
-
-  get blairite() {
-    return this._blairite;
-  }
-
-  get selenicite() {
-    return this._selenicite;
-  }
-
-  get baryonium() {
-    return this._baryonium;
-  }
-
-  get hadronium() {
-    return this._hadronium;
-  }
-
-  get thatcherite() {
-    return this._thatcherite;
-  }
-
-  get leonium() {
-    return this._leonium;
-  }
-
-  get brownite() {
-    return this._brownite;
+    return null;
   }
 
   getState () {
     return this._state({
-      corbyniteId:    Model.id(this._corbynite),
-      quadlithiumId:  Model.id(this._quadlithium),
-      neutroniumId:   Model.id(this._neutronium),
-      kriptiniteId:   Model.id(this._kriptinite),
-      meseoniteId:    Model.id(this._meseonite),
-      blairiteId:     Model.id(this._blairite),
-      seleniciteId:   Model.id(this._selenicite),
-      baryoniumId:    Model.id(this._baryonium),
-      hadroniumId:    Model.id(this._hadronium),
-      thatcheriteId:  Model.id(this._thatcherite),
-      leoniumId:      Model.id(this._leonium),
-      browniteId:     Model.id(this._brownite)
+      mineralIds: this.getObjectState(this._minerals)
     });
   }
 }
 
+//Default minerals
+//TODO make all this configurable
 SystemBodyMinerals.allMinerals = [
   'corbynite',
   'quadlithium',
@@ -156,6 +87,5 @@ SystemBodyMinerals.createMineralsFor = (systemBody, plentifulness) => {
     mineralsObjects.push(mineral);
   })
 
-  //debugger;
-  return new (Function.prototype.bind.apply(SystemBodyMinerals, mineralsObjects));
+  return new SystemBodyMinerals(mineralsObjects);
 }

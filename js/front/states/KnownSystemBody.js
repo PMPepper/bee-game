@@ -1,8 +1,9 @@
 export class KnownSystemBody {
-  constructor(id, systemBody, name) {
+  constructor(id, systemBody, name, minerals) {
     this._id = id;
     this._systemBody = systemBody;
     this._name = name;
+    this._minerals = minerals;
   }
 
   get id() {
@@ -15,5 +16,9 @@ export class KnownSystemBody {
 
   get name() {
     return this._name;
+  }
+
+  get minerals() {
+    return this._minerals;
   }
 }
