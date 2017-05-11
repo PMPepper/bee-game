@@ -34,7 +34,7 @@ export class ASystemMapRenderer extends BEMComponent {
     this._onMouseWheel = this._onMouseWheel.bind(this);
 
     this._lastCoord = null;
-    this._ignoreNextClick = false;
+    this._hasDragged = false;
 
     this._clickTargets = [];
 
@@ -49,15 +49,8 @@ export class ASystemMapRenderer extends BEMComponent {
     this.clearClickTargets();
   }
 
-  _onClick (e) {
-    if(this._ignoreNextClick) {
-      this._ignoreNextClick = false;
-      return;
-    }
-
+  _onClick (screenPos) {
     this.selectedSystemBody = null;
-
-    const screenPos = this._getElementPosFromPage(e.pageX, e.pageY);
 
     //Check for click targets
     const clickTarget = this.getClickTargetAt(screenPos);
@@ -68,7 +61,7 @@ export class ASystemMapRenderer extends BEMComponent {
     }
 
     //If you didn't click on a specific target
-    const pos = this.screenToSystem(this._getElementPosFromPage(e.pageX, e.pageY));
+    const pos = this.screenToSystem(screenPos);
 
     this.panTo(pos.x, pos.y);
   }
@@ -94,7 +87,7 @@ export class ASystemMapRenderer extends BEMComponent {
       .on('mouseup mouseleave', this._onMouseUp);
 
     this._lastCoord = this._getElementPosFromPage(e.pageX, e.pageY);
-    this._ignoreNextClick = false;
+    this._hasDragged = false;
   }
 
   _onMouseMove(e) {
@@ -107,13 +100,18 @@ export class ASystemMapRenderer extends BEMComponent {
     this.y -= deltaMousePos.y / this.zoom;
 
     this._lastCoord = mousePos;
-    this._ignoreNextClick = true;
+    this._hasDragged = true;
   }
 
   _onMouseUp(e) {
     $(window)
       .off('mousemove', this._onMouseMove)
       .off('mouseup mouseleave', this._onMouseUp);
+
+
+    if(!this._hasDragged) {
+      this._onClick(this._lastCoord);
+    }
 
     this._lastCoord = null;
   }

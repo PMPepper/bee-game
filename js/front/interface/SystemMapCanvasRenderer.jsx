@@ -19,7 +19,6 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
 
   render () {
     return <canvas
-            onClick={this._onClick}
             onContextMenu={this._onContextMenu}
             onMouseDown={this._onMouseDown}
             onMouseMove={this._checkCursorStyle}
