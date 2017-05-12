@@ -1,12 +1,17 @@
 @import 'functions';
 
-@mixin panel() {
-  background:#EEE;
-  padding: 4px 5px;
+@mixin panel($skipPaddingsAndMargin:false) {
+  //W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+
+  background: radial-gradient(250px 150px ellipse at left top, #ffffff 0%,#ffffff 48%,#ffffff 48%,#dfdfdf 100%);
+
+  @if $skipPaddingsAndMargin == false {
+    padding: 4px 5px;
+    margin:5px 5px 0;
+  }
+
   border: 1px solid #CCC;
   box-sizing: border-box;
   border-radius:3px;
-  margin:5px 5px 0;
 }
 
 /// Triangle helper mixin

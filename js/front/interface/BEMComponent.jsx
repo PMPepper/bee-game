@@ -27,6 +27,22 @@ export class BEMComponent extends React.Component {
     return this._bemClasses(this.blockName);
   }
 
+  get hasChildren() {
+    const children = this.children;
+
+    return children && children.length > 0;
+  }
+
+  get children() {
+    let children = this.props.children;
+
+    if(children && !(children instanceof Array)) {
+      return [children];
+    }
+
+    return children;
+  }
+
   element(name, extras) {
     return this._bemClasses(this.blockName+elementSep+name, extras);
   }

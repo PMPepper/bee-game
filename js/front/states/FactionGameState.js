@@ -120,7 +120,7 @@ export class FactionGameState {
     return false;
   }
 
-  getColonyOnBody(systemBody) {
+  getColonyOnBody(knownSystemBody) {
     if(!knownSystemBody.isColonisable) {//TODO this should be part of knownSystemBody
       return null;
     }
@@ -300,6 +300,7 @@ export class FactionGameState {
           data.minSurfaceTemp,
           data.maxSurfaceTemp,
           data.avgSurfaceTemp,
+          null,
           data.type );
 
         break;

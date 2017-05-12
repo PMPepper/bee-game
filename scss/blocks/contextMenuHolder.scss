@@ -1,6 +1,8 @@
+@import "../zIndexes";
+
 .contextMenuHolder{
   position: absolute;
-  z-index: 2;
+  z-index: $contextMenuHolderZIndex;
   width:100vw;
   height:100vh;
   background: rgba(0, 0, 0, 0.1)

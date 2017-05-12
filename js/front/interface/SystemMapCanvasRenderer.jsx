@@ -4,6 +4,12 @@ import {ASystemMapRenderer} from './ASystemMapRenderer.jsx';
 import {Circle} from '../graphics/Circle';
 import {Coord} from '../../core/Coord';
 
+const bgImg = new window.Image();
+bgImg.src = '../images/bg.png';
+bgImg.onload = (e) => {
+  //record that this is loaded
+}
+
 
 export class SystemMapCanvasRenderer extends ASystemMapRenderer {
   constructor(props) {
@@ -41,8 +47,9 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
     const element = this._element;
     const ctx = element.getContext('2d');
 
-    ctx.fillStyle = 'rgb(0, 0, 50)';
-    ctx.fillRect(0, 0, element.width, element.width);
+    var ptrn = ctx.createPattern(bgImg, 'repeat'); // Create a pattern with this image, and set it to "repeat".
+    ctx.fillStyle = ptrn;
+    ctx.fillRect(0, 0, element.width, element.height);
 
     system.knownSystemBodies.forEach((knownSystemBody) => {
       const position = this.systemToScreen(knownSystemBody.systemBody.position);
@@ -77,14 +84,17 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
       this.props.onShowSystemBodyContext(position, knownSystemBody);
     }
 
-    switch(systemBody.body.constructor.name) {
-      case 'Star':
+    switch(systemBody.body.type) {
+      case 'star':
         this.renderCircle(ctx, starCircle, coord, systemBody.body.radius * this.zoom, knownSystemBody.name, selectedHandler, contextMenuHandler);
         break;
-      case 'Moon':
+      case 'moon':
         this.renderCircle(ctx, moonCircle, coord, systemBody.body.radius * this.zoom, knownSystemBody.name, selectedHandler, contextMenuHandler);
         break;
-      case 'Planet':
+      case 'gas giant':
+        this.renderCircle(ctx, gasGiantCircle, coord, systemBody.body.radius * this.zoom, knownSystemBody.name, selectedHandler, contextMenuHandler);
+        break;
+      case 'planet':
       default:
         this.renderCircle(ctx, planetCircle, coord, systemBody.body.radius * this.zoom, knownSystemBody.name, selectedHandler, contextMenuHandler);
         break;
@@ -111,11 +121,20 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
     }
 
     if(label) {
+      ctx.save();
+
       ctx.font = '11px Arial, Helvetica, sans-serif';
       ctx.textAlign = 'center';
       ctx.fillStyle = 'rgb(255,255,255)';
 
+      ctx.shadowColor = '#000';
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.shadowBlur = 3;
+
       ctx.fillText(label, coord.x, coord.y + radius + 15);
+
+      ctx.restore();
     }
 
     if(selectedHandler) {
@@ -169,8 +188,9 @@ function getColourAlpha(colour) {
 
 
 //styles
-const starCircle = new Circle(7, 0xFFFFFFDD);
+const starCircle = new Circle(7, 0xFFFDFF00);
 const planetCircle = new Circle(5, 0xFF3333FF);
-const moonCircle = new Circle(4, 0xFF3333FF);
+const gasGiantCircle = new Circle(6, 0xFF6666CC);
+const moonCircle = new Circle(4, 0xFF4444FF);
 
 const orbitCircle = new Circle(1, null, 0x66FFFFFF, 0.8);

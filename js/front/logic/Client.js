@@ -4,6 +4,8 @@ import {render} from 'react-dom';
 import {SystemView} from '../interface/SystemView.jsx';
 import {ContextMenu} from '../interface/ContextMenu.jsx';
 import {DataMenu} from '../interface/DataMenu.jsx';
+import {Windowing} from '../interface/Windowing.jsx';
+import {Window} from '../interface/Window.jsx';
 
 const minTimeSinceLastUpdate = 0;
 
@@ -63,63 +65,32 @@ export class Client {
       return;
     }
 
-    this._systemView = render(<div>
-      {this._getContextMenu()}
-      <SystemView
-        selectedSystemId={this.selectedSystemId}
-        gameState={this._state}
-        constantPlayOn={this._constantPlay}
-        onConstantPlayToggle={() => {
-          this._constantPlay = !this._constantPlay;
-          this._isPlaying = false;
+    this._systemView = render(
+      <div>
+        {this._getContextMenu()}
+        {this._getWindows()}
+        <SystemView
+          selectedSystemId={this.selectedSystemId}
+          gameState={this._state}
+          constantPlayOn={this._constantPlay}
+          onConstantPlayToggle={() => {
+            this._constantPlay = !this._constantPlay;
+            this._isPlaying = false;
 
-          this.doRender();
-        }}
-        onGameStepSelected={(stepSize)=>{
-          this._engineUpdatePeriod = stepSize;
-          this._isPlaying = true;
+            this.doRender();
+          }}
+          onGameStepSelected={(stepSize)=>{
+            this._engineUpdatePeriod = stepSize;
+            this._isPlaying = true;
 
-          this.doRender();
-        }}
-        onShowSystemBodyContext={this._onShowSystemBodyContext}
-      /></div>, this.$element[0]);
+            this.doRender();
+          }}
+          onShowSystemBodyContext={this._onShowSystemBodyContext}
+        />
+      </div>, this.$element[0]);
   }
 
-  _onShowSystemBodyContext(position, knownSystemBody) {
-    const systemBody = knownSystemBody;
 
-    this._contextMenuPosition = position;
-    this._contextMenuItems = [];
-    this._onContextMenuClicked = (e, item) => {//TODO should probably be a class method?
-      switch(item.key) {
-        case 'view':
-          //TODO only colony window
-          break;
-        case 'create':
-          //TODO create colony
-          break;
-        case 'info':
-          //open system body info window
-      }
-    };
-
-    //create context menu data items
-    //TODO should be part of knownSystemBody
-    if(knownSystemBody.isColonisable) {
-      if(this._state.hasColonyOnBody(knownSystemBody)) {
-        this._contextMenuItems.push({type:'leaf', label: 'View colony', key: 'view'});
-      } else {
-        this._contextMenuItems.push({type:'leaf', label: 'Create colony', key: 'create'});
-      }
-    }
-
-    this._contextMenuItems.push({type:'leaf', label: 'See body details', key: 'info'});
-
-    //TODO view other colonies
-    
-
-    this.doRender();
-  }
 
   get selectedSystemId() {
     if(this._selectedSystemId != null) {
@@ -140,6 +111,7 @@ export class Client {
     return null;
   }
 
+  //Rendering methods
   _getContextMenu() {
     if(!this._contextMenuItems || !this._contextMenuPosition) {
       return null;
@@ -147,6 +119,56 @@ export class Client {
     return <div className="contextMenuHolder" onClick={this._clearContextMenu}><ContextMenu x={this._contextMenuPosition.x} y={this._contextMenuPosition.y}>
       <DataMenu items={this._contextMenuItems} onItemClick={this._onContextMenuClicked} />
     </ContextMenu></div>
+  }
+
+  _getWindows() {
+    /*<Window title="Hello Window" width="400px" x="300px">
+      <p>This is a window!</p>
+      <button className="js-closeWindow">Close</button>
+    </Window>*/
+    return  <Windowing>
+
+            </Windowing>
+  }
+
+  //Context menu methods
+  _onShowSystemBodyContext(position, knownSystemBody) {
+    const systemBody = knownSystemBody;
+
+    this._contextMenuPosition = position;
+    this._contextMenuItems = [];
+    this._onContextMenuClicked = (e, item) => {//TODO should probably be a class method?
+      switch(item.key) {
+        case 'view':
+          //TODO only colony window
+          console.log('View: ', knownSystemBody, this._state.getColonyOnBody(knownSystemBody));
+          break;
+        case 'create':
+          //TODO create colony
+          console.log('Create: ', knownSystemBody);
+          break;
+        case 'info':
+          //open system body info window
+          console.log('Info: ', knownSystemBody);
+      }
+    };
+
+    //create context menu data items
+    //TODO should be part of knownSystemBody
+    if(knownSystemBody.isColonisable) {
+      if(this._state.hasColonyOnBody(knownSystemBody)) {
+        this._contextMenuItems.push({type:'leaf', label: 'View colony', key: 'view'});
+      } else {
+        this._contextMenuItems.push({type:'leaf', label: 'Create colony', key: 'create'});
+      }
+    }
+
+    this._contextMenuItems.push({type:'leaf', label: 'See body details', key: 'info'});
+
+    //TODO view other colonies
+
+
+    this.doRender();
   }
 
   _clearContextMenu() {

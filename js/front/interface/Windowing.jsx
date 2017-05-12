@@ -1,66 +1,29 @@
 import React from 'react';
 import {render} from 'react-dom';
 import {Window} from './Window.jsx';
-import {Helpers} from './Helpers.jsx';
+import {BEMComponent} from './BEMComponent.jsx';
 
-export class Windowing extends React.Component {
-  constructor() {
-    super();
-
-    this._windows = {};
-    this._isMounted = false;
-  }
-
-  componentWillMount() {
-    this._isMounted = true;
-
-    this._updateState();
-  }
-
-  componentWillUnmount() {
-    this._isMounted = false;
+export class Windowing extends BEMComponent {
+  constructor(props) {
+    super(props, 'windowing');
   }
 
   render () {
-    console.log('render');
-
-    console.log( Helpers.mapObject(this.state.windows, (key, value) => {
-      return <li key={key} className="windowing-windows-item"><Window title={value} /></li>;
-    }) );
-
-
-    return <div className="windowing">
-      <ul className="windowing-windows">
-        {Helpers.mapObject(this.state.windows, (key, value) => {
-          return <li key={key} className="windowing-windows-item">
-            <Window {...value.props}>
-
-            </Window>
-          </li>;
-        })}
-      </ul>
+    return <div className={this.blockClasses}>
+      {this.hasChildren &&
+      <ul className={this.element('list')}>
+        {this.renderContents()}
+      </ul>}
     </div>
   }
 
-  addWindow(win) {
-    if(!win) {
-      return;
+  renderContents() {
+    if(!this.hasChildren) {
+      return null;
     }
 
-    if(!this._windows[win.id]) {
-      this._windows[win.id] = win;
-
-      this._updateState();
-    }
-  }
-
-  _updateState() {
-    if(!this._isMounted) {
-      return;
-    }
-
-    this.setState({
-      windows: this._windows
+    return this.children.map((item, index) => {
+        return <li className={this.element('item')} key={index}>{item}</li>
     });
   }
 }
