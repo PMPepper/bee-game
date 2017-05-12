@@ -6,6 +6,8 @@ import {BEMComponent} from './BEMComponent.jsx';
 export class Windowing extends BEMComponent {
   constructor(props) {
     super(props, 'windowing');
+
+    this._onWindowFocused = this._onWindowFocused.bind(this);
   }
 
   render () {
@@ -23,7 +25,13 @@ export class Windowing extends BEMComponent {
     }
 
     return this.children.map((item, index) => {
-        return <li className={this.element('item')} key={index}>{item}</li>
+        const clonedItem = React.cloneElement(item, {onFocus:this._onWindowFocused});
+
+        return <li className={this.element('item')} key={index}>{clonedItem}</li>
     });
+  }
+
+  _onWindowFocused(win) {
+    console.log('_onWindowFocused: ', win);
   }
 }

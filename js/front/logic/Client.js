@@ -126,8 +126,19 @@ export class Client {
       <p>This is a window!</p>
       <button className="js-closeWindow">Close</button>
     </Window>*/
-    return  <Windowing>
 
+    //TODO build windo object from data structure so I can dynamically add/remove + re-order
+
+    return  <Windowing>
+              <Window title="Hello Window" width="400" x="300">
+                <p>This is a window!</p>
+                <button className="js-closeWindow">Close</button>
+              </Window>
+              <Window title="Goodbye Window" width="450" x="500">
+                <p>This is another window!</p>
+                <p>It contains <b>MORE</b> content!</p>
+                <button className="js-closeWindow">Close</button>
+              </Window>
             </Windowing>
   }
 
