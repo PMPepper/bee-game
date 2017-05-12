@@ -1,16 +1,10 @@
-import {Immutable} from '../../../core/Immutable';
-import {SubStellarBody} from './SubStellarBody';
-
-export class SystemBodyState extends Immutable {
+export class SystemBodyState {
   constructor(id, body, position, orbit) {
-    super();
-
     this._id = id;
     this._body = body;
     this._position = position;
     this._orbit = orbit;
-
-    this._freeze(SystemBodyState);
+    this._system = null;
   }
 
   get id() {
@@ -21,15 +15,15 @@ export class SystemBodyState extends Immutable {
     return this._body;
   }
 
+  get system() {
+    return this._system;
+  }
+
   get position() {
     return this._position;
   }
 
   get orbit() {
     return this._orbit;
-  }
-
-  get isColonisable() {
-    return this.body instanceof SubStellarBody
   }
 }

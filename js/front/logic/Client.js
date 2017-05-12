@@ -12,7 +12,8 @@ export class Client {
     this._$element = $element;
     this._factionId = null;
     this._connector = null;
-    this._state;
+    this._state = null;
+    this._selectedSystemId = null;
 
     this._constantPlay = false;
     this._isPlaying = false;
@@ -65,7 +66,7 @@ export class Client {
     this._systemView = render(<div>
       {this._getContextMenu()}
       <SystemView
-        selecteSystemIndex="0"
+        selectedSystemId={this.selectedSystemId}
         gameState={this._state}
         constantPlayOn={this._constantPlay}
         onConstantPlayToggle={() => {
@@ -84,7 +85,9 @@ export class Client {
       /></div>, this.$element[0]);
   }
 
-  _onShowSystemBodyContext(position, systemBody) {
+  _onShowSystemBodyContext(position, knownSystemBody) {
+    const systemBody = knownSystemBody;
+
     this._contextMenuPosition = position;
     this._contextMenuItems = [];
     this._onContextMenuClicked = (e, item) => {//TODO should probably be a class method?
@@ -101,8 +104,9 @@ export class Client {
     };
 
     //create context menu data items
-    if(systemBody.isColonisable) {
-      if(this._state.hasColonyOnBody(systemBody)) {
+    //TODO should be part of knownSystemBody
+    if(knownSystemBody.isColonisable) {
+      if(this._state.hasColonyOnBody(knownSystemBody)) {
         this._contextMenuItems.push({type:'leaf', label: 'View colony', key: 'view'});
       } else {
         this._contextMenuItems.push({type:'leaf', label: 'Create colony', key: 'create'});
@@ -112,11 +116,28 @@ export class Client {
     this._contextMenuItems.push({type:'leaf', label: 'See body details', key: 'info'});
 
     //TODO view other colonies
-    if(systemBody.isColonisable) {
-
-    }
+    
 
     this.doRender();
+  }
+
+  get selectedSystemId() {
+    if(this._selectedSystemId != null) {
+      return this._selectedSystemId;
+    }
+
+    const knownSystems = this._state.knownSystems;
+
+    if(this._state != null) {
+      for(let id in knownSystems) {
+        if(knownSystems.hasOwnProperty(id)) {
+          return this._selectedSystemId = id;//just default to the first known system
+        }
+      }
+    }
+
+    //If you get here, there's nothing to render!
+    return null;
   }
 
   _getContextMenu() {
@@ -165,10 +186,10 @@ export class Client {
     this._isAwaitingEngineUpdate = true;
     this._isPlaying = this._constantPlay;
 
-    this._connector.updateEngine([{
+    this._connector.updateEngine({
       id:this._state.id,
       updateUntil:this._engineUpdatePeriod + this._state.time
-    }]);
+    });
   }
 
   get $element() {

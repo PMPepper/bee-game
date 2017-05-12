@@ -21,7 +21,7 @@ export class ASystemMapRenderer extends BEMComponent {
     this._targetX = this._x;
     this._targetY = this._y;
     this._targetZoom = this._zoom;
-    this._selectedSystemBody = null;
+    this._selectedKnownSystemBody = null;
 
     this._renderDirty = true;
 
@@ -50,7 +50,7 @@ export class ASystemMapRenderer extends BEMComponent {
   }
 
   _onClick (screenPos) {
-    this.selectedSystemBody = null;
+    this.selectedKnownSystemBody = null;
 
     //Check for click targets
     const clickTarget = this.getClickTargetAt(screenPos);
@@ -95,7 +95,7 @@ export class ASystemMapRenderer extends BEMComponent {
   }
 
   _onMouseMove(e) {
-    this.selectedSystemBody = null;
+    this.selectedKnownSystemBody = null;
 
     const mousePos = this._getElementPosFromPage(e.pageX, e.pageY);
     const deltaMousePos = mousePos.subtract(this._lastCoord);
@@ -156,8 +156,8 @@ export class ASystemMapRenderer extends BEMComponent {
       return;
     }
 
-    if(this.selectedSystemBody) {
-      const selectedBodyPos = this.selectedSystemBody.position;
+    if(this.selectedKnownSystemBody) {
+      const selectedBodyPos = this.selectedKnownSystemBody.systemBody.position;
 
       this._targetX = selectedBodyPos.x;
       this._targetY = selectedBodyPos.y;
@@ -320,17 +320,17 @@ export class ASystemMapRenderer extends BEMComponent {
     return null;
   }
 
-  get selectedSystemBody() {
-    if(this._selectedSystemBody == null || !this.props || !this.props.system) {
-      this._selectedSystemBody = null;
+  get selectedKnownSystemBody() {
+    if(this._selectedKnownSystemBody == null || !this.props || !this.props.system) {
+      this._selectedKnownSystemBody = null;
 
       return null;
     }
 
-    return this.props.system.getSystemBodyById(this._selectedSystemBody);
+    return this.props.system.getKnownSystemBodyById(this._selectedKnownSystemBody);
   }
 
-  set selectedSystemBody(systemBodyState) {
-    this._selectedSystemBody = systemBodyState ? systemBodyState.id : null;
+  set selectedKnownSystemBody(knownSystemBody) {
+    this._selectedKnownSystemBody = knownSystemBody ? knownSystemBody.id : null;
   }
 }

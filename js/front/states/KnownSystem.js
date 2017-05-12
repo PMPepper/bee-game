@@ -1,6 +1,7 @@
 export class KnownSystem {
-  constructor(id, system, name, discoveryDate, knownJumpPoints) {
+  constructor(id, knownSystemBodies, system, name, discoveryDate, knownJumpPoints) {
     this._id = id;
+    this._knownSystemBodies = knownSystemBodies;
     this._system = system;
     this._name = name;
     this._discoveryDate = discoveryDate;
@@ -9,6 +10,10 @@ export class KnownSystem {
 
   get id() {
     return this._id;
+  }
+
+  get knownSystemBodies() {
+    return this._knownSystemBodies;
   }
 
   get system() {
@@ -25,5 +30,21 @@ export class KnownSystem {
 
   get knownJumpPoints() {
     return this._knownJumpPoints;
+  }
+
+  addKnownSystemBody(knownSystemBody) {
+    this._knownSystemBodies.push(knownSystemBody);
+
+    knownSystemBody._system = this;
+  }
+
+  getKnownSystemBodyById(id) {
+    for(let i = 0; i < this._knownSystemBodies.length; i++) {
+      if(this._knownSystemBodies[i].id == id) {
+        return this._knownSystemBodies[i];
+      }
+    }
+
+    return null;
   }
 }

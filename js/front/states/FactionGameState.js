@@ -6,54 +6,147 @@ import {System} from './system/System';
 import {SystemBodyState} from './system/SystemBodyState';
 import {SystemBodyMineral} from './system/SystemBodyMineral';
 import {SystemBodyMinerals} from './system/SystemBodyMinerals';
-import {Faction} from './Faction';
 import {KnownSystem} from './KnownSystem';
 import {KnownSystemBody} from './KnownSystemBody';
 import {KnownFaction} from './KnownFaction';
+import {Colony} from './Colony';
 
 import {Coord} from '../../core/Coord';
 
-export class FactionGameState extends Faction {
+export class FactionGameState {
   constructor(stateObj) {
-    const id = +Object.keys(stateObj.factionEvents)[0];
+    const id = stateObj.factionId;
     const model = stateObj.models[id];
 
-    super(
-      id,
-      model.fullName,
-      model.shortName,
-      model.adjectiveName,
-      [],
-      [],
-      []
-    );
+    this._id = id;
+    this._fullName = model.fullName;
+    this._shortName = model.shortName;
+    this._adjectiveName = model.adjectiveName;
 
     this._time = stateObj.time;
-    this._events = stateObj.factionEvents[id];
+    this._events = stateObj.events;
 
-    this._factions = [this];
-    this._systems = [];
-
+    //temp prop, needed to de-serialisation
     this._models = stateObj.models;
+
+    //look-up for all known model states by id
     this._statesById = {};
     this._statesById[id] = this;
 
-    //now fully parse the state object
-    this._knownFactions = this._getState(model.knownFactionIds);
-    this._knownSystems = this._getState(model.knownSystemIds);
-    this._knownSystemBodies = this._getState(model.knownSystemBodyIds);
 
-    this._knownSystemBodies.forEach((knownSystemBody) => {
+    this._systems = {};
+    this._colonies = {};
+    this._knownFactions = {};
+    this._knownSystems = {};
+    this._knownSystemBodies = {};
+
+    this._knownSystemBySystemId = {};
+    this._knownSystemBodyBySystemBodyId = {};
+    this._knownFactionByFactionId = {};
+
+    //now fully parse the state object
+    this._getState(model.knownFactionIds);
+    this._getState(model.knownSystemIds);
+    this._getState(model.knownSystemBodyIds);
+    this._getState(model.colonyIds);
+
+    //set system body names
+    /*this._knownSystemBodies.forEach((knownSystemBody) => {
       const systemBody = knownSystemBody.systemBody;
 
       systemBody.body.name = this.getSystemBodyName(systemBody);
-    });
+    });*/
+
+    //link colonies to system bodies
+
 
     //Once parsing is complete
     delete this._models;
 
     console.log('FactionGameState: ', this);
   }
+
+  //Add state methods
+  addColony(colony) {
+    this._colonies[colony.id] = colony;
+  }
+
+  addSystem(systems) {
+    this._systems[systems.id] = systems;
+  }
+
+  addKnownSystem(knownSystem) {
+    this._knownSystems[knownSystem.id] = knownSystem;
+
+    this._knownSystemBySystemId[knownSystem.system.id] = knownSystem;
+  }
+
+  addKnownSystemBody(knownSystemBody) {
+    this._knownSystemBodies[knownSystemBody.id] = knownSystemBody;
+
+    this._knownSystemBodyBySystemBodyId[knownSystemBody.systemBody.id] = knownSystemBody;
+
+
+    this._knownSystemBySystemId[knownSystemBody.systemBody.system.id].addKnownSystemBody(knownSystemBody);
+  }
+
+  addKnownFaction(knownFaction) {
+    this._knownFactions[knownFaction.id] = knownFaction;
+
+    this._knownFactionByFactionId[knownFaction.factionId] = knownFaction;
+  }
+
+  //general faction methods
+  isKnownSystemBody(systemBody) {
+    return this._knownSystemBodyBySystemBodyId.hasOwnProperty(systemBody.id);
+  }
+
+  getKnownSystemBodyBySystemBody(systemBody) {
+    return this._knownSystemBodyBySystemBodyId[systemBody.id] || null;
+  }
+
+  getSystemBodyName(systemBody) {
+    const knownSystemBody = this.getKnownSystemBodyBySystemBody(systemBody);
+
+    //TODO default name scheme for system bodies
+    return knownSystemBody ? knownSystemBody.name : '??';
+  }
+
+  hasColonyOnBody(knownSystemBody) {
+    if(!knownSystemBody.isColonisable) {//TODO this should be part of knownSystemBody
+      return false;
+    }
+
+
+/*//TODO
+    const bodyColonies = systemBody.body.colonies;
+
+    for(let i = 0; i < bodyColonies.length; i++) {
+      if(bodyColonies[i].faction == this) {
+        return true;
+      }
+    }*/
+
+    return false;
+  }
+
+  getColonyOnBody(systemBody) {
+    if(!this.hasColonyOnBody(systemBody)) {
+      return null;
+    }
+
+    const bodyColonies = systemBody.body.colonies;
+
+    for(let i = 0; i < bodyColonies.length; i++) {
+      if(bodyColonies[i].faction == this) {
+        return bodyColonies[i];
+      }
+    }
+  }
+
+  /////////////////////
+  // Parsing methods //
+  /////////////////////
 
   //state object parsing methods
   _getState(data) {
@@ -69,9 +162,6 @@ export class FactionGameState extends Faction {
 
     switch(data['class']) {
       //faction states
-      case 'Faction':
-        state = this._getFaction(data);
-        break;
       case 'KnownFaction':
         state = this._getKnownFaction(data);
         break;
@@ -99,6 +189,9 @@ export class FactionGameState extends Faction {
         state = this._getOrbit(data);
         break;
 
+      case 'Colony':
+        state = this._getColony(data);
+        break;
 
       //Misc
       case 'Coord':
@@ -118,29 +211,13 @@ export class FactionGameState extends Faction {
     });
   }
 
-  _getFaction(data) {
-    if(!data) {
-      return null;
-    }
-
-    //id, name, knownFactions, knownSystems
-    return new Faction(
-      data.id,
-      data.fullName,
-      data.shortName,
-      data.adjectiveName,
-      this._getState(data.knownFactionIds),
-      this._getState(data.knownSystemIds)
-    );
-  }
-
   _getKnownFaction(data) {
     if(!data) {
       return null;
     }
 
     //id, faction, name
-    return new KnownFaction(data.id, this._getStateById(data.factionId), data.fullName, data.shortName, data.adjectiveName);
+    return new KnownFaction(data.id, data.factionId, data.fullName, data.shortName, data.adjectiveName);
   }
 
   _getKnownSystem(data) {
@@ -148,14 +225,21 @@ export class FactionGameState extends Faction {
       return null;
     }
 
+    console.log('_getKnownSystem');
+
+    //TODO get the known bodies
+    const bodies = [];
+
     //id, system, name, discoveryDate, knownJumpPoints
-    return new KnownSystem(data.id, this._getStateById(data.systemId), data.name, data.discoveryDate, data.knownJumpPoints);//TODO known jump points
+    return new KnownSystem(data.id, bodies, this._getStateById(data.systemId), data.name, data.discoveryDate, data.knownJumpPoints);//TODO known jump points
   }
 
   _getKnownSystemBody(data) {
     if(!data) {
       return null;
     }
+
+    console.log('_getKnownSystemBody');
 
     return new KnownSystemBody(data.id, this._getStateById(data.systemBodyId), data.name, this._getStateById(data.mineralsId));//TODO
   }
@@ -183,6 +267,7 @@ export class FactionGameState extends Faction {
   }
 
   _getSystemBodyState(data) {
+    console.log('_getSystemBodyState');
     const state = new SystemBodyState(
       data.id,
       this._getSystemBody(data.body),
@@ -260,6 +345,17 @@ export class FactionGameState extends Faction {
     return state;
   }
 
+  _getColony(data) {
+    if(!data) {
+      return null;
+    }
+
+    //TODO minerals
+    const state = new Colony(data.id, this._getStateById(data.systemBodyId), data.population, null, null);
+
+    return state;
+  }
+
   _addState(state) {
     if(!state) {
       return;
@@ -269,10 +365,11 @@ export class FactionGameState extends Faction {
 
     switch(state.constructor.name) {
       case 'System':
-        this._systems.push(state);
-        break;
       case 'KnownSystem':
-        this._knownSystems.push(state);
+      case 'KnownSystemBody':
+      case 'Colony':
+      case 'KnownFaction':
+        this['add'+state.constructor.name](state);
         break;
     }
   }
@@ -281,25 +378,62 @@ export class FactionGameState extends Faction {
     return this._statesById.hasOwnProperty(id) ? this._statesById[id] : ( this._models.hasOwnProperty(id) ? this._getState(this._models[id]) : null);
   }
 
+  _statesArrayToObject(arr) {
+    const obj = {};
 
-  //Getters/setters
+    arr.forEach((state) => {
+      obj[state.id] = state;
+    })
+
+    return obj;
+  }
+
+  /////////////////////
+  // Getters/setters //
+  /////////////////////
+
+  get id() {
+    return this._id;
+  }
+
+  get fullName() {
+    return this._fullName;
+  }
+
+  get shortName() {
+    return this._shortName;
+  }
+
+  get adjectiveName() {
+    return this._adjectiveName;
+  }
+
+  get knownFactions() {
+    return this._knownFactions;
+  }
+
+  get knownSystems() {
+    return this._knownSystems;
+  }
+
+  get knownSystemBodies() {
+    return this._knownSystemBodies;
+  }
+
   get time() {
     return this._time;
-  }
-
-  get factionId() {
-    return this._factionId;
-  }
-
-  get factionName() {
-    return this.factionName;
   }
 
   get systems() {
     return this._systems;
   }
 
+  get colonies() {
+    return this._colonies;
+  }
+
   get events() {
     return this._events;
   }
+
 }

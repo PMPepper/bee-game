@@ -56,9 +56,9 @@ export class Game extends Model {
     return updatedFactions;
   }
 
-  getGameStateForFactions (factions) {
+  getGameStateForFaction (faction) {
     const allModels = {};
-    const factionEvents = {};
+    const factionEvents = [];
 
     const getAndAddStateById = (id) => {
       if(allModels.hasOwnProperty(id)) {
@@ -94,21 +94,18 @@ export class Game extends Model {
       }
     }
 
-    factions.forEach((faction) => {
-      const factionStateObj = faction.getState();
+    const factionStateObj = faction.getState();
 
-      //get all referenced models and flatten
-      getAllStateObjs(factionStateObj);
+    //get all referenced models and flatten
+    getAllStateObjs(factionStateObj);
 
-      //TODO populate array with event state objects
-      factionEvents[factionStateObj.id] = [];
-    });
-
+    //TODO populate factionEvents array with event state objects
 
     return {
       models: allModels,
       time: this._time,
-      factionEvents: factionEvents
+      factionId: factionStateObj.id,
+      events: factionEvents
     };
   }
 
@@ -142,6 +139,7 @@ export class Game extends Model {
     return this._craft;
   }
 
+  //Used for saving the game (not yet implemented)
   getState () {
     return this._state({
       'class': 'Game',

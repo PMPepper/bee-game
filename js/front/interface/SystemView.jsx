@@ -67,7 +67,7 @@ export class SystemView extends BEMComponent {
   }
 
   get selectedSystem () {
-    return this.props.gameState.systems[this.props.selecteSystemIndex || 0];
+    return this.props.gameState.knownSystems[this.props.selectedSystemId];
   }
 
   get knownSystems() {
@@ -75,7 +75,16 @@ export class SystemView extends BEMComponent {
   }
 
   get knownSystemNames () {
-    return this.knownSystems.map((knownSystem) => {return knownSystem.name});
+    const names = [];
+    const knownSystems = this.knownSystems;
+
+    for(let id in knownSystems) {
+      if(knownSystems.hasOwnProperty(id)) {
+        names.push(knownSystems[id].name);
+      }
+    }
+
+    return names;
   }
 
   //deal with resizing

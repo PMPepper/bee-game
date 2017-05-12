@@ -14,8 +14,8 @@ export class System {
       }
     })
 
-    Object.freeze(this._bodies);
-    Object.freeze(this._stars);
+    this._bodies;
+    this._stars;
   }
 
   get id() {
@@ -30,7 +30,7 @@ export class System {
     return this._stars;
   }
 
-  getSystemBodyById(id) {
+  /*getSystemBodyById(id) {
     const bodies = this.bodies;
 
     for(let i = 0; i < bodies.length; i++) {
@@ -40,7 +40,7 @@ export class System {
     }
 
     return null;
-  }
+  }*/
 
   /*getBodyByName(name) {
     const bodies = this.bodies;

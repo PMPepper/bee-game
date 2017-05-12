@@ -1,4 +1,5 @@
 import {Model} from './Model'
+import {MineralsStockpile} from './MineralsStockpile'
 
 export class Colony extends Model {
   constructor (faction, systemBody, population, mineralsStockpile, orbitalMinerals) {
@@ -7,8 +8,8 @@ export class Colony extends Model {
     this._faction = faction;
     this._systemBody = systemBody;
     this._population = population;
-    this._mineralsStockpile = mineralsStockpile
-    this._orbitalMinerals = orbitalMinerals
+    this._mineralsStockpile = mineralsStockpile || new MineralsStockpile()
+    this._orbitalMinerals = orbitalMinerals || new MineralsStockpile()
 
     faction.addColony(this);
   }
@@ -35,11 +36,11 @@ export class Colony extends Model {
 
   getState () {
     return this._state({
-      factionId:          Model.id(this.faction),
-      systemBodyId:       Model.id(this.systemBody),
-      population:         Model.id(this.population),
-      mineralsStockpile:  Model.id(this.mineralsStockpile),
-      orbitalMinerals:    Model.id(this.orbitalMinerals)
+      factionId:            Model.id(this.faction),
+      systemBodyId:         Model.id(this.systemBody),
+      population:           Model.id(this.population),
+      mineralsStockpileId:  Model.id(this.mineralsStockpile),
+      orbitalMineralsId:    Model.id(this.orbitalMinerals)
     });
   }
 }

@@ -11,7 +11,7 @@ export class ConnectorBasic {
     //register client factions with engine
     //engine can handle a clint with multiple factions,
     //but right now Client is single faction.
-    this._engine.addClientConnectorForFactions(this, [client.factionId]);
+    this._engine.addClientConnectorForFaction(this, client.factionId);
 
     //get initial game state
     client.setConnector(this);
@@ -57,7 +57,7 @@ export class ConnectorBasic {
   }
 
   _doGetCurrentGameState() {
-    const gameState = this._engine.getCurrentGameState(this._engine.getFactionsForClientConnector(this));
+    const gameState = this._engine.getCurrentGameState(this._engine.getFactionForClientConnector(this));
 
     setTimeout(() => {
       this._updateClient(gameState);

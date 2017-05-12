@@ -44,17 +44,18 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
     ctx.fillStyle = 'rgb(0, 0, 50)';
     ctx.fillRect(0, 0, element.width, element.width);
 
-    system.bodies.forEach((systemBody) => {
-      const position = this.systemToScreen(systemBody.position);
+    system.knownSystemBodies.forEach((knownSystemBody) => {
+      const position = this.systemToScreen(knownSystemBody.systemBody.position);
 
-      this.renderObject(ctx, systemBody, position);
+      this.renderObject(ctx, knownSystemBody, position);
     }, this);
 
     this._renderDirty = false;
   }
 
-  renderObject(ctx, systemBody, coord) {
+  renderObject(ctx, knownSystemBody, coord) {
     const minBodyOrbitRenderSize = 5;
+    const systemBody = knownSystemBody.systemBody;
 
     if(systemBody.orbit && (systemBody.orbit.radius*this.zoom < minBodyOrbitRenderSize)) {
       return;
@@ -69,27 +70,25 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
     }
 
     const selectedHandler = () => {
-      this.selectedSystemBody = systemBody;
+      this.selectedKnownSystemBody = knownSystemBody;
     }
 
     const contextMenuHandler = (e, position) => {
-      this.props.onShowSystemBodyContext(position, systemBody);
+      this.props.onShowSystemBodyContext(position, knownSystemBody);
     }
 
     switch(systemBody.body.constructor.name) {
       case 'Star':
-        this.renderCircle(ctx, starCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name, selectedHandler, contextMenuHandler);
+        this.renderCircle(ctx, starCircle, coord, systemBody.body.radius * this.zoom, knownSystemBody.name, selectedHandler, contextMenuHandler);
         break;
       case 'Moon':
-        this.renderCircle(ctx, moonCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name, selectedHandler, contextMenuHandler);
+        this.renderCircle(ctx, moonCircle, coord, systemBody.body.radius * this.zoom, knownSystemBody.name, selectedHandler, contextMenuHandler);
         break;
       case 'Planet':
       default:
-        this.renderCircle(ctx, planetCircle, coord, systemBody.body.radius * this.zoom, systemBody.body.name, selectedHandler, contextMenuHandler);
+        this.renderCircle(ctx, planetCircle, coord, systemBody.body.radius * this.zoom, knownSystemBody.name, selectedHandler, contextMenuHandler);
         break;
     }
-
-
   }
 
   renderCircle(ctx, circle, coord, minRadius, label, selectedHandler, contextMenuHandler) {
