@@ -50,16 +50,6 @@ export class FactionGameState {
     this._getState(model.knownSystemBodyIds);
     this._getState(model.colonyIds);
 
-    //set system body names
-    /*this._knownSystemBodies.forEach((knownSystemBody) => {
-      const systemBody = knownSystemBody.systemBody;
-
-      systemBody.body.name = this.getSystemBodyName(systemBody);
-    });*/
-
-    //link colonies to system bodies
-
-
     //Once parsing is complete
     delete this._models;
 
@@ -117,31 +107,35 @@ export class FactionGameState {
       return false;
     }
 
+    const colonies = this.colonies;
 
-/*//TODO
-    const bodyColonies = systemBody.body.colonies;
-
-    for(let i = 0; i < bodyColonies.length; i++) {
-      if(bodyColonies[i].faction == this) {
-        return true;
+    for(let id in colonies) {
+      if(colonies.hasOwnProperty(id)) {
+        if(colonies[id].systemBody == knownSystemBody.systemBody) {
+          return true
+        }
       }
-    }*/
+    }
 
     return false;
   }
 
   getColonyOnBody(systemBody) {
-    if(!this.hasColonyOnBody(systemBody)) {
+    if(!knownSystemBody.isColonisable) {//TODO this should be part of knownSystemBody
       return null;
     }
 
-    const bodyColonies = systemBody.body.colonies;
+    const colonies = this.colonies;
 
-    for(let i = 0; i < bodyColonies.length; i++) {
-      if(bodyColonies[i].faction == this) {
-        return bodyColonies[i];
+    for(let id in colonies) {
+      if(colonies.hasOwnProperty(id)) {
+        if(colonies[id].systemBody == knownSystemBody.systemBody) {
+          return colonies[id];
+        }
       }
     }
+
+    return null;
   }
 
   /////////////////////
@@ -225,9 +219,6 @@ export class FactionGameState {
       return null;
     }
 
-    console.log('_getKnownSystem');
-
-    //TODO get the known bodies
     const bodies = [];
 
     //id, system, name, discoveryDate, knownJumpPoints
@@ -238,8 +229,6 @@ export class FactionGameState {
     if(!data) {
       return null;
     }
-
-    console.log('_getKnownSystemBody');
 
     return new KnownSystemBody(data.id, this._getStateById(data.systemBodyId), data.name, this._getStateById(data.mineralsId));//TODO
   }
@@ -267,7 +256,6 @@ export class FactionGameState {
   }
 
   _getSystemBodyState(data) {
-    console.log('_getSystemBodyState');
     const state = new SystemBodyState(
       data.id,
       this._getSystemBody(data.body),
