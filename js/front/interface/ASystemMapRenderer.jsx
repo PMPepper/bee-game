@@ -86,6 +86,8 @@ export class ASystemMapRenderer extends BEMComponent {
       return;
     }
 
+    e.preventDefault();
+
     $(window)
       .on('mousemove', this._onMouseMove)
       .on('mouseup mouseleave', this._onMouseUp);
