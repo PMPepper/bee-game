@@ -7,8 +7,6 @@ export class Window extends BEMComponent {
   constructor(props) {
     super(props, 'window');
 
-    this._key = id++;
-
     this.state = {style: {}}
 
     this._onHeaderMouseDown = this._onHeaderMouseDown.bind(this);
@@ -16,10 +14,19 @@ export class Window extends BEMComponent {
     this._onHeaderMouseUp = this._onHeaderMouseUp.bind(this);
 
     this._dragLastCoord = null;
-  }
 
-  get key() {
-    return this._key;
+    this._modifiers = {
+      isFocussed: {
+        type: 'boolean',
+        preset: false
+      },
+      draggable: {
+        type: 'boolean'
+      },
+      resizeable: {
+        type: 'boolean'
+      }
+    };
   }
 
   componentWillMount() {
@@ -44,7 +51,7 @@ export class Window extends BEMComponent {
 
   render () {
     return <section className={this.blockClasses} style={this.state.style} onMouseDown={() =>{this.props.onFocus(this)}}>
-      <header className={this.element('header')} onMouseDown={this.props.draggable ? this._onHeaderMouseDown : null}>This is a window: {this.props.title}.</header>
+      <header className={this.element('header')} onMouseDown={this.props.draggable ? this._onHeaderMouseDown : null}>{this.props.title}</header>
       <div className={this.element('body')}>
         {this.props.children}
       </div>
@@ -94,5 +101,3 @@ Window.defaultProps = {
   x:200,
   y:200
 };
-
-let id = 0;

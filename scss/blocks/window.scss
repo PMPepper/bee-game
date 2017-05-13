@@ -11,5 +11,13 @@
     padding:4px 5px;
     font-weight: bold;
     font-size: 1.4rem;
+
+    &_isFocussed {
+      background: #3333DD;
+    }
+
+    &_draggable_true {
+      cursor: pointer;
+    }
   }
 }

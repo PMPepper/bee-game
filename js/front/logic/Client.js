@@ -5,7 +5,10 @@ import {SystemView} from '../interface/SystemView.jsx';
 import {ContextMenu} from '../interface/ContextMenu.jsx';
 import {DataMenu} from '../interface/DataMenu.jsx';
 import {Windowing} from '../interface/Windowing.jsx';
-import {Window} from '../interface/Window.jsx';
+import {WindowDefinition} from '../interface/WindowDefinition';
+
+//windows stuff
+import {ColonyDetailsWindow} from '../interface/ColonyDetailsWindow.jsx';
 
 const minTimeSinceLastUpdate = 0;
 
@@ -34,6 +37,9 @@ export class Client {
     this._onContextMenuClicked = null;
     this._contextMenuPosition = null;
 
+    //
+    this._windows = [];
+
   }
 
   get factionId() {
@@ -47,8 +53,6 @@ export class Client {
   }
 
   update(newStateObj) {
-    //console.log('Client.update: ', newStateObj);
-
     if(!newStateObj) {
       return;
     }
@@ -122,24 +126,7 @@ export class Client {
   }
 
   _getWindows() {
-    /*<Window title="Hello Window" width="400px" x="300px">
-      <p>This is a window!</p>
-      <button className="js-closeWindow">Close</button>
-    </Window>*/
-
-    //TODO build windo object from data structure so I can dynamically add/remove + re-order
-
-    return  <Windowing>
-              <Window title="Hello Window" width="400" x="300">
-                <p>This is a window!</p>
-                <button className="js-closeWindow">Close</button>
-              </Window>
-              <Window title="Goodbye Window" width="450" x="500">
-                <p>This is another window!</p>
-                <p>It contains <b>MORE</b> content!</p>
-                <button className="js-closeWindow">Close</button>
-              </Window>
-            </Windowing>
+    return  <Windowing windows={this._windows}></Windowing>
   }
 
   //Context menu methods
@@ -152,7 +139,8 @@ export class Client {
       switch(item.key) {
         case 'view':
           //TODO only colony window
-          console.log('View: ', knownSystemBody, this._state.getColonyOnBody(knownSystemBody));
+          this._windows.push(new ColonyDetailsWindow());//TODO focus on this window? Also, center newly opened window
+          this.doRender();
           break;
         case 'create':
           //TODO create colony
