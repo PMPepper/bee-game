@@ -5,7 +5,7 @@ import {SystemView} from '../interface/SystemView.jsx';
 import {ContextMenu} from '../interface/ContextMenu.jsx';
 import {DataMenu} from '../interface/DataMenu.jsx';
 import {Windowing} from '../interface/Windowing.jsx';
-import {WindowDefinition} from '../interface/WindowDefinition';
+//import {WindowDefinition} from '../interface/WindowDefinition';
 
 //windows stuff
 import {ColonyDetailsWindow} from '../interface/ColonyDetailsWindow.jsx';
@@ -32,14 +32,16 @@ export class Client {
     this.tick = this.tick.bind(this);
     this._onShowSystemBodyContext = this._onShowSystemBodyContext.bind(this);
     this._clearContextMenu = this._clearContextMenu.bind(this);
+    this._onComponentChanged = this._onComponentChanged.bind(this);
 
     this._contextMenuItems = null;
     this._onContextMenuClicked = null;
     this._contextMenuPosition = null;
 
-    //
-    this._windows = [];
+    //windowing component
+    this._windowing = new Windowing.Controller();
 
+    this._windowing.addListener('changed', this._onComponentChanged);
   }
 
   get factionId() {
@@ -72,7 +74,7 @@ export class Client {
     this._systemView = render(
       <div>
         {this._getContextMenu()}
-        {this._getWindows()}
+        {this._windowing.render()}
         <SystemView
           selectedSystemId={this.selectedSystemId}
           gameState={this._state}
@@ -94,8 +96,6 @@ export class Client {
       </div>, this.$element[0]);
   }
 
-
-
   get selectedSystemId() {
     if(this._selectedSystemId != null) {
       return this._selectedSystemId;
@@ -115,6 +115,10 @@ export class Client {
     return null;
   }
 
+  _onComponentChanged() {
+    this.doRender();
+  }
+
   //Rendering methods
   _getContextMenu() {
     if(!this._contextMenuItems || !this._contextMenuPosition) {
@@ -123,10 +127,6 @@ export class Client {
     return <div className="contextMenuHolder" onClick={this._clearContextMenu}><ContextMenu x={this._contextMenuPosition.x} y={this._contextMenuPosition.y}>
       <DataMenu items={this._contextMenuItems} onItemClick={this._onContextMenuClicked} />
     </ContextMenu></div>
-  }
-
-  _getWindows() {
-    return  <Windowing windows={this._windows}></Windowing>
   }
 
   //Context menu methods
@@ -139,7 +139,9 @@ export class Client {
       switch(item.key) {
         case 'view':
           //TODO only colony window
-          this._windows.push(new ColonyDetailsWindow());//TODO focus on this window? Also, center newly opened window
+          //this._windows.push(new ColonyDetailsWindow());//TODO focus on this window? Also, center newly opened window
+          this._windowing.addWindow(new ColonyDetailsWindow());
+
           this.doRender();
           break;
         case 'create':
