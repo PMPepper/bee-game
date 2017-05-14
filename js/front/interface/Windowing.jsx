@@ -1,6 +1,5 @@
 import React from 'react';
 import {render} from 'react-dom';
-import {WindowDefinition} from './WindowDefinition';
 import {Window} from './Window.jsx';
 import {BEMComponent} from './BEMComponent.jsx';
 import {ReactComponentController} from './ReactComponentController';
@@ -31,24 +30,13 @@ class WindowingRenderer extends BEMComponent {
     }
 
     const windows = this.props.windows;
-    const focussedWindow = this.focussedWindow;
+    const focussedWindow = this.props.focussedWindow;
 
     return windows.map((win, index) => {
       const isFocussed = win == focussedWindow;
 
       return <li className={this.element('item')} key={win.id}>
-              <Window
-                isFocussed={isFocussed}
-                title={win.title}
-                width={win.width}
-                height={win.height}
-                x={win.x}
-                y={win.y}
-                draggable={win.draggable}
-                resizeable={win.resizeable}
-                onFocus={() => {this.focussedWindow = win;}}>
-                {win.render()}
-              </Window>
+              {win.render(isFocussed, () => {this.focussedWindow = win;})}
             </li>
     });
   }
@@ -59,6 +47,7 @@ class WindowingController extends ReactComponentController {
     super();
 
     this._windows = windows || [];
+    this._windowsById = {};
 
     this._focussedWindow = null;
 
@@ -92,8 +81,24 @@ class WindowingController extends ReactComponentController {
 
     this._focussedWindow = value;
 
+    value.visible = true;
+
     //trigger re-render
     this._doReRender();
+  }
+
+  get focussedWindowId() {
+    return this.focussedWindow ? this.focussedWindow.id : null ;
+  }
+
+  set focussedWindowId(value) {
+    const win = this._windowsById[value];
+
+    if(!win) {
+      throw new Error('Cannot set focus, window id not known');
+    }
+
+    this.focussedWindow = win;
   }
 
   get hasWindows() {
@@ -101,18 +106,20 @@ class WindowingController extends ReactComponentController {
   }
 
   render() {
-    return <WindowingRenderer onSetElement={this._onSetElement} windows={this.windows}></WindowingRenderer>
+    return <WindowingRenderer onSetElement={this._onSetElement} windows={this.windows} focussedWindow={this.focussedWindow}></WindowingRenderer>
   }
 
-  addWindow(win, focus) {
+  addWindow(id, title, content, options = null) {
+    options = Object.assign({}, {width:null, height:null, x:null, y:null, draggable:true, resizeable:false}, options);
+
+    const win = new Window.Controller(id, title, content, options.width, options.height, options.x, options.y, options.draggable, options.resizeable);
+
+    this._windowsById[id] = win;
     this._windows.push(win);
 
-    if(focus) {
-      this.focussedWindow = win;
-    } else {
-      //trigger rect re-render
-      this._doReRender();
-    }
+    win.addListener('changed', this._doReRender);
+
+    this._doReRender();
   }
 
   _onWindowClick(e) {
@@ -124,27 +131,17 @@ class WindowingController extends ReactComponentController {
   }
 
   _getWindowById(id) {
-    const windows = this._windows;
+    const win = this._windowsById[value];
 
-    for(let i = 0; i < windows.length; i++) {
-      if(windows[i].id == id) {
-        return windows[i];
-      }
-    }
-
-    return null;
+    return win || null;
   }
 
   _isKnownWindow(win) {
-    const windows = this._windows;
-
-    for(let i = 0; i < windows.length; i++) {
-      if(windows[i] == win) {
-        return true;
-      }
+    if(!win) {
+      return false;
     }
 
-    return false;
+    return this._windowsById[win.id] == win;
   }
 }
 

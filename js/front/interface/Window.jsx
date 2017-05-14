@@ -2,8 +2,9 @@ import React from 'react';
 import {render} from 'react-dom';
 import {BEMComponent} from './BEMComponent.jsx';
 import {Coord} from '../../core/Coord';
+import {ReactComponentController} from './ReactComponentController';
 
-export class Window extends BEMComponent {
+export class WindowRenderer extends BEMComponent {
   constructor(props) {
     super(props, 'window');
 
@@ -50,10 +51,14 @@ export class Window extends BEMComponent {
   }
 
   render () {
+    if(!this.props.visible){
+      return null;
+    }
+
     return <section className={this.blockClasses} style={this.state.style} onMouseDown={() =>{this.props.onFocus(this)}}>
       <header className={this.element('header')} onMouseDown={this.props.draggable ? this._onHeaderMouseDown : null}>{this.props.title}</header>
       <div className={this.element('body')}>
-        {this.props.children}
+        {this.props.content.render()}
       </div>
     </section>
   }
@@ -95,9 +100,93 @@ export class Window extends BEMComponent {
   }
 }
 
-Window.defaultProps = {
+WindowRenderer.defaultProps = {
   draggable: true,
-  resizeable: false,
-  x:200,
-  y:200
+  resizeable: false
 };
+
+export class WindowController extends ReactComponentController {
+  constructor(id, title, content, width = null, height = null, x = null, y = null, draggable = true, resizeable = false) {
+    super();
+
+    this._id = id;
+    this._title = title;
+    this._content = content;
+    this._width = width;
+    this._height = height;
+    this._x = x;
+    this._y = y;
+    this._draggable = draggable;
+    this._resizeable = resizeable;
+
+    this._visible = false;
+  }
+
+  get id() {
+    return this._id;
+  }
+
+  get title() {
+    return this._title;
+  }
+
+  get width() {
+    return this._width;
+  }
+
+  get height() {
+    return this._height;
+  }
+
+  get x() {
+    return this._x;
+  }
+
+  get y() {
+    return this._y;
+  }
+
+  get draggable() {
+    return this._draggable;
+  }
+
+  get resizeable() {
+    return this._resizeable;
+  }
+
+  get visible() {
+    return this._visible;
+  }
+
+  set visible(value) {
+    value = !!value;
+
+    if(value != this._visible) {
+      this._visible = value;
+
+      this._doReRender();
+    }
+  }
+
+  render(isFocussed, onFocus) {
+    return <WindowRenderer
+      isFocussed={isFocussed}
+      title={this.title}
+      width={this.width}
+      height={this.height}
+      x={this.x}
+      y={this.y}
+      draggable={this.draggable}
+      resizeable={this.resizeable}
+      onFocus={onFocus}
+      visible={this.visible}
+      content={this._content}>
+    </WindowRenderer>
+  }
+}
+
+
+export const Window = Object.freeze({
+  Controller: WindowController,
+  Renderer: WindowRenderer
+});

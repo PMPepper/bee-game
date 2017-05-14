@@ -5,10 +5,9 @@ import {SystemView} from '../interface/SystemView.jsx';
 import {ContextMenu} from '../interface/ContextMenu.jsx';
 import {DataMenu} from '../interface/DataMenu.jsx';
 import {Windowing} from '../interface/Windowing.jsx';
-//import {WindowDefinition} from '../interface/WindowDefinition';
 
 //windows stuff
-import {ColonyDetailsWindow} from '../interface/ColonyDetailsWindow.jsx';
+import {ColonyDetails} from '../interface/ColonyDetails.jsx';
 
 const minTimeSinceLastUpdate = 0;
 
@@ -38,10 +37,18 @@ export class Client {
     this._onContextMenuClicked = null;
     this._contextMenuPosition = null;
 
+    this._renderDirty = true;
+
     //windowing component
+    this._colonyDetailsPanel = new ColonyDetails.Controller();
+
+
     this._windowing = new Windowing.Controller();
+    this._windowing.addWindow('colonyDetails', 'Colony Details', this._colonyDetailsPanel);
 
     this._windowing.addListener('changed', this._onComponentChanged);
+    this._colonyDetailsPanel.addListener('changed', this._onComponentChanged);
+
   }
 
   get factionId() {
@@ -51,7 +58,7 @@ export class Client {
   set factionId(value) {
     this._factionId = value;
 
-    this.doRender();
+    this._reRender();
   }
 
   update(newStateObj) {
@@ -63,11 +70,15 @@ export class Client {
     this._isAwaitingEngineUpdate = false;
     this._lastUpdateTime = Date.now() / 1000;
 
-    this.doRender();
+    this._reRender();
   }
 
-  doRender() {
-    if(!this._state) {
+  _reRender() {
+    this._renderDirty = true;
+  }
+
+  _doRender() {
+    if(!this._state || !this._renderDirty) {
       return;
     }
 
@@ -83,17 +94,20 @@ export class Client {
             this._constantPlay = !this._constantPlay;
             this._isPlaying = false;
 
-            this.doRender();
+            this._reRender();
           }}
           onGameStepSelected={(stepSize)=>{
             this._engineUpdatePeriod = stepSize;
             this._isPlaying = true;
 
-            this.doRender();
+            this._reRender();
           }}
           onShowSystemBodyContext={this._onShowSystemBodyContext}
         />
       </div>, this.$element[0]);
+
+    //no longer render dirty
+    this._renderDirty = false;
   }
 
   get selectedSystemId() {
@@ -116,7 +130,7 @@ export class Client {
   }
 
   _onComponentChanged() {
-    this.doRender();
+    this._reRender();
   }
 
   //Rendering methods
@@ -137,12 +151,11 @@ export class Client {
     this._contextMenuItems = [];
     this._onContextMenuClicked = (e, item) => {//TODO should probably be a class method?
       switch(item.key) {
-        case 'view':
-          //TODO only colony window
-          //this._windows.push(new ColonyDetailsWindow());//TODO focus on this window? Also, center newly opened window
-          this._windowing.addWindow(new ColonyDetailsWindow());
-
-          this.doRender();
+        case 'view'://TODO center newly opened window
+          let colony = this._state.getColonyOnBody(knownSystemBody);
+          
+          this._windowing.focussedWindowId = 'colonyDetails';
+          this._colonyDetailsPanel.colony = colony;
           break;
         case 'create':
           //TODO create colony
@@ -169,7 +182,7 @@ export class Client {
     //TODO view other colonies
 
 
-    this.doRender();
+    this._reRender();
   }
 
   _clearContextMenu() {
@@ -181,7 +194,7 @@ export class Client {
     this._contextMenuItems = menuItems;
     this._onContextMenuClicked = itemClickHandler;
 
-    this.doRender();
+    this._reRender();
   }
 
   tick () {
@@ -191,15 +204,15 @@ export class Client {
 
     window.requestAnimationFrame(this.tick);
 
-    if(this._isAwaitingEngineUpdate || !this._isPlaying) {
-      return ;
+    if(!this._isAwaitingEngineUpdate && this._isPlaying) {
+      if(!this._constantPlay) {
+        this._doEngineUpdate();
+      } else if((Date.now()/1000) > (this._lastUpdateTime + minTimeSinceLastUpdate)) {
+        this._doEngineUpdate();
+      }
     }
 
-    if(!this._constantPlay) {
-      this._doEngineUpdate();
-    } else if((Date.now()/1000) > (this._lastUpdateTime + minTimeSinceLastUpdate)) {
-      this._doEngineUpdate();
-    }
+    this._doRender();
   }
 
   _doEngineUpdate() {
