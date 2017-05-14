@@ -11,10 +11,12 @@ export class Game extends Model {
 
 
   update(nextUpdateTime) {
+    const deltaTime = nextUpdateTime - this.time;
+    const events = [];//TODO does this make any sense??
     //TODO this is gonna need work to do anything else...
 
     for(let id in this._systems) {
-      this._systems[id].update(nextUpdateTime);
+      this._systems[id].update(nextUpdateTime, deltaTime, events);
     }
 
     this._time = nextUpdateTime;
@@ -116,7 +118,7 @@ export class Game extends Model {
   addSystem(system) {
     this._systems[system.id] = system;
 
-    system.update(this.time);
+    system.update(this.time, 0, null);
   }
 
   get time() {

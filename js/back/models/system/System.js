@@ -31,12 +31,12 @@ export class System extends Model {
     return null;
   }
 
-  update (newTime, events) {
+  update (newTime, deltaTime, events) {
     //need to update position..
     this.bodies.forEach((body) => { body.updatePosition(newTime) } );
 
     //then see what has happened as a result
-    this.bodies.forEach((body) => { body.update(newTime, events) } );
+    this.bodies.forEach((body) => { body.update(newTime, deltaTime, events) } );
   }
 
   getState() {

@@ -26,15 +26,21 @@ class ColonyDetailsController extends ReactComponentController {
       this._gameState = event.updatedGameState;
     });
 
-    this._colony = colony;
+    //naughty..
+    this._gameState = client._state;
+    this._colonyId = colony ? colony.id : null;
   }
 
   get colony() {
-    return this._colony;
+    if(!this._gameState || !this._colonyId) {
+      return null;
+    }
+
+    return this._gameState.getStateById(this._colonyId);
   }
 
   set colony(value) {
-    this._colony = value;
+    this._colonyId = value ? value.id : null;
     this._doReRender();
   }
 

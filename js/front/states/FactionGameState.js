@@ -138,6 +138,10 @@ export class FactionGameState {
     return null;
   }
 
+  getStateById(id) {
+    return this._statesById[id] || null;
+  }
+
   /////////////////////
   // Parsing methods //
   /////////////////////

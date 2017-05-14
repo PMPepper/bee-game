@@ -1,5 +1,6 @@
 import {Model} from './Model'
 import {MineralsStockpile} from './MineralsStockpile'
+import {Constants} from '../../core/Constants'
 
 export class Colony extends Model {
   constructor (faction, systemBody, population, mineralsStockpile, orbitalMinerals) {
@@ -12,6 +13,16 @@ export class Colony extends Model {
     this._orbitalMinerals = orbitalMinerals || new MineralsStockpile()
 
     faction.addColony(this);
+    systemBody.addColony(this);
+  }
+
+  update(newTime, deltaTime, events) {
+    if(deltaTime <= 0) {
+      return ;
+    }
+
+    console.log('Colony.update: ', newTime, deltaTime);
+    this._population = this._population * Math.pow(this.populationGrowthRate, (deltaTime / Constants.YEAR));
   }
 
   get faction () {
@@ -23,7 +34,12 @@ export class Colony extends Model {
   }
 
   get population () {
-    return this._population;
+    return Math.floor(this._population);
+  }
+
+  //populate growth rate is per annum
+  get populationGrowthRate() {
+    return 1.05;//TODO actually calculate this based on something
   }
 
   get mineralsStockpile () {
@@ -38,7 +54,7 @@ export class Colony extends Model {
     return this._state({
       factionId:            Model.id(this.faction),
       systemBodyId:         Model.id(this.systemBody),
-      population:           Model.id(this.population),
+      population:           this.population,
       mineralsStockpileId:  Model.id(this.mineralsStockpile),
       orbitalMineralsId:    Model.id(this.orbitalMinerals)
     });

@@ -27,16 +27,22 @@ export class SubStellarBody extends SystemBody {
 
   }
 
-  update(newTime, events) {
-    const lastTime = this.time;
+  addColony(colony) {
+    this.colonies.push(colony);
+  }
 
-    super.update(newTime, events);
+  update(newTime, deltaTime, events) {
+
+    super.update(newTime, deltaTime, events);
 
     //update variable system body state
     this._bodyState.surfaceHeating = this.surfaceHeating;
     this._bodyState.surfaceTemp = this.surfaceTemp;
 
     //TODO update colonies, minerals, etc
+    this.colonies.forEach((colony) => {
+      colony.update(newTime, deltaTime, events);
+    })
   }
 
   get albedo () {

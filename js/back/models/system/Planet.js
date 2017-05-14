@@ -13,12 +13,9 @@ export class Planet extends SubStellarBody {
   }
 
 
-  update(newTime, events) {
-    const lastTime = this.time;
+  update(newTime, deltaTime, events) {
 
-    super.update(newTime, events);
-
-    //TODO update colonies, minerals, etc
+    super.update(newTime, deltaTime, events);
   }
 
 

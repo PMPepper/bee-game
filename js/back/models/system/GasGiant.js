@@ -7,12 +7,10 @@ export class GasGiant extends SubStellarBody {
     this._bodyState['class'] = 'GasGiant';
   }
 
-  update(newTime, events) {
+  update(newTime, deltaTime, events) {
     const lastTime = this.time;
 
-    super.update(newTime, events);
-
-    //TODO update colonies, minerals, etc
+    super.update(newTime, deltaTime, events);
   }
 
   get type () {

@@ -50,7 +50,7 @@ export class SystemBody extends Model{
     this._position = this.getPosition(newTime);
   }
 
-  update(newTime, events) {
+  update(newTime, deltaTime, events) {
 
   }
 
