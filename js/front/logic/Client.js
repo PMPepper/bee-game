@@ -1,6 +1,8 @@
 import React from 'react';
 import {render} from 'react-dom';
 
+import {EventDispatcher} from '../../core/EventDispatcher';
+
 import {SystemView} from '../interface/SystemView.jsx';
 import {ContextMenu} from '../interface/ContextMenu.jsx';
 import {DataMenu} from '../interface/DataMenu.jsx';
@@ -11,8 +13,10 @@ import {ColonyDetails} from '../interface/ColonyDetails.jsx';
 
 const minTimeSinceLastUpdate = 0;
 
-export class Client {
+export class Client extends EventDispatcher{
   constructor($element) {
+    super();
+
     this._$element = $element;
     this._factionId = null;
     this._connector = null;
@@ -40,7 +44,7 @@ export class Client {
     this._renderDirty = true;
 
     //windowing component
-    this._colonyDetailsPanel = new ColonyDetails.Controller();
+    this._colonyDetailsPanel = new ColonyDetails.Controller(this);
 
 
     this._windowing = new Windowing.Controller();
@@ -69,6 +73,9 @@ export class Client {
     this._state = newStateObj;
     this._isAwaitingEngineUpdate = false;
     this._lastUpdateTime = Date.now() / 1000;
+
+    //Let any components know that the game state has updated
+    this.dispatchEvent({type:'gameStateUpdated', updatedGameState: newStateObj});
 
     this._reRender();
   }
@@ -153,7 +160,7 @@ export class Client {
       switch(item.key) {
         case 'view'://TODO center newly opened window
           let colony = this._state.getColonyOnBody(knownSystemBody);
-          
+
           this._windowing.focussedWindowId = 'colonyDetails';
           this._colonyDetailsPanel.colony = colony;
           break;

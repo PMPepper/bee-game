@@ -19,8 +19,12 @@ class ColonyDetailsRenderer extends BEMComponent {
 }
 
 class ColonyDetailsController extends ReactComponentController {
-  constructor (colony) {
+  constructor (client, colony) {
     super();
+
+    this._gameStateUpdatedListener = client.addListener('gameStateUpdated', (event) => {
+      this._gameState = event.updatedGameState;
+    });
 
     this._colony = colony;
   }
@@ -35,7 +39,7 @@ class ColonyDetailsController extends ReactComponentController {
   }
 
   render() {
-    return <ColonyDetailsRenderer colony={this.colony} />
+    return <ColonyDetailsRenderer colony={this.colony} gameState={this._gameState} />
   }
 }
 
