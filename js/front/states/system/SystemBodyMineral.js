@@ -1,13 +1,12 @@
-export class SystemBodyMineral {
+import {State} from '../State';
+
+export class SystemBodyMineral extends State{
   constructor(id, name, amount, accessibility) {
-    this._id = id;
+    super(id);
+
     this._name = name;
     this._amount = amount;
     this._accessibility = accessibility;
-  }
-
-  get id() {
-    return this._id;
   }
 
   get name() {

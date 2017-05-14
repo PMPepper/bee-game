@@ -1,14 +1,13 @@
-export class SystemBodyState {
+import {State} from '../State';
+
+export class SystemBodyState extends State {
   constructor(id, body, position, orbit) {
-    this._id = id;
+    super(id);
+
     this._body = body;
     this._position = position;
     this._orbit = orbit;
     this._system = null;
-  }
-
-  get id() {
-    return this._id;
   }
 
   get body() {

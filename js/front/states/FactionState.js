@@ -1,3 +1,5 @@
+import {State} from './State';
+
 import {GasGiant} from './system/GasGiant';
 import {OrbitRegular} from './system/OrbitRegular';
 import {Planet} from './system/Planet';
@@ -13,12 +15,13 @@ import {Colony} from './Colony';
 
 import {Coord} from '../../core/Coord';
 
-export class FactionGameState {
+export class FactionState extends State {
   constructor(stateObj) {
     const id = stateObj.factionId;
     const model = stateObj.models[id];
 
-    this._id = id;
+    super(id);
+
     this._fullName = model.fullName;
     this._shortName = model.shortName;
     this._adjectiveName = model.adjectiveName;
@@ -52,8 +55,6 @@ export class FactionGameState {
 
     //Once parsing is complete
     delete this._models;
-
-    console.log('FactionGameState: ', this);
   }
 
   //Add state methods
@@ -84,62 +85,6 @@ export class FactionGameState {
     this._knownFactions[knownFaction.id] = knownFaction;
 
     this._knownFactionByFactionId[knownFaction.factionId] = knownFaction;
-  }
-
-  //general faction methods
-  isKnownSystemBody(systemBody) {
-    return this._knownSystemBodyBySystemBodyId.hasOwnProperty(systemBody.id);
-  }
-
-  getKnownSystemBodyBySystemBody(systemBody) {
-    return this._knownSystemBodyBySystemBodyId[systemBody.id] || null;
-  }
-
-  getSystemBodyName(systemBody) {
-    const knownSystemBody = this.getKnownSystemBodyBySystemBody(systemBody);
-
-    //TODO default name scheme for system bodies
-    return knownSystemBody ? knownSystemBody.name : '??';
-  }
-
-  hasColonyOnBody(knownSystemBody) {
-    if(!knownSystemBody.isColonisable) {//TODO this should be part of knownSystemBody
-      return false;
-    }
-
-    const colonies = this.colonies;
-
-    for(let id in colonies) {
-      if(colonies.hasOwnProperty(id)) {
-        if(colonies[id].systemBody == knownSystemBody.systemBody) {
-          return true
-        }
-      }
-    }
-
-    return false;
-  }
-
-  getColonyOnBody(knownSystemBody) {
-    if(!knownSystemBody.isColonisable) {//TODO this should be part of knownSystemBody
-      return null;
-    }
-
-    const colonies = this.colonies;
-
-    for(let id in colonies) {
-      if(colonies.hasOwnProperty(id)) {
-        if(colonies[id].systemBody == knownSystemBody.systemBody) {
-          return colonies[id];
-        }
-      }
-    }
-
-    return null;
-  }
-
-  getStateById(id) {
-    return this._statesById[id] || null;
   }
 
   /////////////////////
@@ -384,10 +329,6 @@ export class FactionGameState {
   /////////////////////
   // Getters/setters //
   /////////////////////
-
-  get id() {
-    return this._id;
-  }
 
   get fullName() {
     return this._fullName;

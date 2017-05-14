@@ -1,16 +1,16 @@
 //Represets a colony for the client faction
+import {State} from './State';
 
-export class Colony {
+export class Colony extends State {
   constructor(id, systemBody, population, mineralsStockpile, orbitalMinerals) {
-    this._id = id;
+    super(id);
+
     this._systemBody = systemBody;
     this._population = population;
     this._mineralsStockpile = mineralsStockpile;
     this._orbitalMinerals = orbitalMinerals;
-  }
 
-  get id() {
-    return this._id;
+    this._removed = false;
   }
 
   get systemBody() {
@@ -27,5 +27,16 @@ export class Colony {
 
   get orbitalMinerals() {
     return this._orbitalMinerals;
+  }
+
+  //
+  get removed() {
+    return this._removed;
+  }
+
+  set removed(value) {
+    this._removed = !!value;
+
+    this._changed();
   }
 }

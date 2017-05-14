@@ -1,14 +1,11 @@
 //Collection of SystemBodyMineral objects
+import {State} from '../State';
 
-export class SystemBodyMinerals {
+export class SystemBodyMinerals extends State {
   constructor (id, minerals) {
-    this._id = id;
+    super(id);
 
     this._minerals = minerals || [];
-  }
-
-  get id() {
-    return this._id;
   }
 
   getMineralByName(name) {

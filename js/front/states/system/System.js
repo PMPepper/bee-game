@@ -1,8 +1,9 @@
-//import {Immutable} from '../../../core/Immutable';
+import {State} from '../State';
 
-export class System {
+export class System extends State {
   constructor(id, bodies) {
-    this._id = id;
+    super(id);
+
     this._bodies = bodies ? bodies.slice() : [];
     this._stars = [];
 
@@ -16,10 +17,6 @@ export class System {
 
     this._bodies;
     this._stars;
-  }
-
-  get id() {
-    return this._id;
   }
 
   get bodies () {

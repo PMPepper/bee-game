@@ -1,14 +1,12 @@
 //represents an colony belonging to a foreign faction
+import {State} from './State';
 
-export class KnownColony {
+export class KnownColony extends State {
   constructor(id, faction, systemBody) {
-    this._id = id;
+    super(id);
+    
     this._faction = faction;
     this._systemBody = systemBody;
-  }
-
-  get id() {
-    return this._id;
   }
 
   get faction() {

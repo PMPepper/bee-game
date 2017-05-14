@@ -33,11 +33,6 @@ export class SubStellarBody extends SystemBody {
     return this._colonies;
   }
 
-  getColony(faction) {
-    //TODO
-    return null;
-  }
-
   get surfaceHeating () {
     return this._surfaceHeating;
   }

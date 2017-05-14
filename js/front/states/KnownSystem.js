@@ -1,15 +1,14 @@
-export class KnownSystem {
+import {State} from './State';
+
+export class KnownSystem extends State {
   constructor(id, knownSystemBodies, system, name, discoveryDate, knownJumpPoints) {
-    this._id = id;
+    super(id);
+
     this._knownSystemBodies = knownSystemBodies;
     this._system = system;
     this._name = name;
     this._discoveryDate = discoveryDate;
     this._knownJumpPoints = knownJumpPoints;
-  }
-
-  get id() {
-    return this._id;
   }
 
   get knownSystemBodies() {

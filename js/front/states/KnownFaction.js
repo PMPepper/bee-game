@@ -1,16 +1,15 @@
-export class KnownFaction {
+import {State} from './State';
+
+export class KnownFaction extends State {
   //TODO loads of info about known faction, e.g. where/when you've seen them,
   //translation efforts, diplomatic info, etc
   constructor(id, factionId, fullName, shortName, adjectiveName) {
-    this._id = id;
+    super(id);
+
     this._factionId = factionId;
     this._fullName = fullName;
     this._shortName = shortName;
     this._adjectiveName = adjectiveName;
-  }
-
-  get id() {
-    return this._id;
   }
 
   get factionId() {

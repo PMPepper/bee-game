@@ -1,9 +1,9 @@
 import {Constants} from '../../../core/Constants';
-import {Immutable} from '../../../core/Immutable';
+import {State} from '../State';
 
-export class SystemBody extends Immutable {
+export class SystemBody extends State {//Does this need to extend State?
   constructor (name, mass, radius, day, axialTilt, tidalLock, parent) {
-    super();
+    super(null);
 
     this._name = name;
     this._mass = mass;
@@ -23,10 +23,6 @@ export class SystemBody extends Immutable {
     if(new.target == SystemBody) {
       throw new Error('SystemBody is in abstract class and should never be instanciated directly');
     }
-  }
-
-  get id() {
-    return this._id;
   }
 
   get name() {

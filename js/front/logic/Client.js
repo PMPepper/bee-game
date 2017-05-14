@@ -3,14 +3,21 @@ import {render} from 'react-dom';
 
 import {EventDispatcher} from '../../core/EventDispatcher';
 
+//states
+import {Colony} from '../states/Colony';
+
+//interface stuff
 import {SystemView} from '../interface/SystemView.jsx';
-import {ContextMenu} from '../interface/ContextMenu.jsx';
+import {ContextMenu} from '../interface/ContextMenu.jsx';//TODO move this into a controller/renderer
 import {DataMenu} from '../interface/DataMenu.jsx';
-import {Windowing} from '../interface/Windowing.jsx';
 
 //windows stuff
+import {Windowing} from '../interface/Windowing.jsx';
 import {ColonyDetails} from '../interface/ColonyDetails.jsx';
+import {GetFactionChanges} from './GetFactionChanges';
 
+
+//Config
 const minTimeSinceLastUpdate = 0;
 
 export class Client extends EventDispatcher{
@@ -53,6 +60,8 @@ export class Client extends EventDispatcher{
     this._windowing.addListener('changed', this._onComponentChanged);
     this._colonyDetailsPanel.addListener('changed', this._onComponentChanged);
 
+    this._onStateChanged = this._onStateChanged.bind(this);
+    this._stateChangeListener = null;
   }
 
   get factionId() {
@@ -74,8 +83,23 @@ export class Client extends EventDispatcher{
     this._isAwaitingEngineUpdate = false;
     this._lastUpdateTime = Date.now() / 1000;
 
+    //clean up any previous state change listeners
+    if(this._stateChangeListener) {
+      this._stateChangeListener.remove();
+      _stateChangeListener = null;
+    }
+
+    //listen to any future changed
+    this._stateChangeListener = this._state.addListener('changed', this._onStateChanged);
+
     //Let any components know that the game state has updated
-    this.dispatchEvent({type:'gameStateUpdated', updatedGameState: newStateObj});
+    this._onStateChanged();
+
+
+  }
+
+  _onStateChanged() {
+    this.dispatchEvent({type:'gameStateUpdated', updatedGameState: this._state});
 
     this._reRender();
   }
@@ -152,8 +176,6 @@ export class Client extends EventDispatcher{
 
   //Context menu methods
   _onShowSystemBodyContext(position, knownSystemBody) {
-    const systemBody = knownSystemBody;
-
     this._contextMenuPosition = position;
     this._contextMenuItems = [];
     this._onContextMenuClicked = (e, item) => {//TODO should probably be a class method?
@@ -165,8 +187,10 @@ export class Client extends EventDispatcher{
           this._colonyDetailsPanel.colony = colony;
           break;
         case 'create':
-          //TODO create colony
-          console.log('Create: ', knownSystemBody);
+          //create a temporary colony
+          //id, systemBody, population, mineralsStockpile, orbitalMinerals
+          //TODO initial minerals
+          this._state._addState(new Colony(getTempId(), knownSystemBody.systemBody, 0, null, null));
           break;
         case 'info':
           //open system body info window
@@ -231,7 +255,8 @@ export class Client extends EventDispatcher{
 
     this._connector.updateEngine({
       id:this._state.id,
-      updateUntil:this._engineUpdatePeriod + this._state.time
+      updateUntil:this._engineUpdatePeriod + this._state.time,
+      changes: GetFactionChanges(this._state)
     });
   }
 
@@ -244,4 +269,11 @@ export class Client extends EventDispatcher{
 
     this.tick();
   }
+
+}
+
+let tempId = -1;
+
+function getTempId() {
+  return tempId--;
 }

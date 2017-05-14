@@ -1,16 +1,14 @@
+import {State} from './State';
 import {SubStellarBody} from './system/SubStellarBody';
 
-export class KnownSystemBody {
+export class KnownSystemBody extends State {
   constructor(id, systemBody, name, minerals) {
-    this._id = id;
+    super(id);
+
     this._systemBody = systemBody;
     this._name = name;
     this._minerals = minerals;
     this._knownSystem = null;
-  }
-
-  get id() {
-    return this._id;
   }
 
   get systemBody() {
