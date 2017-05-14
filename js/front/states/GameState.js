@@ -36,7 +36,9 @@ export class GameState extends FactionState {
 
     for(let id in colonies) {
       if(colonies.hasOwnProperty(id)) {
-        if(colonies[id].systemBody == knownSystemBody.systemBody) {
+        let colony = colonies[id];
+
+        if(colony.systemBody == knownSystemBody.systemBody && !colony.removed) {
           return true
         }
       }
@@ -54,8 +56,10 @@ export class GameState extends FactionState {
 
     for(let id in colonies) {
       if(colonies.hasOwnProperty(id)) {
-        if(colonies[id].systemBody == knownSystemBody.systemBody) {
-          return colonies[id];
+        let colony = colonies[id];
+
+        if(colony.systemBody == knownSystemBody.systemBody && !colony.removed) {
+          return colony;
         }
       }
     }
