@@ -1,3 +1,4 @@
+import {Model} from '../Model';
 import {SystemBody} from './SystemBody';
 import {Coord} from '../../../core/Coord';
 
@@ -10,6 +11,7 @@ export class SubStellarBody extends SystemBody {
     this._colonies = colonies ? Object.assign({}, colonies) : {};
 
     this._bodyState.albedo = albedo;
+    this._bodyState.mineralsId = Model.id(minerals);
 
   }
 
@@ -78,6 +80,7 @@ export class SubStellarBody extends SystemBody {
   set minerals(value) {
     if(!this._minerals) {//can only set minerals if no current minerals
       this._minerals = value;
+      this._bodyState.mineralsId = Model.id(value);
     }
   }
 

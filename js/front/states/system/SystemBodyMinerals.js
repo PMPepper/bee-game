@@ -8,11 +8,15 @@ export class SystemBodyMinerals extends State {
     this._minerals = minerals || [];
   }
 
+  get minerals() {
+    return this._minerals;
+  }
+
   getMineralByName(name) {
     const minerals = this.minerals;
 
     for(let i = 0; i < minerals.length; i++) {
-      if(minerals[i].name == nane) {
+      if(minerals[i].name == name) {
         return minerals[i];
       }
     }

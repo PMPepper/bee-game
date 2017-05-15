@@ -1,9 +1,11 @@
 import React from 'react';
 import {render} from 'react-dom';
-import {BEMComponent} from './BEMComponent.jsx'
+import {Client} from '../logic/Client';
+import {BEMComponent} from './BEMComponent.jsx';
 import {ReactComponentController} from './ReactComponentController';
 import {Tabs} from './Tabs.jsx';
 import {TabPanel} from './TabPanel.jsx';
+import {Helpers} from '../Helpers'
 
 class ColonyDetailsRenderer extends BEMComponent {
   constructor(props) {
@@ -33,7 +35,26 @@ class ColonyDetailsRenderer extends BEMComponent {
             </dl>
           </TabPanel>
           <TabPanel name="industry" title="Industry">TODO 2</TabPanel>
-          <TabPanel name="mining" title="Mining">TODO 3</TabPanel>
+          <TabPanel name="mining" title="Mining">
+            <table className="dataTable">
+              <thead>
+                <tr>
+                  <th>Mineral Name</th>
+                  <th>Quantity</th>
+                  <th>Accessibility</th>
+                  <th>Production</th>
+                  <th>Depletion (years/date)</th>
+                  <th>Stockpile</th>
+                  <th>Stockpile change</th>
+                  <th>Mass Driver</th>
+                  <th>SP + Production</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this._getMineralData()}
+              </tbody>
+            </table>
+          </TabPanel>
           <TabPanel name="shipyards" title="Shpipyards">TODO 4</TabPanel>
           <TabPanel name="shipyardTasks" title="Shipyard Tasks">TODO 5</TabPanel>
           <TabPanel name="groundUnits" title="Ground Units">TODO 6</TabPanel>
@@ -42,6 +63,31 @@ class ColonyDetailsRenderer extends BEMComponent {
       </div>
 
     </article>
+  }
+
+  _getMineralData() {
+    const minerals = Client.getGameConfig().minerals;
+    const colony = this.props.colony;
+    console.log(colony);
+
+    return minerals.map((mineralName) => {
+      const bodyMinerals = colony.systemBody.body.minerals ? colony.systemBody.body.minerals.getMineralByName(mineralName) : null;
+      //TODO get stockpile
+
+      return <tr key={mineralName}>
+              <td>{Helpers.ucFirst(mineralName)}</td>
+              <td>{bodyMinerals ? Helpers.formatNumber(bodyMinerals.amount) : '-'}</td>
+              <td>{bodyMinerals ? bodyMinerals.accessibility : '-'}</td>
+              <td>0</td>
+              <td>0/{Helpers.formatDate(null)}</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+            </tr>
+    })
+
+    return
   }
 }
 

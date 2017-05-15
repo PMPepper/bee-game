@@ -224,7 +224,7 @@ export class FactionState extends State {
         break;
       case 'gas giant':
         //name, mass, radius, day, axialTilt, tidalLock, parent, minerals, colonies
-        state = new GasGiant(null, data.mass, data.radius, data.day, data.axialTilt, data.tidalLock, this._getStateById(data.parentId), null, null );
+        state = new GasGiant(null, data.mass, data.radius, data.day, data.axialTilt, data.tidalLock, this._getStateById(data.parentId), this._getStateById(data.mineralsId), null );
         break;
       case 'planet':
       case 'dwarf planet':
@@ -239,7 +239,7 @@ export class FactionState extends State {
           data.tidalLock,
           this._getStateById(data.parentId),
           data.albedo,
-          null,
+          this._getStateById(data.mineralsId),
           null,
           data.surfaceHeating,
           data.minSurfaceHeating,
