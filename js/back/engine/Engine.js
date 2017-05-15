@@ -1,8 +1,6 @@
 import {Model} from '../models/Model';
 import {Colony} from '../models/Colony';
 
-const minTimeStep = 1;
-
 export class Engine {
   constructor(gameModel) {
     this._gameModel = gameModel;
@@ -106,11 +104,7 @@ export class Engine {
     return this._gameModel.getGameStateForFaction(faction);
   }
 
-  get systems () {
-    return this._systems;
-  }
-
-  get time () {
-    return this._time;
+  get config() {
+    return this._config;
   }
 }

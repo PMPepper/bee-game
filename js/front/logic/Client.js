@@ -19,12 +19,14 @@ import {GetFactionChanges} from './GetFactionChanges';
 
 //Config
 const minTimeSinceLastUpdate = 0;
+let globalGameConfig = null;
 
 export class Client extends EventDispatcher{
-  constructor($element) {
+  constructor($element, gameConfig) {
     super();
 
     this._$element = $element;
+    globalGameConfig = this._gameConfig = gameConfig;
     this._factionId = null;
     this._connector = null;
     this._state = null;
@@ -62,6 +64,10 @@ export class Client extends EventDispatcher{
 
     this._onStateChanged = this._onStateChanged.bind(this);
     this._stateChangeListener = null;
+  }
+
+  get gameConfig() {
+    return this._gameConfig;
   }
 
   get factionId() {
@@ -276,4 +282,8 @@ let tempId = -1;
 
 function getTempId() {
   return tempId--;
+}
+
+Client.getGameConfig = () => {
+  return globalGameConfig;
 }

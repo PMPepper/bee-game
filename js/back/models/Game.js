@@ -1,10 +1,12 @@
 import {Model} from './Model';
 
 export class Game extends Model {
-  constructor (time) {
+  constructor (gameConfig) {
     super();
 
-    this._time = time;
+    globalGameConfig = this._gameConfig = gameConfig;
+
+    this._time = gameConfig.gameStartTime;
     this._factions = {};
     this._systems = {};
   }
@@ -150,4 +152,10 @@ export class Game extends Model {
       factions: this.getObjectState(this.factions)
     });
   }
+}
+
+let globalGameConfig;
+
+Game.getGameConfig = () => {
+  return globalGameConfig;
 }

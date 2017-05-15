@@ -16,7 +16,45 @@ $(() => {
   //Temp game start code code
 
   setTimeout(() => {
+    //Initial game Config
+    const gameConfig = Object.freeze({
+      minerals: [
+        'corbynite',
+        'quadlithium',
+        'neutronium',
+        'kriptinite',
+        'meseonite',
+        'blairite',
+        'selenicite',
+        'baryonium',
+        'hadronium',
+        'thatcherite',
+        'leonium',
+        'brownite'
+      ],
+      bodyTypeMineralModifiers: {
+        'gas giant': {//gas giants only have quadlithium, and low density (but their huge size makes up for it)
+          corbynite:0,
+          quadlithium:0.5,
+          neutronium: 0,
+          kriptinite: 0,
+          meseonite: 0,
+          blairite: 0,
+          selenicite: 0,
+          baryonium: 0,
+          hadronium: 0,
+          thatcherite: 0,
+          leonium: 0,
+          brownite: 0
+        }
+      },
+      baseMineralDensity: 1/1000000000,
+      gameStartTime:Math.floor(Date.now()/1000)
+    });
+
     //Initialise world
+    const gameModel = new Game(gameConfig);
+
     //-init faction
 
     //id, colonies, craft, knownTechnologies, knownFactions, knownSystems, knownContacts
@@ -25,17 +63,19 @@ $(() => {
     //Make this faction humans and add tSol system, on Earth
     const system = InitialiseGame.createHomeSystemFromKnownFor('Sol', 'Sol', faction, 'human', {population:500000000});
 
-    const gameModel = new Game(Math.floor(Date.now()/1000));
+
 
     gameModel.addSystem(system);
     gameModel.addFaction(faction);
     //-end init
-console.log(gameModel);
+
+
+
     //Create game engine
     const engine = new Engine(gameModel);
 
     //Create frontend
-    const client = new Client($('#app'));
+    const client = new Client($('#app'), gameConfig);
 
     //tie client to a faction
     client.factionId = faction.id;
