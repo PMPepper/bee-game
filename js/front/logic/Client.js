@@ -101,7 +101,7 @@ export class Client extends EventDispatcher{
     //Let any components know that the game state has updated
     this._onStateChanged();
 
-
+    console.log(newStateObj);
   }
 
   _onStateChanged() {

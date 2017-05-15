@@ -48,7 +48,7 @@ $(() => {
           brownite: 0
         }
       },
-      baseMineralDensity: 1/1000000000,
+      baseMineralDensity: 1/1000000000000000000,
       gameStartTime:Math.floor(Date.now()/1000)
     });
 

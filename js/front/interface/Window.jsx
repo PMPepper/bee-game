@@ -13,6 +13,7 @@ export class WindowRenderer extends BEMComponent {
     this._onHeaderMouseDown = this._onHeaderMouseDown.bind(this);
     this._onHeaderMouseMove = this._onHeaderMouseMove.bind(this);
     this._onHeaderMouseUp = this._onHeaderMouseUp.bind(this);
+    this._centerWindow = this._centerWindow.bind(this);
 
     this._dragLastCoord = null;
 
@@ -41,11 +42,16 @@ export class WindowRenderer extends BEMComponent {
       newStyle.height = (+this.props.height)+'px';
     }
 
-    this._x = +this.props.x;
-    this._y = +this.props.y;
+    this._x = this.props.x === null ? null : +this.props.x;
+    this._y = this.props.y === null ? null : +this.props.y;
 
-    newStyle.left = this._x + 'px';
-    newStyle.top = this._y + 'px';
+    if(this._x !== null) {
+      newStyle.left = this._x + 'px';
+    }
+
+    if(this._y !== null) {
+      newStyle.top = this._y + 'px';
+    }
 
     this._alterStyle(newStyle);
   }
@@ -55,12 +61,32 @@ export class WindowRenderer extends BEMComponent {
       return null;
     }
 
-    return <section className={this.blockClasses} style={this.state.style} onMouseDown={() =>{this.props.onFocus(this)}}>
+
+
+    return <section ref={this._x === null || this._y === null ? this._centerWindow : null } className={this.blockClasses} style={this.state.style} onMouseDown={() =>{this.props.onFocus(this)}}>
       <header className={this.element('header')} onMouseDown={this.props.draggable ? this._onHeaderMouseDown : null}>{this.props.title}</header>
       <div className={this.element('body')}>
         {this.props.content.render()}
       </div>
     </section>
+  }
+
+  _centerWindow(element) {
+    if(this._x === null || this._y === null) {
+      let alteredStyle = {};
+
+      if(this._x === null) {
+        this._x = Math.round((window.innerWidth - element.clientWidth)/2);
+        alteredStyle.left = this._x + 'px';
+      }
+
+      if(this._y === null) {
+        this._y = alteredStyle.top = Math.round((window.innerHeight - element.clientHeight)/2);
+        alteredStyle.top = this._y + 'px';
+      }
+
+      this._alterStyle(alteredStyle);
+    }
   }
 
   _onHeaderMouseDown(e) {
