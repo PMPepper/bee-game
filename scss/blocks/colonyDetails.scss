@@ -1,0 +1,19 @@
+.colonyDetails {
+  width: 80rem;
+  height: 40rem;
+  max-width:90vw;
+  max-height:90vh;
+  padding:4px 5px;
+
+  &-coloniesListHolder {
+    float:left;
+    width: 20%;
+    height: 100%;
+  }
+
+  &-selectedColonyDetails {
+    float: left;
+    width: 80%;
+    height: 100%;
+  }
+}

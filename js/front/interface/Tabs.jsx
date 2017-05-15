@@ -1,8 +1,6 @@
 import React from 'react';
 
 import {BEMComponent} from './BEMComponent.jsx';
-import {OList} from './OList.jsx';
-import {UList} from './UList.jsx';
 
 export class Tabs extends BEMComponent {
   constructor(props) {

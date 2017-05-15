@@ -2,19 +2,46 @@ import React from 'react';
 import {render} from 'react-dom';
 import {BEMComponent} from './BEMComponent.jsx'
 import {ReactComponentController} from './ReactComponentController';
+import {Tabs} from './Tabs.jsx';
+import {TabPanel} from './TabPanel.jsx';
 
 class ColonyDetailsRenderer extends BEMComponent {
   constructor(props) {
     super(props, 'colonyDetails');
-
-    //this.render = this.render.bind(this);
   }
 
   render() {
     if(!this.props.colony) {
       return <article className={this.blockClasses}>No colony selected</article>
     }
-    return <article className={this.blockClasses}>Colony population: {this.props.colony.population}</article>
+    return <article className={this.blockClasses}>
+      <div className={this.element('coloniesListHolder')}>
+        TODO list all colonies
+      </div>
+      <div className={this.element('selectedColonyDetails')}>
+        <Tabs name="colonyDetailsTab" activeTab={0}>
+          <TabPanel name="summary" title="Summary">
+            <dl>
+              <dt>Colony population: </dt>
+              <dd>{this.props.colony.population}</dd>
+              <dt>Colony population: </dt>
+              <dd>{this.props.colony.population}</dd>
+              <dt>Colony population: </dt>
+              <dd>{this.props.colony.population}</dd>
+              <dt>Colony population: </dt>
+              <dd>{this.props.colony.population}</dd>
+            </dl>
+          </TabPanel>
+          <TabPanel name="industry" title="Industry">TODO 2</TabPanel>
+          <TabPanel name="mining" title="Mining">TODO 3</TabPanel>
+          <TabPanel name="shipyards" title="Shpipyards">TODO 4</TabPanel>
+          <TabPanel name="shipyardTasks" title="Shipyard Tasks">TODO 5</TabPanel>
+          <TabPanel name="groundUnits" title="Ground Units">TODO 6</TabPanel>
+          <TabPanel name="economy" title="Economy">TODO 7</TabPanel>
+        </Tabs>
+      </div>
+
+    </article>
   }
 }
 
