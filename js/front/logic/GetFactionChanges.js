@@ -42,12 +42,12 @@ function getObjectDifferences(newStates, oldStates, addedTransform, removedTrans
 
       delete oldStates[id];//whatever happens, delete from oldStates object
     }
+  }
 
     //oldStates now only holds things which used to be present, but now aren't
-    for(let id in oldStates) {
-      if(oldStates.hasOwnProperty(id)) {
-        delta.removed[id] = removedTransform(oldStates[id]);
-      }
+  for(let id in oldStates) {
+    if(oldStates.hasOwnProperty(id)) {
+      delta.removed[id] = removedTransform(oldStates[id]);
     }
   }
 

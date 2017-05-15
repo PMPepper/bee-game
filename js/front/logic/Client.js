@@ -86,7 +86,7 @@ export class Client extends EventDispatcher{
     //clean up any previous state change listeners
     if(this._stateChangeListener) {
       this._stateChangeListener.remove();
-      _stateChangeListener = null;
+      this._stateChangeListener = null;
     }
 
     //listen to any future changed

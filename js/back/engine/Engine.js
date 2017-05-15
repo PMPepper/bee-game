@@ -1,4 +1,5 @@
 import {Model} from '../models/Model';
+import {Colony} from '../models/Colony';
 
 const minTimeStep = 1;
 
@@ -34,29 +35,71 @@ export class Engine {
 
   //Expects array of faction update objects
   addFactionUpdates(factionUpdate) {
+    const factionId = factionUpdate.id;
+    const faction = this._gameModel.factions[factionUpdate.id];
+    const changes = factionUpdate.changes;
+
+    faction.updateUntil = factionUpdate.updateUntil;
+
+    //colonies
+    //-added
+    for(let id in changes.colonies.added) {
+      if(changes.colonies.added.hasOwnProperty(id)) {
+        let systemBodyId = changes.colonies.added[id];
+        let systemBody = Model.getById(systemBodyId);
+
+        //Is this a systemBody that can be colonised?
+        if(!systemBody || !systemBody.isColonisable) {
+          continue;//nope!
+        }
+
+        //Do you know about this systemBody, and is it not already colonised
+        if(!faction.isKnownSystemBody(systemBody) || systemBody.getColonyByFaction(faction) != null) {
+          continue;//nope!
+        }
+
+        //ok, you can add a colony here
+        //faction, systemBody, population, mineralsStockpile, orbitalMinerals
+        new Colony(faction, systemBody, 0, null, null);
+      }
+    }
+    //-removed
+    for(let id in changes.colonies.removed) {
+      if(changes.colonies.removed.hasOwnProperty(id)) {
+        let colony = faction.getColonyById(id);
+
+        if(colony) {
+          colony.dispose();
+        }
+      }
+    }
 
     //TODO update models with faction updates
     //This can wait until next phase
-    //-temp code
-    this._gameModel.factions[factionUpdate.id].updateUntil = factionUpdate.updateUntil;
     //END TODO
 
+    this._nextUpdate();
+  }
+
+  _nextUpdate() {
     //find first time that someone is waiting for
     const nextUpdateTime = this._gameModel.getNextUpdateTime();
 
-    //update until that point
-    this._gameModel.update(nextUpdateTime);
+    if(nextUpdateTime > this._gameModel.time) {
+      //update until that point
+      this._gameModel.update(nextUpdateTime);
 
-    //get list of all factions that have reached their faction update time
-    const updatedFactions = this._gameModel.getUpdatedFactions();
+      //get list of all factions that have reached their faction update time
+      const updatedFactions = this._gameModel.getUpdatedFactions();
 
-    updatedFactions.forEach((faction) => {
-      //get new game state object
-      const gameState = this._gameModel.getGameStateForFaction(faction);
+      updatedFactions.forEach((faction) => {
+        //get new game state object
+        const gameState = this._gameModel.getGameStateForFaction(faction);
 
-      //send to clientConnector
-      this.getClientConnectorForFaction(faction).doClientUpdate(gameState);
-    });
+        //send to clientConnector
+        this.getClientConnectorForFaction(faction).doClientUpdate(gameState);
+      });
+    }
   }
 
   getCurrentGameState(faction) {

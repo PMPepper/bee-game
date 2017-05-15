@@ -13,6 +13,8 @@ export class EventDispatcher {
     const listener = new EventListener(eventType, handler, this);
 
     events[eventType].push(listener);
+
+    return listener;
   }
 
   removeListener(listener) {

@@ -57,7 +57,13 @@ export class Model {
   dispose() {
     if(!this.isDisposed) {
       delete allModelsById[this._id];
+
+      this._dispose();
     }
+  }
+
+  _dispose() {
+
   }
 
   get isDisposed() {

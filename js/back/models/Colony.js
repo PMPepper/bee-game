@@ -21,7 +21,6 @@ export class Colony extends Model {
       return ;
     }
 
-    console.log('Colony.update: ', newTime, deltaTime);
     this._population = this._population * Math.pow(this.populationGrowthRate, (deltaTime / Constants.YEAR));
   }
 
@@ -58,5 +57,15 @@ export class Colony extends Model {
       mineralsStockpileId:  Model.id(this.mineralsStockpile),
       orbitalMineralsId:    Model.id(this.orbitalMinerals)
     });
+  }
+
+  _dispose() {
+    this.faction.removeColony(this);
+    this.systemBody.removeColony(this);
+
+    this._faction = null;
+    this._systemBody = null;
+    this._mineralsStockpile = null
+    this._orbitalMinerals = null
   }
 }

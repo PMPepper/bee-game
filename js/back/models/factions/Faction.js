@@ -47,6 +47,18 @@ export class Faction extends Model {
     this._colonies[colony.id] = colony;
   }
 
+  removeColony(colony) {
+    if(colony && this._colonies[colony.id]) {
+      delete this._colonies[colony.id];
+
+      colony.dispose();
+    }
+  }
+
+  getColonyById(id) {
+    return this._colonies[id] || null;
+  }
+
   //TODO known technologies methods
   isKnownTechnology (technology) {
     return !!this._isKnownTechnology[Model.id(technology)];

@@ -131,6 +131,10 @@ export class SystemBody extends Model{
     throw new Error('Not implemented');
   }
 
+  get isColonisable() {
+    return false;
+  }
+
   getPosition(time){
     return this.orbit ? this.orbit.getPosition(time) : Coord.ORIGIN;
   }

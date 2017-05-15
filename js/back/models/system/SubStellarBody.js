@@ -7,10 +7,14 @@ export class SubStellarBody extends SystemBody {
 
     this._albedo = albedo;
     this._minerals = minerals || null;
-    this._colonies = colonies ? colonies.slice() : [];
+    this._colonies = colonies ? Object.assign({}, colonies) : {};
 
     this._bodyState.albedo = albedo;
 
+  }
+
+  get isColonisable() {
+    return true;
   }
 
   //called once system is created and all body info available
@@ -28,7 +32,21 @@ export class SubStellarBody extends SystemBody {
   }
 
   addColony(colony) {
-    this.colonies.push(colony);
+    this.colonies[colony.id] = colony;
+  }
+
+  hasColony(colony) {
+    return this.colonies[colony.id] === colony;
+  }
+
+  removeColony(colony) {
+    let index;
+
+    if(colony && this.hasColony(colony)) {
+      delete this.colonies[colony.id];
+
+      colony.dispose();
+    }
   }
 
   update(newTime, deltaTime, events) {
@@ -40,9 +58,13 @@ export class SubStellarBody extends SystemBody {
     this._bodyState.surfaceTemp = this.surfaceTemp;
 
     //TODO update colonies, minerals, etc
-    this.colonies.forEach((colony) => {
-      colony.update(newTime, deltaTime, events);
-    })
+    const colonies = this.colonies;
+
+    for(let id in colonies){
+      if(colonies.hasOwnProperty(id)) {
+        colonies[id].update(newTime, deltaTime, events);
+      }
+    }
   }
 
   get albedo () {
@@ -63,8 +85,20 @@ export class SubStellarBody extends SystemBody {
     return this._colonies;
   }
 
-  getColony(faction) {
-    throw new Error('TODO Not implemented yet');
+  getColonyByFaction(faction) {
+    const colonies = this.colonies;
+
+    for(id in colonies) {
+      if(colonies.hasOwnProperty(id)) {
+        let colony = colonies[id];
+
+        if(colony.faction == faction) {
+          return colony;
+        }
+      }
+    }
+
+    return null;
   }
 
   get surfaceHeating () {
