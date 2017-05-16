@@ -7,6 +7,7 @@ import {Tabs} from './Tabs.jsx';
 import {TabPanel} from './TabPanel.jsx';
 import {Helpers} from '../Helpers';
 import {DataTable} from './DataTable.jsx';
+import {Constants} from '../../core/Constants';
 
 class ColonyDetailsRenderer extends BEMComponent {
   constructor(props) {
@@ -52,6 +53,7 @@ class ColonyDetailsRenderer extends BEMComponent {
   _getMineralData() {
     const minerals = Client.getGameConfig().minerals;
     const colony = this.props.colony;
+    const stockpile = colony.mineralsStockpile;
 
     minerals.sort();
 
@@ -105,6 +107,10 @@ class ColonyDetailsRenderer extends BEMComponent {
 
       //get data about this mineral
       const bodyMinerals = colony.systemBody.body.minerals ? colony.systemBody.body.minerals.getMineralByName(mineralName) : null;
+      const stockpile = colony.mineralsStockpile.getMineralQty(mineralName);
+      const production = 0;//production is per day
+      const depletionDays = Math.round(stockpile/production);
+      const depletionDate = depletionDays > 0 ? new window.Date((this.props.gameState.time+(depletionDays*Constants.DAY)) * 1000) : null ;
 
       //Mineral name cell
       mineralRow.push({
@@ -126,29 +132,31 @@ class ColonyDetailsRenderer extends BEMComponent {
 
       //Production cell
       mineralRow.push({
-        label: 0,
-        value: 0
+        label: Helpers.formatNumber(production),
+        value: production
       })
 
       //Depletion (years/date) cell
       mineralRow.push({
-        label: '0/'+Helpers.formatDate(null),
-        value: 0
+        label: '0/'+Helpers.formatDate(depletionDate),
+        value: depletionDays
       })
 
       //Stockpile cell
       mineralRow.push({
-        label: 0,
-        value: 0
+        label: Helpers.formatNumber(stockpile),
+        value: stockpile
       })
 
       //Stockpile Change cell
+      //TODO compare to 30 days ago? How?
       mineralRow.push({
         label: 0,
         value: 0
       })
 
       //Mass Driver cell
+      //TODO
       mineralRow.push({
         label: 0,
         value: 0
@@ -164,30 +172,6 @@ class ColonyDetailsRenderer extends BEMComponent {
     });
 
     return data;
-  }
-
-  _getMineralDataOld() {
-    const minerals = Client.getGameConfig().minerals;
-    const colony = this.props.colony;
-
-    return minerals.map((mineralName) => {
-      const bodyMinerals = colony.systemBody.body.minerals ? colony.systemBody.body.minerals.getMineralByName(mineralName) : null;
-      //TODO get stockpile
-
-      return <tr key={mineralName}>
-              <td>{Helpers.ucFirst(mineralName)}</td>
-              <td>{bodyMinerals ? Helpers.formatNumber(bodyMinerals.amount) : '-'}</td>
-              <td>{bodyMinerals ? bodyMinerals.accessibility : '-'}</td>
-              <td>0</td>
-              <td>0/{Helpers.formatDate(null)}</td>
-              <td>0</td>
-              <td>0</td>
-              <td>0</td>
-              <td>0</td>
-            </tr>
-    })
-
-    return
   }
 }
 

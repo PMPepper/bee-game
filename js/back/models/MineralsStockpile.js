@@ -20,6 +20,6 @@ export class MineralsStockpile extends Model {
   }
 
   getState () {
-    return this._state(Object.assign({}, this._minerals));
+    return this._state(Object.assign({}, {minerals: this._minerals}));
   }
 }

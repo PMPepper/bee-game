@@ -12,6 +12,7 @@ import {KnownSystem} from './KnownSystem';
 import {KnownSystemBody} from './KnownSystemBody';
 import {KnownFaction} from './KnownFaction';
 import {Colony} from './Colony';
+import {MineralsStockpile} from './MineralsStockpile';
 
 import {Coord} from '../../core/Coord';
 
@@ -135,7 +136,9 @@ export class FactionState extends State {
       case 'Colony':
         state = this._getColony(data);
         break;
-
+      case 'MineralsStockpile':
+        state = this._getMineralsStockpile(data);
+        break;
       //Misc
       case 'Coord':
         return new Coord(data.x, data.y);
@@ -288,10 +291,23 @@ export class FactionState extends State {
       return null;
     }
 
-    //TODO minerals
-    const state = new Colony(data.id, this._getStateById(data.systemBodyId), data.population, null, null);
+    //id, systemBody, population, mineralsStockpile, orbitalMinerals
+    const state = new Colony(
+      data.id,
+      this._getStateById(data.systemBodyId),
+      data.population,
+      this._getStateById(data.mineralsStockpileId),
+      this._getStateById(data.orbitalMineralsId));
 
     return state;
+  }
+
+  _getMineralsStockpile(data) {
+    if(!data) {
+      return null;
+    }
+
+    return new MineralsStockpile(data.id, data.minerals);
   }
 
   _addState(state) {
