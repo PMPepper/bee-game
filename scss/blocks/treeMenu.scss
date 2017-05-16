@@ -1,0 +1,137 @@
+.treeMenu {
+  $lineColour: #AFAFAF;
+
+  &-list {
+    list-style: none;
+    display: block;
+    margin: 0;
+    padding: 0;
+    position: relative;
+
+
+  }
+
+  &-item {
+    display: block;
+    margin: 0;
+    padding:0 5px;
+    position: relative;
+    z-index: 2;
+
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      z-index: 1;
+      width: 0;
+      top: 0px;
+      bottom: 0px;
+      left: 11px;
+      border-left: 1px solid $lineColour;
+    }
+
+    &_depth_1#{&}_firstChild {
+      &:before {
+        top: 10px;
+      }
+    }
+
+    &_lastChild {
+      &:before {
+        height: 11px;
+        bottom: none;
+      }
+    }
+  }
+
+  &-children {
+    display: none;
+
+    &_isOpen {
+      display: block;
+    }
+
+    margin-left: 14px;
+  }
+
+  &-btn {
+    display: inline-block;
+    width:1.1rem;
+    height:1.1rem;
+    padding: 0;
+    margin: 0 5px 0 0;
+    line-height: 5px;
+    background: #DDD;
+    border: 1px solid #333;
+    border-radius: 3px;
+    font-size: 1rem;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    box-sizing: content-box;
+    outline: none;
+    vertical-align: middle;
+
+    &:hover {
+      background: #CCC;
+    }
+
+    &:after {
+      content: '';
+      display: block;
+      background: #000;
+      width: 7px;
+      height: 1px;
+      top: 5px;
+      left: 2px;
+      position: absolute;
+    }
+
+    &_isOpen {
+      &:before {
+        content: '';
+        display: block;
+        background: #000;
+        width: 1px;
+        height: 7px;
+        top: 2px;
+        left: 5px;
+        position: absolute;
+      }
+    }
+  }
+
+  &-label {
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    margin-left: 15px;
+    font-size: 1.3rem;
+    padding: 4px;
+    cursor: pointer;
+
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      left: -9px;
+      top: 11px;
+      width: 10px;
+      z-index: 1;
+      border-top: 1px solid $lineColour;
+    }
+
+    &_hasChildren {
+      margin-left: 0;
+
+      &:before {
+        left: -10px;
+      }
+    }
+
+    &_selected {
+      background: rgba(0, 0, 0, 0.2);
+    }
+  }
+}

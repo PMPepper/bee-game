@@ -8,6 +8,7 @@ import {TabPanel} from './TabPanel.jsx';
 import {Helpers} from '../Helpers';
 import {DataTable} from './DataTable.jsx';
 import {ScrollPane} from './ScrollPane.jsx';
+import {TreeMenu} from './TreeMenu.jsx';
 import {Constants} from '../../core/Constants';
 
 class ColonyDetailsRenderer extends BEMComponent {
@@ -19,9 +20,35 @@ class ColonyDetailsRenderer extends BEMComponent {
     if(!this.props.colony) {
       return <article className={this.blockClasses}>No colony selected</article>
     }
+
+    const exampleData = [
+      {
+        label: 'root 1',
+        children: [
+          'a',
+          'b',
+          'c'
+        ]
+      },
+      {
+        label: 'root 2',
+        children: [
+          1,
+          2,
+          3,
+          {
+            label: 4,
+            isOpen: true,
+            children: ['hello', 'world']
+          }
+        ]
+      },
+      'Just a string'
+    ];
+
     return <article className={this.blockClasses}>
       <div className={this.element('coloniesListHolder')}>
-        TODO list all colonies
+        <TreeMenu onItemClick={(item) => {console.log('onItemClick: ', item);}} data={exampleData} />
       </div>
       <div className={this.element('selectedColonyDetails')}>
         <ScrollPane vertical={true}>
