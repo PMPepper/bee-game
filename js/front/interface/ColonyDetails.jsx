@@ -7,6 +7,7 @@ import {Tabs} from './Tabs.jsx';
 import {TabPanel} from './TabPanel.jsx';
 import {Helpers} from '../Helpers';
 import {DataTable} from './DataTable.jsx';
+import {ScrollPane} from './ScrollPane.jsx';
 import {Constants} from '../../core/Constants';
 
 class ColonyDetailsRenderer extends BEMComponent {
@@ -23,28 +24,30 @@ class ColonyDetailsRenderer extends BEMComponent {
         TODO list all colonies
       </div>
       <div className={this.element('selectedColonyDetails')}>
-        <Tabs name="colonyDetailsTab" activeTab={2}>
-          <TabPanel name="summary" title="Summary">
-            <dl>
-              <dt>Colony population: </dt>
-              <dd>{this.props.colony.population}</dd>
-              <dt>Colony population: </dt>
-              <dd>{this.props.colony.population}</dd>
-              <dt>Colony population: </dt>
-              <dd>{this.props.colony.population}</dd>
-              <dt>Colony population: </dt>
-              <dd>{this.props.colony.population}</dd>
-            </dl>
-          </TabPanel>
-          <TabPanel name="industry" title="Industry">TODO 2</TabPanel>
-          <TabPanel name="mining" title="Mining">
-            <DataTable data={this._getMineralData()} />
-          </TabPanel>
-          <TabPanel name="shipyards" title="Shpipyards">TODO 4</TabPanel>
-          <TabPanel name="shipyardTasks" title="Shipyard Tasks">TODO 5</TabPanel>
-          <TabPanel name="groundUnits" title="Ground Units">TODO 6</TabPanel>
-          <TabPanel name="economy" title="Economy">TODO 7</TabPanel>
-        </Tabs>
+        <ScrollPane vertical={true}>
+          <Tabs name="colonyDetailsTab" activeTab={2}>
+            <TabPanel name="summary" title="Summary">
+              <dl>
+                <dt>Colony population: </dt>
+                <dd>{this.props.colony.population}</dd>
+                <dt>Colony population: </dt>
+                <dd>{this.props.colony.population}</dd>
+                <dt>Colony population: </dt>
+                <dd>{this.props.colony.population}</dd>
+                <dt>Colony population: </dt>
+                <dd>{this.props.colony.population}</dd>
+              </dl>
+            </TabPanel>
+            <TabPanel name="industry" title="Industry">TODO 2</TabPanel>
+            <TabPanel name="mining" title="Mining">
+              <DataTable data={this._getMineralData()} />
+            </TabPanel>
+            <TabPanel name="shipyards" title="Shpipyards">TODO 4</TabPanel>
+            <TabPanel name="shipyardTasks" title="Shipyard Tasks">TODO 5</TabPanel>
+            <TabPanel name="groundUnits" title="Ground Units">TODO 6</TabPanel>
+            <TabPanel name="economy" title="Economy">TODO 7</TabPanel>
+          </Tabs>
+        </ScrollPane>
       </div>
 
     </article>

@@ -2,7 +2,7 @@
   width: 80rem;
   height: 40rem;
   max-width:90vw;
-  max-height:90vh;
+  max-height:calc(90vh - 4rem);
   padding:4px 5px;
 
   &-coloniesListHolder {

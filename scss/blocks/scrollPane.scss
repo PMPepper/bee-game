@@ -1,0 +1,14 @@
+.scrollPane {
+  overflow-x: hidden;
+  overflow-y: hidden;
+
+  &_vertical {
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  &_horizontal{
+    width:100%;
+    overflow-x: auto;
+  }
+}
