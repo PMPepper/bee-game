@@ -1,7 +1,9 @@
+@import "../mixins";
+
 .dataTable {
   border-collapse: collapse;
 
-  th {
+  &-th {
     vertical-align: bottom;
     text-align: center;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
@@ -11,20 +13,98 @@
     &:first-child {
       text-align: left;
     }
-  }
 
-  > tbody {
-    > tr:first-child > td {
-      padding-top:6px;
+    &_sortable {
+      cursor: pointer;
+      padding-right: 1.5rem;
+    }
+
+    $sortArrowSize: 0.4rem;
+
+    &_sorted_asc {
+      position: relative;
+
+      &:after {
+        position: absolute;
+        right:4px;
+        top: 50%;
+        @include triangle(top, #000, $sortArrowSize);
+        margin-top: $sortArrowSize * -1.5;
+      }
+    }
+
+    &_sorted_desc {
+      position: relative;
+
+      &:after {
+        position: absolute;
+        right:4px;
+        top: 50%;
+        @include triangle(bottom, #000, $sortArrowSize);
+        margin-top: $sortArrowSize * 0.5;
+      }
+    }
+
+    //sort styles take prescendence over sorted styles
+    &_sort_asc {
+      position: relative;
+
+      &:after {
+        border:none;
+        position: absolute;
+        right:4px;
+        top: 50%;
+        @include triangle(top, #666, $sortArrowSize);
+        margin-top: $sortArrowSize * -1.5;
+      }
+    }
+
+    &_sort_desc {
+      position: relative;
+
+      &:after {
+        border:none;
+        position: absolute;
+        right:4px;
+        top: 50%;
+        @include triangle(bottom, #666, $sortArrowSize);
+        margin-top: $sortArrowSize * 0.5;
+      }
+    }
+
+    &_hovered {
+      background: rgba(0, 0, 0, 0.1);
     }
   }
 
-  td {
+  &-tbody {
+
+  }
+
+  &-row {
+    &_body {
+      &:first-child > td{
+        padding-top:6px;
+      }
+
+      &:hover {
+        > td {
+          background: rgba(0, 0, 0, 0.1);
+        }
+      }
+    }
+  }
+
+  &-td {
     text-align: center;
     padding: 3px 5px;
 
     &:first-child {
       text-align: left;
+    }
+
+    &_sortableColumnHovered {
+      background: rgba(0, 0, 0, 0.1);
     }
   }
 }

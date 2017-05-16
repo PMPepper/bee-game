@@ -5,7 +5,8 @@ import {BEMComponent} from './BEMComponent.jsx';
 import {ReactComponentController} from './ReactComponentController';
 import {Tabs} from './Tabs.jsx';
 import {TabPanel} from './TabPanel.jsx';
-import {Helpers} from '../Helpers'
+import {Helpers} from '../Helpers';
+import {DataTable} from './DataTable.jsx';
 
 class ColonyDetailsRenderer extends BEMComponent {
   constructor(props) {
@@ -21,7 +22,7 @@ class ColonyDetailsRenderer extends BEMComponent {
         TODO list all colonies
       </div>
       <div className={this.element('selectedColonyDetails')}>
-        <Tabs name="colonyDetailsTab" activeTab={0}>
+        <Tabs name="colonyDetailsTab" activeTab={2}>
           <TabPanel name="summary" title="Summary">
             <dl>
               <dt>Colony population: </dt>
@@ -36,24 +37,7 @@ class ColonyDetailsRenderer extends BEMComponent {
           </TabPanel>
           <TabPanel name="industry" title="Industry">TODO 2</TabPanel>
           <TabPanel name="mining" title="Mining">
-            <table className="dataTable">
-              <thead>
-                <tr>
-                  <th>Mineral Name</th>
-                  <th>Quantity</th>
-                  <th>Accessibility</th>
-                  <th>Production</th>
-                  <th>Depletion (years/date)</th>
-                  <th>Stockpile</th>
-                  <th>Stockpile change</th>
-                  <th>Mass Driver</th>
-                  <th>SP + Production</th>
-                </tr>
-              </thead>
-              <tbody>
-                {this._getMineralData()}
-              </tbody>
-            </table>
+            <DataTable data={this._getMineralData()} />
           </TabPanel>
           <TabPanel name="shipyards" title="Shpipyards">TODO 4</TabPanel>
           <TabPanel name="shipyardTasks" title="Shipyard Tasks">TODO 5</TabPanel>
@@ -68,7 +52,123 @@ class ColonyDetailsRenderer extends BEMComponent {
   _getMineralData() {
     const minerals = Client.getGameConfig().minerals;
     const colony = this.props.colony;
-    console.log(colony);
+
+    minerals.sort();
+
+    const data = {
+      columns:[
+        {
+          label:'Mineral Name',
+          sortable: true,
+          sorted: 'asc',
+          modifiers:{ex:1}
+        },
+        {
+          label:'Quantity',
+          sortable: true,
+          modifiers:{ex:2}
+        },
+        {
+          label:'Accessibility',
+          sortable: true
+        },
+        {
+          label:'Production',
+          sortable: true
+        },
+        {
+          label:'Depletion (years/date)',
+          sortable: true
+        },
+        {
+          label:'Stockpile',
+          sortable: true
+        },
+        {
+          label:'Stockpile Change',
+          sortable: true
+        },
+        {
+          label:'Mass Driver',
+          sortable: true
+        },
+        {
+          label:'SP + Production',
+          sortable: true
+        }
+      ],
+      rows:[]
+    };
+
+    minerals.forEach((mineralName) => {
+      const mineralRow = [];
+
+      //get data about this mineral
+      const bodyMinerals = colony.systemBody.body.minerals ? colony.systemBody.body.minerals.getMineralByName(mineralName) : null;
+
+      //Mineral name cell
+      mineralRow.push({
+        label: Helpers.ucFirst(mineralName),
+        value: mineralName
+      })
+
+      //Quantity cell
+      mineralRow.push({
+        label:(bodyMinerals ? Helpers.formatNumber(bodyMinerals.amount) : '-'),
+        value: bodyMinerals ? bodyMinerals.amount : 0
+      })
+
+      //Accessibility cell
+      mineralRow.push({
+        label:(bodyMinerals ? bodyMinerals.accessibility : '-'),
+        value: bodyMinerals ? bodyMinerals.accessibility : 0
+      })
+
+      //Production cell
+      mineralRow.push({
+        label: 0,
+        value: 0
+      })
+
+      //Depletion (years/date) cell
+      mineralRow.push({
+        label: '0/'+Helpers.formatDate(null),
+        value: 0
+      })
+
+      //Stockpile cell
+      mineralRow.push({
+        label: 0,
+        value: 0
+      })
+
+      //Stockpile Change cell
+      mineralRow.push({
+        label: 0,
+        value: 0
+      })
+
+      //Mass Driver cell
+      mineralRow.push({
+        label: 0,
+        value: 0
+      })
+
+      //SP + Production cell
+      mineralRow.push({
+        label: 0,
+        value: 0
+      })
+
+      data.rows.push(mineralRow);
+    });
+
+    return data;
+  }
+
+  _getMineralDataOld() {
+    const minerals = Client.getGameConfig().minerals;
+    const colony = this.props.colony;
 
     return minerals.map((mineralName) => {
       const bodyMinerals = colony.systemBody.body.minerals ? colony.systemBody.body.minerals.getMineralByName(mineralName) : null;

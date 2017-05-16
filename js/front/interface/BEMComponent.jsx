@@ -94,7 +94,7 @@ export class BEMComponent extends React.Component {
 
     if(extras) {
       for(let mod in extras) {
-        className += ' '+baseClassName+modifierSep+mod+modifierSep+extras[mod];
+        className += ' '+baseClassName+modifierSep+mod+(extras[mod] === null ? '' : modifierSep+extras[mod]);
       }
     }
 
