@@ -8,8 +8,16 @@ export class DataTable extends BEMComponent {
   }
 
   componentWillMount() {
+    this._setStateFromProps(this.props.data);
+  }
+
+  componentWillReceiveProps(newProps) {
+    this._setStateFromProps(newProps.data);
+  }
+
+  _setStateFromProps(propData) {
     //do a deep clone
-    let data = window.JSON.parse(window.JSON.stringify(this.props.data));
+    let data = window.JSON.parse(window.JSON.stringify(propData));
     let sortedColumnIndex = null;
     let sortedColumnDirection = null;
 

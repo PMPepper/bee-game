@@ -11,6 +11,8 @@ export class Colony extends State {
     this._mineralsStockpile = mineralsStockpile || new MineralsStockpile();
     this._orbitalMinerals = orbitalMinerals || new MineralsStockpile();
 
+    this._knownSystemBody = null;
+
     this._removed = false;
   }
 
@@ -28,6 +30,10 @@ export class Colony extends State {
 
   get orbitalMinerals() {
     return this._orbitalMinerals;
+  }
+
+  get knownSystemBody() {
+    return this._knownSystemBody;
   }
 
   //

@@ -34,7 +34,7 @@ export class KnownSystem extends State {
   addKnownSystemBody(knownSystemBody) {
     this._knownSystemBodies.push(knownSystemBody);
 
-    knownSystemBody._system = this;
+    knownSystemBody._knownSystem = this;
   }
 
   getKnownSystemBodyById(id) {
@@ -45,5 +45,24 @@ export class KnownSystem extends State {
     }
 
     return null;
+  }
+
+  getFactionColonies() {
+    const colonies = [];
+
+    this.knownSystemBodies.forEach((knownSystemBody) => {
+      let colony = knownSystemBody.colony;
+
+      if(colony) {
+        colonies.push(colony);
+      }
+    });
+
+    return colonies;
+  }
+
+  getKnownColonies() {
+    throw new Error('not implemented');
+    return [];
   }
 }

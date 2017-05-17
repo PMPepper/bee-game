@@ -16,39 +16,22 @@ class ColonyDetailsRenderer extends BEMComponent {
     super(props, 'colonyDetails');
   }
 
+  componentWillMount() {
+    this.setState({colony:this.props.colony});
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState({colony:props.colony});
+  }
+
   render() {
     if(!this.props.colony) {
       return <article className={this.blockClasses}>No colony selected</article>
     }
 
-    const exampleData = [
-      {
-        label: 'root 1',
-        children: [
-          'a',
-          'b',
-          'c'
-        ]
-      },
-      {
-        label: 'root 2',
-        children: [
-          1,
-          2,
-          3,
-          {
-            label: 4,
-            isOpen: true,
-            children: ['hello', 'world']
-          }
-        ]
-      },
-      'Just a string'
-    ];
-
     return <article className={this.blockClasses}>
       <div className={this.element('coloniesListHolder')}>
-        <TreeMenu onItemClick={(item) => {console.log('onItemClick: ', item);}} data={exampleData} />
+        <TreeMenu onItemClick={(item) => {return this.props.onItemClickSetColony(item);}} data={this._getFactionColoniesData(this.state.colony)} />
       </div>
       <div className={this.element('selectedColonyDetails')}>
         <ScrollPane vertical={true}>
@@ -80,6 +63,43 @@ class ColonyDetailsRenderer extends BEMComponent {
     </article>
   }
 
+  _onItemClickSetColony(item) {
+
+  }
+
+  _getFactionColoniesData(selectedColony) {
+    const gameState = this.props.gameState;
+
+    const knownSystems = gameState.knownSystems;
+    const systems = [];
+
+    for( let id in knownSystems) {
+      if(knownSystems.hasOwnProperty(id)) {
+        let knownSystem = knownSystems[id];
+
+        let colonies = knownSystem.getFactionColonies();
+
+        if(colonies.length > 0) {
+          systems.push({
+            label: knownSystem.name,
+            key: knownSystem.id,
+            isOpen: true,
+            children: colonies.map((colony) => {
+              return {
+                label: colony.knownSystemBody.name,
+                key: colony.id,
+                selected: colony == selectedColony,
+                isColony: true
+              };
+            })
+          })
+        }
+      }
+    }
+
+    return systems;
+  }
+
   _getMineralData() {
     const minerals = Client.getGameConfig().minerals;
     const colony = this.props.colony;
@@ -92,7 +112,7 @@ class ColonyDetailsRenderer extends BEMComponent {
         {
           label:'Mineral Name',
           sortable: true,
-          sorted: 'asc',
+          sorted: 'desc',
           modifiers:{ex:1}
         },
         {
@@ -141,6 +161,10 @@ class ColonyDetailsRenderer extends BEMComponent {
       const production = 0;//production is per day
       const depletionDays = Math.round(stockpile/production);
       const depletionDate = depletionDays > 0 ? new window.Date((this.props.gameState.time+(depletionDays*Constants.DAY)) * 1000) : null ;
+
+      if(bodyMinerals === null) {
+        return;
+      }
 
       //Mineral name cell
       mineralRow.push({
@@ -216,6 +240,8 @@ class ColonyDetailsController extends ReactComponentController {
     //naughty..
     this._gameState = client._state;
     this._colonyId = colony ? colony.id : null;
+
+    this._onItemClickSetColony = this._onItemClickSetColony.bind(this);
   }
 
   get colony() {
@@ -227,12 +253,32 @@ class ColonyDetailsController extends ReactComponentController {
   }
 
   set colony(value) {
-    this._colonyId = value ? value.id : null;
-    this._doReRender();
+    const newValue = value ? value.id : null;
+
+    if(newValue != this._colonyId) {
+      this._colonyId = newValue;
+      this._doReRender();
+    }
+  }
+
+  _onItemClickSetColony(item) {
+    if(item.isColony) {
+      const colony = this._gameState.getStateById(item.key);
+
+      if(!colony) {
+        return false;
+      }
+
+      this.colony = colony;
+
+      return false;
+    }
+
+    return false;
   }
 
   render() {
-    return <ColonyDetailsRenderer colony={this.colony} gameState={this._gameState} />
+    return <ColonyDetailsRenderer colony={this.colony} gameState={this._gameState} onItemClickSetColony={this._onItemClickSetColony} />
   }
 }
 

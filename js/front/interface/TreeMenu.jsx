@@ -14,7 +14,24 @@ export class TreeMenu extends BEMComponent {
   }
 
   componentWillMount() {
-    this.setState({data: normaliseData(JSON.parse(JSON.stringify(this.props.data)))});
+    this._parsePropIntoState(this.props.data);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this._parsePropIntoState(nextProps.data);
+  }
+
+  //TODO reconcile state - e.g. open/close states? Is that feasible?
+  _parsePropIntoState(propData) {
+    let selectedObj = {};
+
+    const newState = {data: normaliseData(JSON.parse(JSON.stringify(propData)), selectedObj)};
+
+    if(selectedObj.selected) {
+      newState.selected = selectedObj.selected;
+    }
+
+    this.setState(newState);
   }
 
   render() {
@@ -32,7 +49,11 @@ export class TreeMenu extends BEMComponent {
 
     //call handler, if supplied
     if(typeof(this.props.onItemClick) == 'function') {
-      this.props.onItemClick(item);
+      let retVal = this.props.onItemClick(item);
+
+      if(retVal === false) {
+        return;//if handler returns false, do not select this item
+      }
     }
 
     if(this.state.selected) {
@@ -65,6 +86,7 @@ export class TreeMenu extends BEMComponent {
               {list.map((item, index) => {
                 const modifiers = {depth: depth};
 
+                //set calculated modifiers
                 if(item.isOpen) {
                   modifiers.isOpen = null;
                 }
@@ -107,7 +129,7 @@ export class TreeMenu extends BEMComponent {
 //TODO get initially selected item
 
 //Normalise data
-function normaliseData(data) {
+function normaliseData(data, selectedObj) {
   if(!data) {
     return [];
   }
@@ -117,13 +139,13 @@ function normaliseData(data) {
   }
 
   data.forEach((child, index) => {
-    data[index] = normaliseObject(data[index]);
+    data[index] = normaliseObject(data[index], selectedObj);
   });
 
   return data;
 }
 
-function normaliseObject(data) {
+function normaliseObject(data, selectedObj) {
   if(typeof(data) != 'object') {
     data = {label: data, key: data, modifiers: {}, isOpen: false};
   } else {
@@ -140,9 +162,17 @@ function normaliseObject(data) {
     data.isOpen = !! data.isOpen;
 
     if(data.children) {
-      data.children = normaliseData(data.children);
+      data.children = normaliseData(data.children, selectedObj);
     } else {
       data.children = null;
+    }
+
+    if(data.selected) {
+      if(selectedObj.selected) {
+        throw new Error('Cannot have multiple selected items in a tree menu');
+      }
+
+      selectedObj.selected = data;
     }
   }
 

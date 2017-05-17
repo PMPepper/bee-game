@@ -42,6 +42,12 @@
         bottom: none;
       }
     }
+
+    &_lastChild#{&}_hasChildren {
+      &:before {
+        height: 5px;
+      }
+    }
   }
 
   &-children {

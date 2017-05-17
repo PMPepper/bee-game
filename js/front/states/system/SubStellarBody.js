@@ -1,12 +1,11 @@
 import {SystemBody} from './SystemBody';
 
 export class SubStellarBody extends SystemBody {
-  constructor (name, mass, radius, day, axialTilt, tidalLock, parent, albedo, minerals, colonies, surfaceHeating, minSurfaceHeating, maxSurfaceHeating, avgSurfaceHeating, surfaceTemp, minSurfaceTemp, maxSurfaceTemp, avgSurfaceTemp) {
+  constructor (name, mass, radius, day, axialTilt, tidalLock, parent, albedo, minerals, surfaceHeating, minSurfaceHeating, maxSurfaceHeating, avgSurfaceHeating, surfaceTemp, minSurfaceTemp, maxSurfaceTemp, avgSurfaceTemp) {
     super(name, mass, radius, day, axialTilt, tidalLock, parent);
 
     this._albedo = albedo;
     this._minerals = minerals || null;
-    this._colonies = colonies ? colonies.slice() : [];
     this._surfaceHeating = surfaceHeating;
     this._minSurfaceHeating = minSurfaceHeating;
     this._maxSurfaceHeating = maxSurfaceHeating;
@@ -27,10 +26,6 @@ export class SubStellarBody extends SystemBody {
 
   get minerals() {
     return this._minerals;
-  }
-
-  get colonies () {
-    return this._colonies;
   }
 
   get surfaceHeating () {

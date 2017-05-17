@@ -61,6 +61,12 @@ export class FactionState extends State {
   //Add state methods
   addColony(colony) {
     this._colonies[colony.id] = colony;
+
+    const knownSystemBody = this._knownSystemBodyBySystemBodyId[colony.systemBody.id];
+
+    //set two directional link between colonies
+    knownSystemBody._colony = colony;
+    colony._knownSystemBody = knownSystemBody;
   }
 
   addSystem(systems) {
@@ -182,7 +188,7 @@ export class FactionState extends State {
       return null;
     }
 
-    return new KnownSystemBody(data.id, this._getStateById(data.systemBodyId), data.name, this._getStateById(data.mineralsId));//TODO
+    return new KnownSystemBody(data.id, this._getStateById(data.systemBodyId), data.name, !!data.isSurveyed, this._getStateById(data.mineralsId));//TODO
   }
 
   _getSystemBodyMinerals(data) {
@@ -232,7 +238,7 @@ export class FactionState extends State {
       case 'planet':
       case 'dwarf planet':
       case 'moon':
-        //name, mass, radius, day, axialTilt, tidalLock, parent, albedo, minerals, colonies, surfaceHeating, minSurfaceHeating, maxSurfaceHeating, avgSurfaceHeating, surfaceTemp, minSurfaceTemp, maxSurfaceTemp, avgSurfaceTemp, atmosphere, type
+        //name, mass, radius, day, axialTilt, tidalLock, parent, albedo, minerals, surfaceHeating, minSurfaceHeating, maxSurfaceHeating, avgSurfaceHeating, surfaceTemp, minSurfaceTemp, maxSurfaceTemp, avgSurfaceTemp, atmosphere, type
         state = new Planet(
           null,
           data.mass,
@@ -243,7 +249,6 @@ export class FactionState extends State {
           this._getStateById(data.parentId),
           data.albedo,
           this._getStateById(data.mineralsId),
-          null,
           data.surfaceHeating,
           data.minSurfaceHeating,
           data.maxSurfaceHeating,

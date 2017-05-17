@@ -1,4 +1,7 @@
 import {State} from '../State';
+import {FactionState} from '../FactionState';
+import {Colony} from '../Colony';
+import {SubStellarBody} from './SubStellarBody';
 
 export class System extends State {
   constructor(id, bodies) {
@@ -26,6 +29,8 @@ export class System extends State {
   get stars () {
     return this._stars;
   }
+
+  
 
   /*getSystemBodyById(id) {
     const bodies = this.bodies;
