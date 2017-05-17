@@ -50,7 +50,7 @@ class ColonyDetailsRenderer extends BEMComponent {
             </TabPanel>
             <TabPanel name="industry" title="Industry">TODO 2</TabPanel>
             <TabPanel name="mining" title="Mining">
-              <DataTable data={this._getMineralData()} />
+              <DataTable columns={mineralsTableColumns} rows={this._getMineralData()} />
             </TabPanel>
             <TabPanel name="shipyards" title="Shpipyards">TODO 4</TabPanel>
             <TabPanel name="shipyardTasks" title="Shipyard Tasks">TODO 5</TabPanel>
@@ -61,10 +61,6 @@ class ColonyDetailsRenderer extends BEMComponent {
       </div>
 
     </article>
-  }
-
-  _onItemClickSetColony(item) {
-
   }
 
   _getFactionColoniesData(selectedColony) {
@@ -104,53 +100,9 @@ class ColonyDetailsRenderer extends BEMComponent {
     const minerals = Client.getGameConfig().minerals;
     const colony = this.props.colony;
     const stockpile = colony.mineralsStockpile;
+    const rows = [];
 
     minerals.sort();
-
-    const data = {
-      columns:[
-        {
-          label:'Mineral Name',
-          sortable: true,
-          sorted: 'desc',
-          modifiers:{ex:1}
-        },
-        {
-          label:'Quantity',
-          sortable: true,
-          modifiers:{ex:2}
-        },
-        {
-          label:'Accessibility',
-          sortable: true
-        },
-        {
-          label:'Production',
-          sortable: true
-        },
-        {
-          label:'Depletion (years/date)',
-          sortable: true
-        },
-        {
-          label:'Stockpile',
-          sortable: true
-        },
-        {
-          label:'Stockpile Change',
-          sortable: true
-        },
-        {
-          label:'Mass Driver',
-          sortable: true
-        },
-        {
-          label:'SP + Production',
-          sortable: true
-        }
-      ],
-      rows:[]
-    };
 
     minerals.forEach((mineralName) => {
       const mineralRow = [];
@@ -222,10 +174,10 @@ class ColonyDetailsRenderer extends BEMComponent {
         value: 0
       })
 
-      data.rows.push(mineralRow);
+      rows.push(mineralRow);
     });
 
-    return data;
+    return rows;
   }
 }
 
@@ -287,3 +239,45 @@ export const ColonyDetails = Object.freeze({
   Renderer: ColonyDetailsRenderer,
   Controller: ColonyDetailsController
 });
+
+const mineralsTableColumns = [
+  {
+    label:'Mineral Name',
+    sortable: true,
+    sorted: 'desc',
+    modifiers:{ex:1}
+  },
+  {
+    label:'Quantity',
+    sortable: true,
+    modifiers:{ex:2}
+  },
+  {
+    label:'Accessibility',
+    sortable: true
+  },
+  {
+    label:'Production',
+    sortable: true
+  },
+  {
+    label:'Depletion (years/date)',
+    sortable: true
+  },
+  {
+    label:'Stockpile',
+    sortable: true
+  },
+  {
+    label:'Stockpile Change',
+    sortable: true
+  },
+  {
+    label:'Mass Driver',
+    sortable: true
+  },
+  {
+    label:'SP + Production',
+    sortable: true
+  }
+]

@@ -2,56 +2,92 @@ import React from 'react';
 import {render} from 'react-dom';
 import {BEMComponent} from './BEMComponent.jsx';
 
+const JSON = window.JSON;
+
+function deepClone(obj) {
+  return obj ? JSON.parse(JSON.stringify(obj)) : null;
+}
+
 export class DataTable extends BEMComponent {
   constructor(props) {
     super(props, 'dataTable');
+
+    this.state = {};
   }
 
   componentWillMount() {
-    this._setStateFromProps(this.props.data);
+    this._setStateFromProps(this.props.columns, this.props.rows, this.props.footer || null);
   }
 
   componentWillReceiveProps(newProps) {
-    this._setStateFromProps(newProps.data);
+    this._setStateFromProps(newProps.columns || null, newProps.rows || null, newProps.footer || null);
   }
 
-  _setStateFromProps(propData) {
+  _setStateFromProps(propColumns, propRows, propFooter) {
+    let columns;
+    let rows;
+    let footer;
+
     //do a deep clone
-    let data = window.JSON.parse(window.JSON.stringify(propData));
     let sortedColumnIndex = null;
     let sortedColumnDirection = null;
 
-    //normalise data, set default props, etc
-    data.columns = data.columns.map((column, index) => {
-      const cell = getCellObject(column);
+    if(propColumns && propColumns != this.state.originalColumns) {
+      columns  = deepClone(propColumns).map((column, index) => {
+        const cell = getCellObject(column);
 
-      if(cell.sorted) {
-        if(sortedColumnIndex !== null) {
-          throw new Error('DataTable can only be sorted by one column at a time');
+        if(cell.sorted) {
+          if(sortedColumnIndex !== null) {
+            throw new Error('DataTable can only be sorted by one column at a time');
+          }
+
+          sortedColumnIndex = index;
+          sortedColumnDirection = cell.sorted;
         }
 
-        sortedColumnIndex = index;
-        sortedColumnDirection = cell.sorted;
-      }
+        return cell;
+      });
+    } else {
+      //retrieve values from state
+      propColumns = this.state.originalColumns;
+      columns = this.state.columns;
+      sortedColumnIndex = this.state.sortedColumnIndex;
+      sortedColumnDirection = this.state.sortedColumnDirection;
+    }
 
-      return cell;
-    })
+    if(propRows) {
+      rows = deepClone(propRows)
+      rows.forEach((row) => {normaliseRowArray(row, columns)});
+    } else {
+      rows = this.state.rows;
+    }
 
-    data.rows.forEach((row) => {normaliseRowArray(row, data.columns)});
+    //TODO implement footer
+    if(propFooter) {
+      footer = deepClone(propFooter);
+    } else {
+      footer = this.state.footer;
+    }
 
     //store in state
-    this.setState({data: data, sortedColumnIndex: sortedColumnIndex, sortedColumnDirection: sortedColumnDirection});
+    this.setState({
+      columns: columns,
+      rows: rows,
+      footer: footer,
+      originalColumns: propColumns,
+      sortedColumnIndex: sortedColumnIndex,
+      sortedColumnDirection: sortedColumnDirection
+    });
   }
 
   render() {
-    const data = this.state.data;
+    const columns = this.state.columns;
+    const rows = this.state.rows;
+    const footer = this.state.footer;
 
-    if(!data) {
+    if(!columns || !rows) {
       return null;
     }
-
-    const columns = data.columns;
-    const rows = data.rows;
 
     return <table className={this.blockClasses}>
       <thead className={this.element('thead')}>
@@ -99,28 +135,27 @@ export class DataTable extends BEMComponent {
 
     //read data out of state (state only changes asynchronosly, so don't refer back to it while changing stuff, because it won't have changed)
     const state = this.state;
-    const data = state.data;
+    const columns = state.columns;
+    const rows = state.rows;
     let sortedColumnIndex = state.sortedColumnIndex;
     let sortedColumnDirection = state.sortedColumnDirection;
 
     //first, find currently sorted column and remove
     if(sortedColumnIndex == index) {
       //toggle direction
-      data.columns[index].sorted = sortedColumnDirection = (sortedColumnDirection == 'asc' ? 'desc' : 'asc');
+      columns[index].sorted = sortedColumnDirection = (sortedColumnDirection == 'asc' ? 'desc' : 'asc');
     } else {
       //sort on a new column
       //-clear old sorting value
-      delete data.columns[sortedColumnIndex].sorted;
+      delete columns[sortedColumnIndex].sorted;
 
       //set new sorting values
       //-always default to asc sorting
-      data.columns[index].sorted = sortedColumnDirection = 'asc';
+      columns[index].sorted = sortedColumnDirection = 'asc';
       sortedColumnIndex = index;
     }
 
-    //now re-sort the data
-    const rows = data.rows;
-
+    //now re-sort the rows
     rows.sort((sortedColumnDirection == 'asc') ?
       (rowA, rowB) => {
         const valueA = rowA[index].value;
@@ -139,7 +174,7 @@ export class DataTable extends BEMComponent {
 
     //now check the hovering code stuff
     if(clicked) {
-      this._mouseEnterColumn(data.columns[sortedColumnIndex], sortedColumnIndex);
+      this._mouseEnterColumn(columns[sortedColumnIndex], sortedColumnIndex);
     }
 
     //finally set new state values
@@ -154,12 +189,12 @@ export class DataTable extends BEMComponent {
       return;
     }
 
-    let data = this.state.data;
+    let rows = this.state.rows;
 
     column.modifiers.hovered = null;
     column.modifiers.sort = column.sorted && column.sorted == 'asc' ? 'desc' : 'asc';
 
-    data.rows.forEach((row) => {
+    rows.forEach((row) => {
       row[index].modifiers.sortableColumnHovered = null;
     });
 
@@ -171,12 +206,12 @@ export class DataTable extends BEMComponent {
       return;
     }
 
-    let data = this.state.data;
+    let rows = this.state.rows;
 
     delete column.modifiers.hovered;
     delete column.modifiers.sort;
 
-    data.rows.forEach((row) => {
+    rows.forEach((row) => {
       delete row[index].modifiers.sortableColumnHovered;
     });
 
