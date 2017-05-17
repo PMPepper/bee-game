@@ -53,6 +53,7 @@ class WindowingController extends ReactComponentController {
 
     this._onWindowClick = this._onWindowClick.bind(this);
     this._onSetElement = this._onSetElement.bind(this);
+    this._onWindowChanged = this._onWindowChanged.bind(this);
   }
 
   get windows() {
@@ -64,7 +65,7 @@ class WindowingController extends ReactComponentController {
   }
 
   set focussedWindow(value) {
-    if(!this._isKnownWindow(value)) {
+    if(value !== null && !this._isKnownWindow(value)) {
       throw new Error('You cannot focus on a window not present in this windowing object');
     }
 
@@ -72,16 +73,17 @@ class WindowingController extends ReactComponentController {
       return;//nothing has changed, do nothing
     }
 
-    //bring this window to the top
-    const windows = this._windows;
+    if(value) {
+      //bring this window to the top
+      const windows = this._windows;
 
-    const index = windows.indexOf(value);
-    windows.splice(index, 1);
-    windows.push(value);
+      const index = windows.indexOf(value);
+      windows.splice(index, 1);
+      windows.push(value);
+      value.visible = true;//make window visible
+    }
 
     this._focussedWindow = value;
-
-    value.visible = true;
 
     //trigger re-render
     this._doReRender();
@@ -117,7 +119,17 @@ class WindowingController extends ReactComponentController {
     this._windowsById[id] = win;
     this._windows.push(win);
 
-    win.addListener('changed', this._doReRender);
+    win.addListener('changed', this._onWindowChanged);
+
+    this._doReRender();
+  }
+
+  _onWindowChanged(e) {
+    if(e.target == this.focussedWindow) {
+      if(!e.target.visible) {
+        this.focussedWindow = null;//clear focussed window
+      }
+    }
 
     this._doReRender();
   }

@@ -14,6 +14,7 @@ export class WindowRenderer extends BEMComponent {
     this._onHeaderMouseMove = this._onHeaderMouseMove.bind(this);
     this._onHeaderMouseUp = this._onHeaderMouseUp.bind(this);
     this._centerWindow = this._centerWindow.bind(this);
+    this._onWindowClicked = this._onWindowClicked.bind(this);
 
     this._dragLastCoord = null;
 
@@ -61,14 +62,24 @@ export class WindowRenderer extends BEMComponent {
       return null;
     }
 
-
-
-    return <section ref={this._x === null || this._y === null ? this._centerWindow : null } className={this.blockClasses} style={this.state.style} onMouseDown={() =>{this.props.onFocus(this)}}>
-      <header className={this.element('header')} onMouseDown={this.props.draggable ? this._onHeaderMouseDown : null}>{this.props.title}</header>
+    return <section onClick={this._onWindowClicked} ref={this._x === null || this._y === null ? this._centerWindow : null } className={this.blockClasses} style={this.state.style} onMouseDown={() =>{this.props.onFocus(this)}}>
+      <header className={this.element('header')}>
+        <h1 onMouseDown={this.props.draggable ? this._onHeaderMouseDown : null} className={this.element('header-title')}>{this.props.title}</h1>
+        <button className={this.element('closeBtn') + ' js-closeWindow'} type="button"><span>Close {this.props.title} window</span></button>
+      </header>
       <div className={this.element('body')}>
         {this.props.content.render()}
       </div>
     </section>
+  }
+
+  _onWindowClicked(e) {
+    if(e.target.classList.contains('js-closeWindow')) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      this.props.onCloseClicked();
+    }
   }
 
   _centerWindow(element) {
@@ -146,6 +157,8 @@ export class WindowController extends ReactComponentController {
     this._resizeable = resizeable;
 
     this._visible = false;
+
+    this._onCloseClicked = this._onCloseClicked.bind(this);
   }
 
   get id() {
@@ -206,8 +219,13 @@ export class WindowController extends ReactComponentController {
       resizeable={this.resizeable}
       onFocus={onFocus}
       visible={this.visible}
-      content={this._content}>
+      content={this._content}
+      onCloseClicked={this._onCloseClicked}>
     </WindowRenderer>
+  }
+
+  _onCloseClicked() {
+    this.visible = false;
   }
 }
 

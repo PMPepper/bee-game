@@ -1,5 +1,6 @@
 @import 'functions';
 
+//Add standard panel styling to an element
 @mixin panel($skipPaddingsAndMargin:false) {
   //W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+
   background: radial-gradient(250px 150px ellipse at left top, #ffffff 0%,#ffffff 48%,#ffffff 48%,#dfdfdf 100%);
@@ -39,4 +40,14 @@
     border-bottom: $perpendicular-borders;
     border-top:    $perpendicular-borders;
   }
+}
+
+//Accessible off-screen content
+@mixin offscreen() {
+  height: 1px;
+  left: -10000px;
+  overflow: hidden;
+  position: absolute;
+  top: auto;
+  width: 1px;
 }
