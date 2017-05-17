@@ -7,6 +7,7 @@ Constants.G = 9.819649737724955;//Earth's surface gravity based on internal calc
 
 //Time Constants
 Constants.DAY = 86400;
-Constants.YEAR = Constants.DAY * 365;//ignore leap years
+Constants.DAYS_PER_YEAR = 365;//ignore leap years
+Constants.YEAR = Constants.DAY * Constants.DAYS_PER_YEAR;
 
 Object.freeze(Constants);

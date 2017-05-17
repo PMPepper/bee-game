@@ -49,12 +49,11 @@
     &_sort_asc {
       position: relative;
 
-      &:after {
-        border:none;
+      &:before {
         position: absolute;
         right:4px;
         top: 50%;
-        @include triangle(top, #666, $sortArrowSize);
+        @include triangle(top, #555, $sortArrowSize);
         margin-top: $sortArrowSize * -1.5;
       }
     }
@@ -62,12 +61,11 @@
     &_sort_desc {
       position: relative;
 
-      &:after {
-        border:none;
+      &:before {
         position: absolute;
         right:4px;
         top: 50%;
-        @include triangle(bottom, #666, $sortArrowSize);
+        @include triangle(bottom, #555, $sortArrowSize);
         margin-top: $sortArrowSize * 0.5;
       }
     }
@@ -98,6 +96,7 @@
   &-td {
     text-align: center;
     padding: 3px 5px;
+    white-space: nowrap;
 
     &:first-child {
       text-align: left;
@@ -106,5 +105,14 @@
     &_sortableColumnHovered {
       background: rgba(0, 0, 0, 0.1);
     }
+
+    &_footer {
+      font-weight: bold;
+      border-top: 1px solid rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  &-tfoot{
+
   }
 }

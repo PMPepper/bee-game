@@ -62,20 +62,20 @@ export class DataTable extends BEMComponent {
       rows = this.state.rows;
     }
 
-    //TODO implement footer
+    //TODO implement footer normalisation
     if(propFooter) {
       footer = deepClone(propFooter);
     } else {
       footer = this.state.footer;
     }
 
-    //store in state
-    this.setState({
+    //sort and store in state
+    this._sortOnColumn(columns[sortedColumnIndex], sortedColumnIndex, false, {
       columns: columns,
       rows: rows,
       footer: footer,
       originalColumns: propColumns,
-      sortedColumnIndex: sortedColumnIndex,
+      sortedColumnIndex: -1,
       sortedColumnDirection: sortedColumnDirection
     });
   }
@@ -125,16 +125,27 @@ export class DataTable extends BEMComponent {
           </tr>
         })}
       </tbody>
+      {footer &&
+        <tfoot className={this.element('tfoot')}>
+          <tr className={this.element('row', {footer:null})}>
+            {footer.map((val, index) => {
+              return  <td key={index} className={this.element('td', {footer:null})}>
+                        {val}
+                      </td>
+            })}
+          </tr>
+        </tfoot>
+      }
     </table>
   }
 
-  _sortOnColumn(column, index, clicked) {
+  _sortOnColumn(column, index, clicked, state) {
     if(!column.sortable) {
       return;
     }
 
     //read data out of state (state only changes asynchronosly, so don't refer back to it while changing stuff, because it won't have changed)
-    const state = this.state;
+    state = state || this.state;
     const columns = state.columns;
     const rows = state.rows;
     let sortedColumnIndex = state.sortedColumnIndex;
@@ -147,7 +158,9 @@ export class DataTable extends BEMComponent {
     } else {
       //sort on a new column
       //-clear old sorting value
-      delete columns[sortedColumnIndex].sorted;
+      if(columns[sortedColumnIndex]) {
+        delete columns[sortedColumnIndex].sorted;
+      }
 
       //set new sorting values
       //-always default to asc sorting

@@ -50,12 +50,13 @@ class ColonyDetailsRenderer extends BEMComponent {
             </TabPanel>
             <TabPanel name="industry" title="Industry">TODO 2</TabPanel>
             <TabPanel name="mining" title="Mining">
-              <DataTable columns={mineralsTableColumns} rows={this._getMineralData()} />
+              <DataTable columns={mineralsTableColumns} rows={this._getMineralData()} footer={this._getMineralSummary()} />
             </TabPanel>
-            <TabPanel name="shipyards" title="Shpipyards">TODO 4</TabPanel>
+            <TabPanel name="shipyards" title="Shipyards">TODO 4</TabPanel>
             <TabPanel name="shipyardTasks" title="Shipyard Tasks">TODO 5</TabPanel>
             <TabPanel name="groundUnits" title="Ground Units">TODO 6</TabPanel>
             <TabPanel name="economy" title="Economy">TODO 7</TabPanel>
+            <TabPanel name="maintenance" title="Maintenance">TODO 8</TabPanel>
           </Tabs>
         </ScrollPane>
       </div>
@@ -114,9 +115,6 @@ class ColonyDetailsRenderer extends BEMComponent {
       const depletionDays = Math.round(stockpile/production);
       const depletionDate = depletionDays > 0 ? new window.Date((this.props.gameState.time+(depletionDays*Constants.DAY)) * 1000) : null ;
 
-      if(bodyMinerals === null) {
-        return;
-      }
 
       //Mineral name cell
       mineralRow.push({
@@ -126,7 +124,7 @@ class ColonyDetailsRenderer extends BEMComponent {
 
       //Quantity cell
       mineralRow.push({
-        label:(bodyMinerals ? Helpers.formatNumber(bodyMinerals.amount) : '-'),
+        label:(bodyMinerals ? Helpers.formatNumber(bodyMinerals.amount) : 'Not surveyed'),
         value: bodyMinerals ? bodyMinerals.amount : 0
       })
 
@@ -178,6 +176,40 @@ class ColonyDetailsRenderer extends BEMComponent {
     });
 
     return rows;
+  }
+
+  _getMineralSummary() {
+    const minerals = Client.getGameConfig().minerals;
+    const colony = this.props.colony;
+    const bodyMinerals = colony.systemBody.body.minerals ? colony.systemBody.body.minerals.totalMinerals : 0;
+    const accessiblity = colony.systemBody.body.minerals ? colony.systemBody.body.minerals.totalAccessibility : 0;
+    const stockpile = colony.mineralsStockpile.totalMinerals;
+    const production = 0 * Constants.DAYS_PER_YEAR;//production is per day, multiplied to a year
+    const depletionDays = null;//TODO get highest depletion days Math.round(stockpile/production);
+    const depletionDate = null;//TODO use depletionDays to calculate deplation date.
+
+    const footer = [];
+
+    //Mineral name cell
+    footer.push('Totals');
+    //Quantity cell
+    footer.push(colony.knownSystemBody.isSurveyed ? Helpers.formatNumber(bodyMinerals) : '?');
+    //Accessibility cell
+    footer.push(colony.knownSystemBody.isSurveyed ? accessiblity : '?')//TODO format?
+    //Production cell
+    footer.push('TODO');
+    //Depletion (years/date) cell
+    footer.push('TODO');
+    //Stockpile cell
+    footer.push('TODO');
+    //Stockpile Change cell
+    footer.push('TODO');//Helpers.formatNumber(stockpile)
+    //Mass Driver cell
+    footer.push('TODO');
+    //SP + Production cell
+    footer.push(Helpers.formatNumber(stockpile+production));
+
+    return footer;
   }
 }
 
@@ -257,7 +289,7 @@ const mineralsTableColumns = [
     sortable: true
   },
   {
-    label:'Production',
+    label:'Annual Production',
     sortable: true
   },
   {

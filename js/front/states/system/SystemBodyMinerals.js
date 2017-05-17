@@ -12,6 +12,26 @@ export class SystemBodyMinerals extends State {
     return this._minerals;
   }
 
+  get totalMinerals() {
+    let totalMinerals = 0;
+
+    this.minerals.forEach((mineral) => {
+      totalMinerals += mineral.amount;
+    })
+
+    return totalMinerals;
+  }
+
+  get totalAccessibility() {
+    let totalAccessibility = 0;
+
+    this.minerals.forEach((mineral) => {
+      totalAccessibility += mineral.accessibility;
+    })
+
+    return totalAccessibility;
+  }
+
   getMineralByName(name) {
     const minerals = this.minerals;
 
