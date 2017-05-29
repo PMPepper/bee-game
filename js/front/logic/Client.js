@@ -45,6 +45,7 @@ export class Client extends EventDispatcher{
     this._onShowSystemBodyContext = this._onShowSystemBodyContext.bind(this);
     this._clearContextMenu = this._clearContextMenu.bind(this);
     this._onComponentChanged = this._onComponentChanged.bind(this);
+    this._topMenuClick = this._topMenuClick.bind(this);
 
     this._contextMenuItems = null;
     this._onContextMenuClicked = null;
@@ -139,6 +140,7 @@ export class Client extends EventDispatcher{
 
             this._reRender();
           }}
+          onTopMenuClick={this._topMenuClick}
           onShowSystemBodyContext={this._onShowSystemBodyContext}
         />
       </div>, this.$element[0]);
@@ -168,6 +170,15 @@ export class Client extends EventDispatcher{
 
   _onComponentChanged() {
     this._reRender();
+  }
+
+  //Interface methods
+  _topMenuClick(clicked) {
+    switch(clicked) {
+      case 'colonies':
+        this._windowing.focussedWindowId = 'colonyDetails';
+        break;
+    }
   }
 
   //Rendering methods

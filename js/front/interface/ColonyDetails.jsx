@@ -17,35 +17,57 @@ class ColonyDetailsRenderer extends BEMComponent {
   }
 
   componentWillMount() {
-    this.setState({colony:this.props.colony});
+
+    this.setState({colony: this._getSelectedColony(this.props)});
   }
 
-  componentWillReceiveProps(props) {
-    this.setState({colony:props.colony});
+  componentWillReceiveProps(newProps) {
+    this.setState({colony: this._getSelectedColony(newProps)});
+  }
+
+  _getSelectedColony(props) {
+    let selectedColony = props.colony;
+
+    if(!selectedColony) {
+      const gameState = props.gameState;
+      const client = props.client;
+
+      const selectedSystem = gameState.getStateById(client.selectedSystemId);
+
+      if(selectedSystem) {
+        let colonies = selectedSystem.getFactionColonies();
+
+        if(colonies.length > 0) {
+          //sort on population
+          colonies.sort((colonyA, colonyB)=> {return colonyB.population - colonyA.population;});
+
+          selectedColony = colonies[0];
+        }
+      }
+    }
+
+    return selectedColony;
   }
 
   render() {
-    if(!this.props.colony) {
-      return <article className={this.blockClasses}>No colony selected</article>
-    }
-
     return <article className={this.blockClasses}>
       <div className={this.element('coloniesListHolder')}>
         <TreeMenu onItemClick={(item) => {return this.props.onItemClickSetColony(item);}} data={this._getFactionColoniesData(this.state.colony)} />
       </div>
       <div className={this.element('selectedColonyDetails')}>
+        {!!this.state.colony ?
         <ScrollPane vertical={true}>
           <Tabs name="colonyDetailsTab" activeTab={2}>
             <TabPanel name="summary" title="Summary">
               <dl>
                 <dt>Colony population: </dt>
-                <dd>{this.props.colony.population}</dd>
+                <dd>{this.state.colony.population}</dd>
                 <dt>Colony population: </dt>
-                <dd>{this.props.colony.population}</dd>
+                <dd>{this.state.colony.population}</dd>
                 <dt>Colony population: </dt>
-                <dd>{this.props.colony.population}</dd>
+                <dd>{this.state.colony.population}</dd>
                 <dt>Colony population: </dt>
-                <dd>{this.props.colony.population}</dd>
+                <dd>{this.state.colony.population}</dd>
               </dl>
             </TabPanel>
             <TabPanel name="industry" title="Industry">TODO 2</TabPanel>
@@ -57,8 +79,12 @@ class ColonyDetailsRenderer extends BEMComponent {
             <TabPanel name="groundUnits" title="Ground Units">TODO 6</TabPanel>
             <TabPanel name="economy" title="Economy">TODO 7</TabPanel>
             <TabPanel name="maintenance" title="Maintenance">TODO 8</TabPanel>
+            <TabPanel name="research" title="Research">TODO 9</TabPanel>
           </Tabs>
         </ScrollPane>
+        :
+        <p>No colony selected</p>
+        }
       </div>
 
     </article>
@@ -99,7 +125,7 @@ class ColonyDetailsRenderer extends BEMComponent {
 
   _getMineralData() {
     const minerals = Client.getGameConfig().minerals;
-    const colony = this.props.colony;
+    const colony = this.state.colony;
     const stockpile = colony.mineralsStockpile;
     const rows = [];
 
@@ -180,7 +206,7 @@ class ColonyDetailsRenderer extends BEMComponent {
 
   _getMineralSummary() {
     const minerals = Client.getGameConfig().minerals;
-    const colony = this.props.colony;
+    const colony = this.state.colony;
     const bodyMinerals = colony.systemBody.body.minerals ? colony.systemBody.body.minerals.totalMinerals : 0;
     const accessiblity = colony.systemBody.body.minerals ? colony.systemBody.body.minerals.totalAccessibility : 0;
     const stockpile = colony.mineralsStockpile.totalMinerals;
@@ -220,6 +246,8 @@ class ColonyDetailsController extends ReactComponentController {
     this._gameStateUpdatedListener = client.addListener('gameStateUpdated', (event) => {
       this._gameState = event.updatedGameState;
     });
+
+    this._client = client;
 
     //naughty..
     this._gameState = client._state;
@@ -262,7 +290,7 @@ class ColonyDetailsController extends ReactComponentController {
   }
 
   render() {
-    return <ColonyDetailsRenderer colony={this.colony} gameState={this._gameState} onItemClickSetColony={this._onItemClickSetColony} />
+    return <ColonyDetailsRenderer colony={this.colony} client={this._client} gameState={this._gameState} onItemClickSetColony={this._onItemClickSetColony} />
   }
 }
 

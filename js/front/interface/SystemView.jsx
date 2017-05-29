@@ -27,8 +27,8 @@ export class SystemView extends BEMComponent {
       <div className={this.element('holder')}>
         <div className={this.element('topMenu')}>
           <div className={this.element('buttons')} onClick={this._topMenuClicked}>
-            <button className={this.element('button', {type:'colonies'})}>Colonies</button>
-            <button className={this.element('button', {type:'research'})}>Research</button>
+            <button className={this.element('button', {type:'colonies'})} data-val="colonies">Colonies</button>
+            <button className={this.element('button', {type:'research'})} data-val="research">Research</button>
           </div>
           <div className={this.element('gameSpeed')}>
             <Date date={this.props.gameState.time}/>
@@ -57,7 +57,18 @@ export class SystemView extends BEMComponent {
   }
 
   _topMenuClicked(e) {
-    e.target;
+    e.preventDefault();
+
+    const target = e.target;
+    let val = null;
+
+    if(target) {
+      val = target.getAttribute('data-val');
+    }
+
+    if(val) {
+      this.props.onTopMenuClick(val);
+    }
   }
 
   _gameStepClicked(e) {
