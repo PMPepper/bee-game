@@ -1,4 +1,4 @@
-import {Model} from '../Model';
+import Model from '../Model';
 
 export class KnownFaction extends Model {
   constructor(faction, fullName, shortName, adjectiveName) {

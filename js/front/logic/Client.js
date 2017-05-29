@@ -3,6 +3,10 @@ import {render} from 'react-dom';
 
 import {EventDispatcher} from '../../core/EventDispatcher';
 
+//definitions
+import OrbitalFacility from '../../core/definitions/OrbitalFacility';
+import SurfaceFacility from '../../core/definitions/SurfaceFacility';
+
 //states
 import {Colony} from '../states/Colony';
 
@@ -27,6 +31,11 @@ export class Client extends EventDispatcher{
 
     this._$element = $element;
     globalGameConfig = this._gameConfig = gameConfig;
+
+    //Create definitions
+    this._orbitalFacilities = gameConfig.orbitalFacilities.map((facility) => {return new OrbitalFacility(facility)});
+    this._surfaceFacilities = gameConfig.surfaceFacilities.map((facility) => {return new SurfaceFacility(facility)});
+
     this._factionId = null;
     this._connector = null;
     this._state = null;

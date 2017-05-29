@@ -18,6 +18,10 @@ $(() => {
   setTimeout(() => {
     //Initial game Config
     const gameConfig = Object.freeze({
+      //Construction config
+      surfaceFacilities: require('./data/surfaceFacilities'),
+      orbitalFacilities: require('./data/orbitalFacilities'),
+      //Minerals config
       minerals: [
         'corbynite',
         'quadlithium',
@@ -49,6 +53,7 @@ $(() => {
         }
       },
       baseMineralDensity: 1/1000000000000000000,
+      //Time
       gameStartTime:Math.floor(Date.now()/1000)
     });
 

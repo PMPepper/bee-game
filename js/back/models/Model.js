@@ -3,7 +3,7 @@ let id = 0;
 const allModelsById = {};
 
 
-export class Model {
+export default class Model {
   constructor() {
     this._id = id++;
 

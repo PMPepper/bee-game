@@ -1,4 +1,4 @@
-import {Model} from '../Model';
+import Model from '../Model';
 import {KnownFaction} from './KnownFaction';
 import {KnownSystem} from './KnownSystem';
 import {KnownTechnology} from './KnownTechnology';

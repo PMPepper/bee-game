@@ -1,4 +1,4 @@
-import {Model} from '../Model';
+import Model from '../Model';
 
 export class KnownSystem extends Model {
   constructor (system, name, discoveryDate, knownJumpPoints) {

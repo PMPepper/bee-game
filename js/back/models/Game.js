@@ -1,4 +1,6 @@
-import {Model} from './Model';
+import Model from './Model';
+import SurfaceFacility from '../../core/definitions/SurfaceFacility';
+import OrbitalFacility from '../../core/definitions/OrbitalFacility';
 
 export class Game extends Model {
   constructor (gameConfig) {
@@ -9,6 +11,15 @@ export class Game extends Model {
     this._time = gameConfig.gameStartTime;
     this._factions = {};
     this._systems = {};
+    {};
+
+    this._surfaceFacilities = gameConfig.surfaceFacilities.map((facility) => {
+      return new SurfaceFacility(facility);
+    });
+
+    this._orbitalFacilities = gameConfig.orbitalFacilities.map((facility) => {
+      return new OrbitalFacility(facility);
+    });
 
     this._factionTempIds = {};
   }

@@ -1,4 +1,4 @@
-import {Model} from '../Model';
+import Model from '../Model';
 
 export class Orbit extends Model{
   constructor () {

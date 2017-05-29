@@ -2,7 +2,7 @@
 
 //TODO implement
 
-import {Model} from './Model'
+import Model from './Model'
 
 export class MineralsStockpile extends Model {
   constructor (initialMinerals) {

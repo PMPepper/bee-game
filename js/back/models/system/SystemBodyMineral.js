@@ -1,6 +1,6 @@
 //represents the amount of a specific mineral present on a system body
 
-import {Model} from '../Model'
+import Model from '../Model'
 
 export class SystemBodyMineral extends Model {
   constructor (name, initialAmount, initialAccessibility, currentAmount) {

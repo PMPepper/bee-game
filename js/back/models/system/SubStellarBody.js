@@ -1,4 +1,4 @@
-import {Model} from '../Model';
+import Model from '../Model';
 import {SystemBody} from './SystemBody';
 import {Coord} from '../../../core/Coord';
 

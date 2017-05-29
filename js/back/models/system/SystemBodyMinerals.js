@@ -1,6 +1,6 @@
 //represets the minerals present in a system body
 
-import {Model} from '../Model'
+import Model from '../Model'
 import {SystemBodyMineral} from './SystemBodyMineral'
 import {Game} from '../Game'
 

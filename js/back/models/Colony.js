@@ -1,4 +1,4 @@
-import {Model} from './Model'
+import Model from './Model'
 import {MineralsStockpile} from './MineralsStockpile'
 import {Constants} from '../../core/Constants'
 

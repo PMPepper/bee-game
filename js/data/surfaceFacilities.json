@@ -1,0 +1,244 @@
+[
+  {
+    "name": "Automated Mine",
+    "size": 25000,
+    "sectionSize": 5000,
+    "workforce": 0,
+    "minerals": {
+      "thatcherite": 120,
+      "hadronium": 120
+    },
+    "cost": 240,
+    "maintenance": 0,
+    "functions": {
+      "mine": 1
+    },
+    "requirements":null
+  },
+  {
+    "name": "Commercial Spaceport",
+    "size": 25000,
+    "sectionSize": 5000,
+    "workforce": 0,
+    "minerals": {
+      "thatcherite": 300,
+      "hadronium": 150
+    },
+    "cost": 1200,
+    "maintenance": 0,
+    "functions": {
+      "shipyard": 1
+    },
+    "requirements":null
+  },
+  {
+    "name": "Construction Factory",
+    "size": 25000,
+    "sectionSize": 5000,
+    "workforce": 0,
+    "minerals": {
+      "thatcherite": 60
+    },
+    "cost": 0,
+    "maintenance": 0,
+    "functions": {
+      "buildFacility": 1
+    },
+    "requirements":null
+  },
+  {
+    "name": "Deep Space Tracking Station",
+    "size": 25000,
+    "sectionSize": 5000,
+    "workforce": 0,
+    "minerals": {
+
+    },
+    "cost": 0,
+    "maintenance": 0,
+    "functions": {
+      "tracking": 1
+    },
+    "requirements":null
+  },
+  {
+    "name": "Fighter Factory",
+    "size": 25000,
+    "sectionSize": 25000,
+    "workforce": 0,
+    "minerals": {
+
+    },
+    "cost": 0,
+    "maintenance": 0,
+    "functions": {
+      "buildFighter": 1
+    },
+    "requirements":null
+  },
+  {
+    "name": "Financial Center",
+    "size": 0,
+    "sectionSize": 0,
+    "workforce": 0,
+    "minerals": {
+
+    },
+    "cost": 0,
+    "maintenance": 0,
+    "functions": {
+      "finance": 1
+    },
+    "requirements":null
+  },
+  {
+    "name": "Fuel Refinery",
+    "size": 0,
+    "sectionSize": 0,
+    "workforce": 0,
+    "minerals": {
+
+    },
+    "cost": 0,
+    "maintenance": 0,
+    "functions": {
+      "fuel": 1
+    },
+    "requirements":null
+  },
+  {
+    "name": "Ground Force Training Center",
+    "size": 0,
+    "sectionSize": 0,
+    "workforce": 0,
+    "minerals": {
+
+    },
+    "cost": 0,
+    "maintenance": 0,
+    "functions": {
+      "groundUnitTraining": 1
+    },
+    "requirements":null
+  },
+  {
+    "name": "Infrastucture",
+    "size": 0,
+    "sectionSize": 0,
+    "workforce": 0,
+    "minerals": {
+
+    },
+    "cost": 0,
+    "maintenance": 0,
+    "functions": {
+      "infrastructure": 10
+    },
+    "requirements":null
+  },
+  {
+    "name": "Maintenance Facility",
+    "size": 0,
+    "sectionSize": 0,
+    "workforce": 0,
+    "minerals": {
+
+    },
+    "cost": 0,
+    "maintenance": 0,
+    "functions": {
+      "maintenance": 1
+    },
+    "requirements":null
+  },
+  {
+    "name": "Space Elevator",
+    "size": 0,
+    "sectionSize": 0,
+    "workforce": 0,
+    "minerals": {
+
+    },
+    "cost": 0,
+    "maintenance": 0,
+    "functions": {
+      "orbitTransport": 1
+    },
+    "requirements":null
+  },
+  {
+    "name": "Military Academy",
+    "size": 0,
+    "sectionSize": 0,
+    "workforce": 0,
+    "minerals": {
+
+    },
+    "cost": 0,
+    "maintenance": 0,
+    "functions": {
+      "educate": 1
+    },
+    "requirements":null
+  },
+  {
+    "name": "Mine",
+    "size": 0,
+    "sectionSize": 0,
+    "workforce": 0,
+    "minerals": {
+
+    },
+    "cost": 0,
+    "maintenance": 0,
+    "functions": {
+      "mine": 1
+    },
+    "requirements":null
+  },
+  {
+    "name": "Ordinance Factory",
+    "size": 0,
+    "sectionSize": 0,
+    "workforce": 0,
+    "minerals": {
+
+    },
+    "cost": 0,
+    "maintenance": 0,
+    "functions": {
+      "buildOrdinance": 1
+    },
+    "requirements":null
+  },
+  {
+    "name": "Research Lab",
+    "size": 0,
+    "sectionSize": 0,
+    "workforce": 0,
+    "minerals": {
+
+    },
+    "cost": 0,
+    "maintenance": 0,
+    "functions": {
+      "research": 1
+    },
+    "requirements":null
+  },
+  {
+    "name": "Terraforming Installation",
+    "size": 0,
+    "sectionSize": 0,
+    "workforce": 0,
+    "minerals": {
+
+    },
+    "cost": 0,
+    "maintenance": 0,
+    "functions": {
+      "terraform": 1
+    },
+    "requirements":null
+  }
+]

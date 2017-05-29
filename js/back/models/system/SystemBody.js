@@ -1,7 +1,7 @@
 import {Constants} from '../../../core/Constants';
 import {Coord} from '../../../core/Coord';
 
-import {Model} from '../Model';
+import Model from '../Model';
 
 export class SystemBody extends Model{
   constructor (mass, radius, day, axialTilt, tidalLock, parent, orbit) {
