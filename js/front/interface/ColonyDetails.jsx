@@ -5,7 +5,7 @@ import {BEMComponent} from './BEMComponent.jsx';
 import {ReactComponentController} from './ReactComponentController';
 import {Tabs} from './Tabs.jsx';
 import {TabPanel} from './TabPanel.jsx';
-import {Helpers} from '../Helpers';
+import Helpers from '../Helpers';
 import {DataTable} from './DataTable.jsx';
 import {ScrollPane} from './ScrollPane.jsx';
 import {TreeMenu} from './TreeMenu.jsx';

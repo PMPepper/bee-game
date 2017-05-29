@@ -6,13 +6,17 @@ import {BEMComponent} from './BEMComponent.jsx';
 const zoomSpeed = 1.5;
 const easeFactor = 1/10;//must be less than or equal to 0
 
+const initialZoom = 1/1000000000;
+const maxZoom = 1/100000;
+const minZoom = 1/100000000000;
+
 export class ASystemMapRenderer extends BEMComponent {
   constructor(props, block) {
     super(props, block);
 
 
     this._element = null;
-    this._zoom = +this.props.zoom || 1/1000000000;
+    this._zoom = +this.props.zoom || initialZoom;
     this._x = +this.props.x ||0;
     this._y = +this.props.y ||0;
     this._cx = +this.props.cx ||0.5;
@@ -134,13 +138,17 @@ export class ASystemMapRenderer extends BEMComponent {
     return new Coord(x - offset.left, y - offset.top);
   }
 
+  _getLimitedZoom(zoom) {
+    return  Math.min(Math.max(zoom, minZoom), maxZoom);
+  }
+
   panTo(x, y) {
     this._targetX = x;
     this._targetY = y;
   }
 
   zoomTo(deltaZoom, x, y) {
-    const targetZoom = this.zoom * deltaZoom;
+    const targetZoom = this._getLimitedZoom(this.zoom * deltaZoom);
 
     const screenPos = this.systemToScreen(x, y);
     const targetPos = this.systemToScreen(x, y, targetZoom);
@@ -232,6 +240,8 @@ export class ASystemMapRenderer extends BEMComponent {
   }
 
   set zoom(newZoom) {
+    newZoom = this._getLimitedZoom(newZoom);
+
     this._targetZoom = this._zoom = newZoom;
     this._renderDirty = true;
   }

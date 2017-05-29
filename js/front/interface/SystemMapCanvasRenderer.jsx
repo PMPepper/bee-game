@@ -3,6 +3,7 @@ import {render} from 'react-dom';
 import {ASystemMapRenderer} from './ASystemMapRenderer.jsx';
 import {Circle} from '../graphics/Circle';
 import {Coord} from '../../core/Coord';
+import * as Helpers from '../Helpers';
 
 const bgImg = new window.Image();
 bgImg.src = '../images/bg.png';
@@ -57,7 +58,127 @@ export class SystemMapCanvasRenderer extends ASystemMapRenderer {
       this.renderObject(ctx, knownSystemBody, position);
     }, this);
 
+    this.renderScale();
+
     this._renderDirty = false;
+  }
+
+  renderScale() {
+    const validFractions = [1.5, 2, 2.5, 3, 4, 5, 6, 7, 7.5, 8, 9];
+
+    //calculate most appropriate scale
+    const possibleFormats = [];
+
+    const maxWidth = 200;
+    const maxDistance = maxWidth / this.zoom;//in meters
+
+    //Calculate SI units
+    const maxDistMag = Math.floor(Math.log10(maxDistance));
+    const maxDistPow = Math.pow(10, maxDistMag);
+
+    const nearestPowLength = maxWidth * (maxDistPow / maxDistance);
+    //Nearest pow of 10
+    possibleFormats.push({length: nearestPowLength, distance: maxDistPow})
+
+    validFractions.forEach((val) => {
+      if(nearestPowLength * val <= maxWidth) {
+        possibleFormats.push({length: nearestPowLength * val, distance: maxDistPow * val})
+      }
+    });
+
+    //pick format with longest distance
+    possibleFormats.sort((fA, fB) => {return fB.length - fA.length;})
+    const formatSI = possibleFormats[0];
+
+    //TODO calculate light years/days seconds/etc
+    const ls = Helpers.metersToLightSeconds(maxDistance);
+    const lm = Helpers.metersToLightMinutes(maxDistance);
+    const lh = Helpers.metersToLightHours(maxDistance);
+    const ld = Helpers.metersToLightDays(maxDistance);
+    const ly = Helpers.metersToLightYears(maxDistance);
+
+    let lengthC = 0;
+    let distanceC = 0;
+    let cDist = 0;
+    let unitC = null;
+    let lengthPerUnit = 0;
+
+    if(ly > 0.1) {
+      //light years
+      cDist = ly;
+      unitC = 'LY';
+    } else if (ld > 1) {
+      //light days
+      cDist = ld;
+      unitC = 'LD';
+    } else if (lh > 1) {
+      //light hours
+      cDist = lh;
+      unitC = 'LH';
+    } else if (lm > 1) {
+      //light minutes
+      cDist = lm;
+      unitC = 'LM';
+    } else {
+      //light seconds
+      cDist = ls;
+      unitC = 'LS';
+    }
+
+    distanceC = Helpers.floorTo(cDist, cDist < 2 ? 1 : 0);
+    lengthC = maxWidth * (distanceC / cDist);
+
+    this._doRenderScale(formatSI.length, formatSI.distance, lengthC, distanceC, unitC);
+
+  }
+
+  _doRenderScale(lengthSI, distanceSI, lengthC, distanceC, unitC) {
+    //first, position
+    const offX = 4.5;
+    const offY = 100.5;
+    const endMarkHeight = 5;
+    const element = this._element;
+    const ctx = element.getContext('2d');
+
+    ctx.save();
+
+    ctx.strokeStyle = '#FFF'
+    ctx.lineWidth = 1;
+
+    //SI line
+    ctx.beginPath();
+    ctx.moveTo(offX, offY);
+    ctx.lineTo(offX + lengthSI, offY);
+    ctx.lineTo(offX + lengthSI, offY - endMarkHeight);
+    ctx.stroke();
+
+    //SI Label
+    ctx.font = '11px Arial, Helvetica, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgb(255,255,255)';
+
+    ctx.shadowColor = '#000';
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.shadowBlur = 3;
+
+    ctx.fillText(Helpers.formatDistanceSI(distanceSI, 1), offX+0.5, offY - 4.5);
+
+    if(lengthC > 0) {
+      //C line
+      ctx.beginPath();
+      ctx.moveTo(offX, offY);
+      ctx.lineTo(offX + lengthC, offY);
+      ctx.lineTo(offX + lengthC, offY + endMarkHeight + 1);
+      ctx.stroke();
+
+      //C label
+      ctx.fillText(distanceC + ' ' + unitC, offX+0.5, offY + 12.5);
+    } else {
+      ctx.fillText('< 0.1 LS', offX+0.5, offY + 12.5);
+    }
+
+    ctx.restore();
   }
 
   renderObject(ctx, knownSystemBody, coord) {
