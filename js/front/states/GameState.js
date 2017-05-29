@@ -68,6 +68,10 @@ export class GameState extends FactionState {
   }
 
   getStateById(id) {
+    if(this._reconciliation && this._reconciliation.hasOwnProperty(id)) {
+      id = this._reconciliation[id];
+    }
+    
     return this._statesById[id] || null;
   }
 

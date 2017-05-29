@@ -9,6 +9,8 @@ export class Game extends Model {
     this._time = gameConfig.gameStartTime;
     this._factions = {};
     this._systems = {};
+
+    this._factionTempIds = {};
   }
 
 
@@ -109,7 +111,8 @@ export class Game extends Model {
       models: allModels,
       time: this._time,
       factionId: factionStateObj.id,
-      events: factionEvents
+      events: factionEvents,
+      reconciliation: this._factionTempIds[faction.id] || null
     };
   }
 
@@ -121,6 +124,14 @@ export class Game extends Model {
     this._systems[system.id] = system;
 
     system.update(this.time, 0, null);
+  }
+
+  addIdReconciliation(factionId, tempId, newId) {
+    if(!this._factionTempIds[factionId]) {
+      this._factionTempIds[factionId] = {};
+    }
+
+    this._factionTempIds[factionId][tempId] = newId;
   }
 
   get time() {
@@ -149,7 +160,8 @@ export class Game extends Model {
       'class': 'Game',
       time: this.time,
       systems: this.getObjectState(this.systems),
-      factions: this.getObjectState(this.factions)
+      factions: this.getObjectState(this.factions),
+      reconciliation: this._factionTempIds
     });
   }
 }

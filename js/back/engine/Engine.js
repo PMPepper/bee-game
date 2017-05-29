@@ -58,7 +58,9 @@ export class Engine {
 
         //ok, you can add a colony here
         //faction, systemBody, population, mineralsStockpile, orbitalMinerals
-        new Colony(faction, systemBody, 0, null, null);
+        let newColony = new Colony(faction, systemBody, 0, null, null);
+
+        this._gameModel.addIdReconciliation(faction.id, id, newColony.id);
       }
     }
     //-removed

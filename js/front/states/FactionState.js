@@ -48,6 +48,8 @@ export class FactionState extends State {
     this._knownSystemBodyBySystemBodyId = {};
     this._knownFactionByFactionId = {};
 
+    this._reconciliation = stateObj.reconciliation;
+
     //now fully parse the state object
     this._getState(model.knownFactionIds);
     this._getState(model.knownSystemIds);
@@ -334,6 +336,10 @@ export class FactionState extends State {
   }
 
   _getStateById(id) {
+    if(this._reconciliation && this._reconciliation.hasOwnProperty(id)) {
+      id = this._reconciliation[id];
+    }
+
     return this._statesById.hasOwnProperty(id) ? this._statesById[id] : ( this._models.hasOwnProperty(id) ? this._getState(this._models[id]) : null);
   }
 
